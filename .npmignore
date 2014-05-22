@@ -1,0 +1,4 @@
+.npmignore
+.jshintrc
+.jshintignore
+test
