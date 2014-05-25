@@ -2,6 +2,7 @@
  * Module dependencies.
  */
 var Layer = require('./layer');
+var mockJson = require('./mockJson');
 var parseUrl = require('parseurl');
 
 /**
@@ -76,9 +77,7 @@ Router.prototype.add = function (rules) {
 };
 
 Router.prototype.handle = function (req, res) {
-    var self = this,
-
-        url = parseUrl(req),
+    var url = parseUrl(req),
         method = req.method.toLowerCase(),
 
         strict,
@@ -98,12 +97,14 @@ Router.prototype.handle = function (req, res) {
         merge(params, req.body);
 
         if ((strict = methods.hasOwnProperty(method) || methods.hasOwnProperty('*')) && layer.match(url.pathname)) {
-            options = strict ? methods[method] : methods['*'];
-            req.params = merge(params, layer.params);
-            res.body = options.data;
-            res.cookies = options.cookies;
 
-            var body = JSON.stringify(options.data),
+            options = strict ? methods[method] : methods['*'];
+
+            req.params = merge(params, layer.params);
+            res.body = mockJson(options.data, req.params);
+            res.cookies = mockJson(options.cookies, req.params);
+
+            var body = JSON.stringify(res.body),
                 headers = {
                     'Content-Type': 'application/json',
                     'Content-Length': body.length

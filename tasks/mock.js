@@ -219,11 +219,9 @@ module.exports = function (grunt) {
                         console.log(data);
                     }
 
-                    next();
-                });
-
-                middlewares.push(function (req, res) {
                     console.log('\nWaiting for next request...'.italic.grey);
+
+                    next();
                 });
             } else {
                 middlewares.push(
