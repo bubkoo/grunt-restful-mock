@@ -14,29 +14,36 @@
 module.exports = function (grunt) {
 
 
-    var connect = require('connect'),
-        http = require('http'),
-        https = require('https'),
-        portscanner = require('portscanner'),
-        async = require('async');
+    var connect = require('connect');
+    var http = require('http');
+    var https = require('https');
+    var portscanner = require('portscanner');
+    var async = require('async');
+    var Dispatcher = require('./lib/dispatcher');
 
     grunt.registerMultiTask('mock', 'Start a API mock server.', function () {
 
-        var done = this.async(),
+        var dispatcher;
+        var done = this.async();
 
         // Merge task-specific and/or target-specific options with these defaults.
-            options = this.options({
-                protocol: 'http',
-                port: '',
-                hostname: '0.0.0.0',
-                delay: 500,
-                debug: false
-            });
+        var options = this.options({
+            protocol: 'http',
+            port: '',
+            hostname: '0.0.0.0',
+            delay: 500,
+            timeout: false,
+            sensitive: false,   // 当设置为 true, 将区分路由的大小写
+            strict: false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
+            end: true,          // 当设置为 false, 将只会匹配 url 前缀
+            debug: false
+        });
 
         options.debug = grunt.option('debug') || options.debug === true;
 
         async.waterfall([
             function (next) {
+
                 if (options.protocol !== 'http' && options.protocol !== 'https') {
                     grunt.fatal('protocol option must be \'http\' or \'https\'');
                 }
@@ -44,10 +51,13 @@ module.exports = function (grunt) {
                     grunt.fatal('must be assign a service port');
                 }
                 next(null);
+
             },
             function () {
+
                 var app = connect.apply(null, createMiddleware(connect, options));
                 var server = null;
+
                 if (options.protocol === 'http') {
                     server = http.createServer(app);
                 } else if (options.protocol === 'https') {
@@ -61,11 +71,17 @@ module.exports = function (grunt) {
                         server
                             .listen(options.port, options.hostname)
                             .on('listening', function () {
-                                var address = server.address(),
-                                    hostname = options.hostname || '0.0.0.0',
-                                    port = address.port === 80 ? '' : ':' + address.port,
-                                    target = options.protocol + '://' + hostname + port;
+
+                                var address = server.address();
+                                var hostname = options.hostname || '0.0.0.0';
+                                var port = address.port === 80 ? '' : ':' + address.port;
+                                var target = options.protocol + '://' + hostname + port;
+
+                                // 创建路由分发
+                                dispatcher = new Dispatcher(options);
+
                                 consoleLogo(target, options.debug);
+
 
 //                            grunt.config.set('connect.' + taskTarget + '.options.hostname', hostname);
 //                            grunt.config.set('connect.' + taskTarget + '.options.port', address.port);
@@ -98,9 +114,15 @@ module.exports = function (grunt) {
             }
         }
 
-        function formatJson(obj, space) {
+        function formatJson(obj, space, level) {
+            if (!obj) {
+                return '';
+            }
             if (typeof space === 'undefined') {
                 space = '';
+            }
+            if (typeof level === 'undefined') {
+                level = 0;
             }
 
             var indent = '    ',
@@ -109,28 +131,26 @@ module.exports = function (grunt) {
                 key,
                 val;
 
-            if (isArr) {
-                ret += space + '[\n';
-            }
-            else {
-                ret += space + '{\n';
-            }
-
             for (key in obj) {
                 ret += space + indent + key + ': ';
                 val = obj[key];
                 if (typeof val === 'object' || Array.isArray(val)) {
-                    ret += formatJson(val, space + indent);
+                    ret += formatJson(val, space + indent, level + 1);
                 } else {
+                    if (typeof val === 'string') {
+                        val = '"' + val + '"';
+                    }
                     ret += val + '\n';
                 }
             }
 
-            if (isArr) {
-                ret += space + ']\n';
-            }
-            else {
-                ret += space + '}\n';
+            if (typeof key !== 'undefined') {
+                if (isArr) {
+                    ret = (level > 0 ? '' : space) + '[\n' + ret + space + ']' + (level > 0 ? '\n' : '');
+                }
+                else {
+                    ret = (level > 0 ? '' : space) + '{\n' + ret + space + '}' + (level > 0 ? '\n' : '');
+                }
             }
             return ret;
         }
@@ -152,59 +172,65 @@ module.exports = function (grunt) {
                         'format': '\\n[MOCK DEBUG INFO]\\n'.magenta +
                             ' - Request:\\n'.cyan +
                             '     method: '.yellow + ':method HTTP/:http-version\\n' +
-                            '     url:    '.yellow + ':url'.green + '\\n' +
+                            '     url:    '.yellow + ':url' + '\\n' +
                             '     ref:    '.yellow + ':referrer\\n' +
                             '     uag:    '.yellow + ':user-agent\\n' +
                             '     addr:   '.yellow + ':remote-addr\\n' +
                             '     date:   '.yellow + ':date',
                         'immediate': true
                     }));
+            }
 
+            // 根据请求路由，匹配规则，返回数据
+            middlewares.push(function (req, res, next) {
+                dispatcher.handle(req, res);
+                next();
+            });
+
+            // 输出响应信息
+            if (debug) {
                 middlewares.push(function (req, res, next) {
-                    if (req.method === 'GET') {
-                        console.log(('     query:  ').yellow);
-                        console.log(formatJson(req.query, '         '));
-                    } else {
-                        console.log(('     body:   ').yellow);
-                        console.log(formatJson(req.body, '         '));
-                    }
+                    console.log('     params: '.yellow);
+                    console.log(formatJson(req.params, '         '));
+                    console.log(' - Response:'.cyan);
+                    console.log('     status: '.yellow + (res.statusCode === 200 ? 200 : (res.statusCode + '').red));
                     next();
                 });
 
+                middlewares.push(
+                    connect.logger({
+                        'format': '' +
+                            '     length: '.yellow + ':res[content-length] byte\\n' +
+                            '     timing: '.yellow + ':response-time ms',
+                        'immediate': true
+                    }));
+
+                middlewares.push(function (req, res, next) {
+                    var data = formatJson(res.body, '         '),
+                        cookies = formatJson(res.cookies, '         ');
+
+                    console.log('     cookies:'.yellow);
+                    if (cookies) {
+                        console.log(cookies);
+                    }
+
+                    console.log('     data:   '.yellow);
+                    if (data) {
+                        console.log(data);
+                    }
+
+                    next();
+                });
+
+                middlewares.push(function (req, res) {
+                    console.log('\nWaiting for next request...'.italic.grey);
+                });
             } else {
                 middlewares.push(
                     connect.logger({
                         'format': '[:method] :url'.green,
                         'immediate': true
                     }));
-            }
-
-            // 根据请求路由，匹配规则，返回数据
-            middlewares.push(function (req, res, next) {
-                var body = '{"name":"bub"}',
-                    headers = {
-                        'Content-Type': 'application/json',
-                        'Content-Length': body.length
-                    };
-                res.writeHead(200, headers);
-                res.end(body);
-                next();
-            });
-
-            // 输出响应信息
-            if (debug) {
-                middlewares.push(
-                    connect.logger({
-                        'format': ' - Response:\\n'.cyan +
-                            '     status: '.yellow + ':status\\n' +
-                            '     length: '.yellow + ':res[content-length] byte\\n' +
-                            '     timing: '.yellow + ':response-time ms\\n',
-                        'immediate': true
-                    }));
-
-                middlewares.push(function (req, res) {
-                    console.log('Waiting for next request...'.italic.grey);
-                });
             }
 
             return middlewares;
