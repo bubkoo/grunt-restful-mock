@@ -58,8 +58,7 @@
         };
 
         Util.type = function type(obj) {
-            return obj === null || obj === undefined ? String(obj) :
-                Object.prototype.toString.call(obj).match(/\[object (\w+)\]/)[1].toLowerCase();
+            return obj === null || obj === undefined ? String(obj) : Object.prototype.toString.call(obj).match(/\[object (\w+)\]/)[1].toLowerCase();
         };
         Util.each("String Object Array RegExp Function".split(" "), function (value) {
             Util["is" + value] = function (obj) {
@@ -625,7 +624,7 @@
         });
         Random.extend({
             url: function () {
-                return "http://" + this.domain() + "/" + this.word();
+                return "http://www." + this.domain() + "/" + this.word();
             },
             domain: function (tld) {
                 return this.word() + "." + (tld || this.tld());
@@ -713,7 +712,7 @@
                 return id;
             },
             autoIncrementInteger: 0,
-               increment: function (step) {
+            increment: function (step) {
                 return this.autoIncrementInteger += +step || 1;
             },
             inc: function (step) {
@@ -829,13 +828,7 @@
             return result;
         },
         object: function (options) {
-            var result = {},
-                keys,
-                key,
-                parsedKey,
-                inc,
-                i;
-
+            var result = {}, keys, key, parsedKey, inc, i;
             if (options.rule.min) {
                 keys = Util.keys(options.template);
                 keys = Random.shuffle(keys);
@@ -881,18 +874,13 @@
                 }
                 result = parseFloat(parts.join("."), 10);
             } else {
-                result = options.rule.range &&
-                    !options.rule.parameters[2] ?
-                    options.rule.count :
-                    options.template;
+                result = options.rule.range && !options.rule.parameters[2] ? options.rule.count : options.template;
             }
             return result;
         },
         "boolean": function (options) {
             var result;
-            result = options.rule.parameters ?
-                Random.bool(options.rule.min, options.rule.max, options.template) :
-                options.template;
+            result = options.rule.parameters ? Random.bool(options.rule.min, options.rule.max, options.template) : options.template;
             return result;
         },
         string: function (options) {
@@ -947,19 +935,14 @@
         },
         placeholder: function (placeholder, obj, templateContext) {
             rplaceholder.exec("");
-            var parts = rplaceholder.exec(placeholder),
-                key = parts && parts[1],
-                lkey = key && key.toLowerCase(),
-                okey = this._all()[lkey],
-                params = parts && parts[2] || "";
+            var parts = rplaceholder.exec(placeholder), key = parts && parts[1], lkey = key && key.toLowerCase(), okey = this._all()[lkey], params = parts && parts[2] || "";
             try {
                 eval("!function(){ params = [].splice.call(arguments, 0 ) }(" + params + ")");
             } catch (e) {
                 params = parts[2].split(/,\s*/);
             }
             if (obj && key in obj) return obj[key];
-            if (templateContext && typeof templateContext === "object"
-                && key in templateContext && placeholder !== templateContext[key]) {
+            if (templateContext && typeof templateContext === "object" && key in templateContext && placeholder !== templateContext[key]) {
                 templateContext[key] = Handle.gen(templateContext[key], key, {
                     currentContext: obj,
                     templateCurrentContext: templateContext
@@ -985,11 +968,6 @@
             }
         }
     });
-
-
-
-
-
 
 
 
@@ -1413,7 +1391,6 @@
             return val;
         };
     }).call(this);
-
     /*! src/mock4xtpl.js */
     (function (undefined) {
         if (typeof KISSY === "undefined") return;
