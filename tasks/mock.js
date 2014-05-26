@@ -24,7 +24,7 @@ module.exports = function (grunt) {
     grunt.registerMultiTask('mock', 'Start a API mock server.', function () {
 
         var dispatcher;
-        var done = this.async();
+        var done = this.async(); // 阻塞式 grunt 任务
 
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
@@ -32,6 +32,7 @@ module.exports = function (grunt) {
             port: '',
             hostname: '0.0.0.0',
             delay: 500,
+            statusCode: 200,
             timeout: false,
             sensitive: false,   // 当设置为 true, 将区分路由的大小写
             strict: false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
