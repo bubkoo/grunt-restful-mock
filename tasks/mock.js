@@ -132,24 +132,30 @@ module.exports = function (grunt) {
                 val;
 
             for (key in obj) {
-                ret += space + indent + key + ': ';
+                if (isArr) {
+                    ret += space + indent;
+                } else {
+                    ret += space + indent + key + ': ';
+                }
+
                 val = obj[key];
-                if (typeof val === 'object' || Array.isArray(val)) {
+                if (Array.isArray(val) || typeof val === 'object') {
                     ret += formatJson(val, space + indent, level + 1);
                 } else {
                     if (typeof val === 'string') {
                         val = '"' + val + '"';
                     }
-                    ret += val + '\n';
+                    ret += val + ',\n';
                 }
             }
+            ret = ret.substr(0, ret.length - 2) + '\n';
 
             if (typeof key !== 'undefined') {
                 if (isArr) {
-                    ret = (level > 0 ? '' : space) + '[\n' + ret + space + ']' + (level > 0 ? '\n' : '');
+                    ret = (level > 0 ? '' : space) + '[\n' + ret + space + ']' + (level > 0 ? ',\n' : '');
                 }
                 else {
-                    ret = (level > 0 ? '' : space) + '{\n' + ret + space + '}' + (level > 0 ? '\n' : '');
+                    ret = (level > 0 ? '' : space) + '{\n' + ret + space + '}' + (level > 0 ? ',\n' : '');
                 }
             }
             return ret;

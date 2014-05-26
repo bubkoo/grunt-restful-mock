@@ -72,7 +72,6 @@
                     }
                     else {
                         // 自增/减
-                        isUndefined(options.rule.step) || (options.template += options.rule.step);
                         result = options.template;
                     }
                     return result;
@@ -86,6 +85,7 @@
                 },
                 'array': function (options) {
                     var result = [],
+                        item,
                         i,
                         j,
                         len = options.template.length,
@@ -94,7 +94,8 @@
                     for (i = 0; i < count; i++) {
                         j = 0;
                         while (j < len) {
-                            result.push(generate(options.template[j], j, options.data, options.root));
+                            item = generate(options.template[j], j, options.data, options.root);
+                            result.push(item);
                             j++;
                         }
                     }
@@ -105,6 +106,7 @@
                         keys,
                         key,
                         parsedKey,
+                        inc,
                         i,
                         length;
                     keys = getKeys(options.template);
@@ -117,6 +119,11 @@
                         key = keys[i];
                         parsedKey = key.replace(rRule, '$1');
                         result[parsedKey] = generate(options.template[key], key, options.data, options.root);
+
+                        inc = key.match(rRule);
+                        if (inc && inc[2] && 'number' === getType(options.template[key])) {
+                            options.template[key] += int(inc[2]);
+                        }
                     }
                     return result;
                 },

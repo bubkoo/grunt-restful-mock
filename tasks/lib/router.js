@@ -86,23 +86,26 @@ Router.prototype.handle = function (req, res) {
         layer,
         options,
 
-        i = 0,
+        i,
         len = this.stack.length;
 
-    for (; i < len; i++) {
+    for (i = 0; i < len; i++) {
         layer = this.stack[i];
         methods = layer.methods;
 
+        // 合并参数
         params = merge({}, req.query);
         merge(params, req.body);
 
         if ((strict = methods.hasOwnProperty(method) || methods.hasOwnProperty('*')) && layer.match(url.pathname)) {
 
-            options = strict ? methods[method] : methods['*'];
+            options = merge({}, strict ? methods[method] : methods['*']);
 
+            // 合并参数
             req.params = merge(params, layer.params);
+            // 生成 mock data
             res.body = mockJson(options.data, req.params);
-            res.cookies = mockJson(options.cookies, req.params);
+//            res.cookies = mockJson(options.cookies, req.params);
 
             var body = JSON.stringify(res.body),
                 headers = {
@@ -125,8 +128,32 @@ Router.prototype.handle = function (req, res) {
     function merge(target, source) {
         target = target || {};
         source = source || {};
-        for (var key in source) {
-            target[key] = source[key];
+
+        var key,
+            copyIsArray,
+            clone,
+            src,
+            copy;
+
+        for (key in source) {
+            src = target[ key ];
+            copy = source[ key ];
+            if (target === copy) {
+                continue;
+            }
+            if ((copyIsArray = Array.isArray(copy)) || Object.prototype.toString.call(copy) === '[object Object]') {
+                if (copyIsArray) {
+                    copyIsArray = false;
+                    clone = src && Array.isArray(src) ? src : [];
+                }
+                else {
+                    clone = src && typeof src === 'object' ? src : {};
+                }
+                target[ key ] = merge(clone, copy);
+            }
+            else if (copy !== undefined) {
+                target[ key ] = copy;
+            }
         }
         return target;
     }
