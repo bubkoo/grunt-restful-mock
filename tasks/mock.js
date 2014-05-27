@@ -65,6 +65,7 @@ module.exports = function (grunt) {
 
                 }
 
+
                 // Checks the status of a single port
                 portscanner.checkPortStatus(options.port, options.hostname, function (error, status) {
                     // Status is 'open' if currently in use or 'closed' if available
