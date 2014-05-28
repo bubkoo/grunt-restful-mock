@@ -31,81 +31,83 @@ module.exports = function (grunt) {
         var watchers = [];
         var server = null;
         var sockets = [];
+        var reloadTimes = 0;
         var done = self.async(); // 阻塞式 grunt 任务
 
+        register();
 
-        // Merge task-specific and/or target-specific options with these defaults.
-        options = self.options({
-            protocol: 'http',
-            port: '6000',
-            hostname: '127.0.0.1',
-            delay: 0,
-            statusCode: 200,
-            timeout: false,
-            sensitive: false,   // 当设置为 true, 将区分路由的大小写
-            strict: false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
-            end: true,          // 当设置为 false, 将只会匹配 url 前缀
-            debug: false,
-            watch: ''           // 需要监视的文件，文件变化之后自动重启服务
-        });
+        function register() {
 
+            // Merge task-specific and/or target-specific options with these defaults.
+            options = self.options({
+                protocol: 'http',
+                port: '6000',
+                hostname: '127.0.0.1',
+                delay: 0,
+                statusCode: 200,
+                timeout: false,
+                sensitive: false,   // 当设置为 true, 将区分路由的大小写
+                strict: false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
+                end: true,          // 当设置为 false, 将只会匹配 url 前缀
+                debug: false,
+                watch: ''           // 需要监视的文件，文件变化之后自动重启服务
+            });
+            options.debug = grunt.option('debug') || options.debug === true;
 
-        options.debug = grunt.option('debug') || options.debug === true;
+            // 检测端口
+            if (options.protocol !== 'http' && options.protocol !== 'https') {
+                grunt.fatal('protocol option must be \'http\' or \'https\'');
+            }
+            if (!options.port) {
+                grunt.fatal('must be assign a service port');
+            }
 
-        // 检测端口
-        if (options.protocol !== 'http' && options.protocol !== 'https') {
-            grunt.fatal('protocol option must be \'http\' or \'https\'');
-        }
-        if (!options.port) {
-            grunt.fatal('must be assign a service port');
-        }
+            var app = connect.apply(null, createMiddleware(connect, options));
+            if (options.protocol === 'http') {
+                server = http.createServer(app);
+            } else if (options.protocol === 'https') {
+                server = https.createServer({
+                    key: options.key || grunt.file.read(path.join(__dirname, 'certs', 'server.key')).toString(),
+                    cert: options.cert || grunt.file.read(path.join(__dirname, 'certs', 'server.crt')).toString(),
+                    ca: options.ca || grunt.file.read(path.join(__dirname, 'certs', 'ca.crt')).toString(),
+                    passphrase: options.passphrase || 'grunt',
+                }, app);
+            }
 
-        var app = connect.apply(null, createMiddleware(connect, options));
-        if (options.protocol === 'http') {
-            server = http.createServer(app);
-        } else if (options.protocol === 'https') {
-            server = https.createServer({
-                key: options.key || grunt.file.read(path.join(__dirname, 'certs', 'server.key')).toString(),
-                cert: options.cert || grunt.file.read(path.join(__dirname, 'certs', 'server.crt')).toString(),
-                ca: options.ca || grunt.file.read(path.join(__dirname, 'certs', 'ca.crt')).toString(),
-                passphrase: options.passphrase || 'grunt',
-            }, app);
-        }
-
-        // Checks the status of a single port
-        portscanner.checkPortStatus(options.port, options.hostname, function (error, status) {
-            // Status is 'open' if currently in use or 'closed' if available
-            if ('closed' === status) {
-                server
-                    .listen(options.port, options.hostname)
-                    .once('listening', function () {
-                        // 创建路由分发
-                        dispatcher = new Dispatcher(options);
-                        // 监视配置文件变化，自动重启服务
-                        watchConfigFile();
-                        // 打印 logo 信息
-                        consoleLogo();
-                    })
-                    .on('connection', function (socket) {
-                        sockets.push(socket);
-                        socket.once('close', function () {
-                            // 销毁已经关闭的连接
-                            sockets.splice(sockets.indexOf(socket), 1);
+            // Checks the status of a single port
+            portscanner.checkPortStatus(options.port, options.hostname, function (error, status) {
+                // Status is 'open' if currently in use or 'closed' if available
+                if ('closed' === status) {
+                    server
+                        .listen(options.port, options.hostname)
+                        .once('listening', function () {
+                            // 创建路由分发
+                            dispatcher = new Dispatcher(options);
+                            // 监视配置文件变化，自动重启服务
+                            watchConfigFile();
+                            // 打印 logo 信息
+                            consoleLogo();
+                        })
+                        .on('connection', function (socket) {
+                            sockets.push(socket);
+                            socket.once('close', function () {
+                                // 销毁已经关闭的连接
+                                sockets.splice(sockets.indexOf(socket), 1);
+                            });
+                        })
+                        .on('error', function (err) {
+                            if (err.code === 'EADDRINUSE') {
+                                grunt.fatal('Port ' + options.port + ' is already in use by another process.');
+                            } else {
+                                grunt.fatal(err);
+                            }
                         });
-                    })
-                    .on('error', function (err) {
-                        if (err.code === 'EADDRINUSE') {
-                            grunt.fatal('Port ' + options.port + ' is already in use by another process.');
-                        } else {
-                            grunt.fatal(err);
-                        }
-                    });
-            }
-            else {
-                grunt.fatal('Port ' + options.port + ' is already in use by another process.');
-            }
-        });
-
+                }
+                else {
+                    grunt.fatal('Port ' + options.port + ' is already in use by another process.');
+                }
+            });
+        }
 
         function reloadTask() {
 
@@ -130,9 +132,13 @@ module.exports = function (grunt) {
                 // Re-init the watch task config
                 grunt.task.init([self.name]);
                 // Run the task again
-                grunt.task.run(self.nameArgs);
-                done();
-                console.log(('\nRestarting mock.').magenta);
+//                grunt.task.run(self.nameArgs);
+//                done();
+
+                reloadTimes++;
+                console.log(('\nRestarting mock. Restart times: ').magenta + (reloadTimes + '\n').green);
+
+                register();
             });
         }
 
@@ -181,11 +187,15 @@ module.exports = function (grunt) {
             var port = address.port === 80 ? '' : ':' + address.port;
             var target = options.protocol + '://' + hostname + port;
 
-            console.log('\n     __  __  ___   ____ _  __'.magenta);
-            console.log('    |  \\/  |/ _ \\ / ___| |/ /'.magenta);
-            console.log('    | |\\/| | | | | |   | \' /'.magenta);
-            console.log('    | |  | | |_| | |___| . \\'.magenta);
-            console.log('    |_|  |_|\\___/ \\____|_|\\_\\'.magenta + '\n');
+            // 第一次启动才显示 logo 信息
+            if (!reloadTimes) {
+                console.log('\n     __  __  ___   ____ _  __'.magenta);
+                console.log('    |  \\/  |/ _ \\ / ___| |/ /'.magenta);
+                console.log('    | |\\/| | | | | |   | \' /'.magenta);
+                console.log('    | |  | | |_| | |___| . \\'.magenta);
+                console.log('    |_|  |_|\\___/ \\____|_|\\_\\'.magenta + '\n');
+            }
+
             console.log('Started API mock on ' + target + '\n');
 
             if (options.debug === true) {
