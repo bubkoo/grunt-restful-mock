@@ -32,6 +32,7 @@ module.exports = function (grunt) {
         var server = null;
         var sockets = [];
         var reloadTimes = 0;
+        var changedFiles = [];
         var done = self.async(); // 阻塞式 grunt 任务
 
         register();
@@ -129,17 +130,36 @@ module.exports = function (grunt) {
             }
 
             server.close(function () {
+                clearFileCache();
                 // Re-init the watch task config
                 grunt.task.init([self.name]);
+
                 // Run the task again
 //                grunt.task.run(self.nameArgs);
 //                done();
 
                 reloadTimes++;
+
                 console.log(('\nRestarting mock. Restart times: ').magenta + (reloadTimes + '\n').green);
 
                 register();
             });
+        }
+
+        function clearFileCache() {
+            if (changedFiles) {
+
+                changedFiles.forEach(function (filepath) {
+
+                    var abspath = path.resolve(filepath);
+                    if (require.cache[abspath]) {
+                        delete require.cache[abspath];
+                    }
+
+                });
+
+                changedFiles = [];
+            }
         }
 
         function watchConfigFile() {
@@ -164,7 +184,8 @@ module.exports = function (grunt) {
                                 grunt.fatal(err);
                             }
 
-                            this.on('changed', function (status, filepath) {
+                            this.on('changed', function (filepath) {
+                                changedFiles.push(filepath);
                                 reloadTask();
                             });
 
