@@ -1,4 +1,6 @@
+.idea
 .npmignore
 .jshintrc
 .jshintignore
+npm-debug.log
 test
