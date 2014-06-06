@@ -2,5 +2,6 @@
 .npmignore
 .jshintrc
 .jshintignore
+.DS_Store
 npm-debug.log
 test
