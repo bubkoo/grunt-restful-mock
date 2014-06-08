@@ -21,6 +21,7 @@ module.exports = function (grunt) {
     var async = require('async');
     var Gaze = require('gaze').Gaze;
     var Dispatcher = require('./lib/dispatcher');
+    var readfile = require('./lib/readfile');
 
 
     grunt.registerMultiTask('mock', 'Start a API mock server.', function () {
@@ -54,6 +55,8 @@ module.exports = function (grunt) {
                 watch: ''           // 需要监视的文件，文件变化之后自动重启服务
             });
             options.debug = grunt.option('debug') || options.debug === true;
+
+            prepareRoute.call(self);
 
             // 检测端口
             if (options.protocol !== 'http' && options.protocol !== 'https') {
@@ -109,6 +112,50 @@ module.exports = function (grunt) {
                 }
             });
         }
+
+        function prepareRoute() {
+
+            this.files.forEach(function (f) {
+                var cwd = f.cwd;
+
+                var src = f.src.filter(function (filepath) {
+                    filepath = getRealPath(filepath, cwd);
+                    if (!grunt.file.exists(filepath)) {
+                        grunt.log.warn('Source file "' + filepath + '" not found.');
+                        return false;
+                    } else if (grunt.file.isFile(filepath)) {
+                        return true;
+                    }
+                });
+
+                if (src.length === 0) {
+                    return;
+                }
+
+                var routes = {};
+                src.forEach(function (filepath) {
+
+                    var result;
+                    try {
+                        filepath = getRealPath(filepath, cwd);
+                        result = readfile(filepath);
+                    } catch (err) {
+                        grunt.log.warn(err);
+                    }
+
+                    if ('function' === typeof result) {
+                        result = result(grunt);
+                    }
+
+                    grunt.util._.merge(routes, result);
+
+                });
+
+                grunt.util._.merge(options.route, routes);
+
+            });
+        }
+
 
         function reloadTask() {
 
@@ -349,5 +396,10 @@ module.exports = function (grunt) {
 
             return middlewares;
         };
+
+        function getRealPath(filepath, cwd) {
+            filepath = cwd ? path.join(cwd, filepath) : filepath;
+            return path.join(process.cwd(), filepath);
+        }
     });
 };
