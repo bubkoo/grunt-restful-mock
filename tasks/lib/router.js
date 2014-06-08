@@ -50,6 +50,7 @@ Router.prototype.add = function (rules) {
         methods,
         method,
         options,
+        cookies,
         layer;
 
     for (rule in rules) {
@@ -69,7 +70,16 @@ Router.prototype.add = function (rules) {
 
             options.delay = options.delay || this.delay;
             options.timeout = 'undefined' === typeof options.timeout ? this.timeout : options.timeout;
-            options.cookies = options.cookies || this.cookies;
+
+//            options.cookies = options.cookies || this.cookies;
+            // cookies 应该是合并式，而不是覆盖式
+            if (options.cookies && this.cookies) {
+                cookies = merge({}, options.cookies, this.cookies);
+            } else {
+                cookies = options.cookies || this.cookies;
+            }
+            options.cookies = cookies;
+
             options.data = options.data || {};
 
             layer.methods[method.toLowerCase()] = options;
@@ -100,6 +110,7 @@ Router.prototype.handle = function (req, res) {
         if ((strict = methods.hasOwnProperty(method) || methods.hasOwnProperty('*')) && layer.match(url.pathname)) {
 
             options = merge({}, strict ? methods[method] : methods['*']);
+
             // 合并参数
             params = merge({}, req.query);
             merge(params, req.body);
