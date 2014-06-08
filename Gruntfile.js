@@ -40,13 +40,14 @@ module.exports = function (grunt) {
                 options: {
                     port: '6001',
                     debug: true,
-                    cookies: {},
                     route: {
 
                         '/api/safe_center/state': {
                             'get': {
+                                cookies: null,
                                 data: {
                                     'code': '0',
+
                                     'data': {
                                         // 累积收益，最小单位为分，100表示1元
                                         'bind_email': '',
