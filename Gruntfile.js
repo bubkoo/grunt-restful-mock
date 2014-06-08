@@ -39,12 +39,15 @@ module.exports = function (grunt) {
             victory: {
                 options: {
                     port: '6001',
+
                     debug: true,
+
                     route: {
 
                         '/api/safe_center/state': {
                             'get': {
                                 cookies: null,
+
                                 data: {
                                     'code': '0',
 
@@ -67,6 +70,8 @@ module.exports = function (grunt) {
                                 }
                             }
                         },
+
+
 
                         '/api/fund/other_bank_item': {
                             post: {

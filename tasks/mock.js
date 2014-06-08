@@ -31,6 +31,7 @@ module.exports = function (grunt) {
         var options;
         var dispatcher;
         var watchers = [];
+        var wathcer = null;
         var server = null;
         var sockets = [];
         var reloadTimes = 0;
@@ -89,7 +90,7 @@ module.exports = function (grunt) {
                             // 创建路由分发
                             dispatcher = new Dispatcher(options);
                             // 监视配置文件变化，自动重启服务
-                            watchConfigFile();
+                            watchConfigFile.call(self);
                             // 打印 logo 信息
                             consoleLogo();
                         })
@@ -117,17 +118,14 @@ module.exports = function (grunt) {
 
         function reloadTask() {
 
-            if (watchers && watchers.length) {
-                // 关闭已经存在的监视
-                // server 单方面从 server 上 close 了，已经连接的 socket 会进入一个 close_wait 状态
-                // 直到客户端关闭浏览器，server 才真正介绍，所以需要手动销毁连接池
-                watchers.forEach(function (watcher) {
-                    watcher.close();
-                });
-                watchers = [];
+            // 关闭已经存在的监视
+            if (wathcer) {
+                wathcer.close();
             }
 
             // 销毁 socket 连接
+            // server 单方面从 server 上 close 了，已经连接的 socket 会进入一个 close_wait 状态
+            // 直到客户端关闭浏览器，server 才真正介绍，所以需要手动销毁连接池
             if (sockets && sockets.length) {
                 sockets.forEach(function (socket) {
                     socket.destroy();
@@ -135,8 +133,9 @@ module.exports = function (grunt) {
             }
 
             server.close(function () {
+                // 删除 require 的缓存
                 clearFileCache();
-                // Re-init the watch task config
+                // 重新加载任务的配置文件
                 grunt.task.init([self.name]);
 
                 // Run the task again
@@ -212,42 +211,47 @@ module.exports = function (grunt) {
 
         function watchConfigFile() {
 
+            var files = ['Gruntfile.js', 'Gruntfile.coffee']; // 默认监视 Gruntfile
+
             if (options.watch) {
-                if (!Array.isArray(options.watch) && typeof options.watch === 'string') {
-                    options.watch = [ options.watch ];
+                if (Array.isArray(options.watch)) {
+                    files = files.concat(options.watch);
+                } else {
+                    files.push(options.watch);
                 }
-
-                options.watch.map(function (item) {
-                    return path.join(process.cwd(), item);
-                });
-
-                options.watch.forEach(function (item, index) {
-                    if (grunt.file.exists(item)) {
-                        watchers.push(new Gaze(item, function (err) {
-                            if (err) {
-                                if (typeof err === 'string') {
-                                    err = new Error(err);
-                                }
-                                grunt.log.writeln('ERROR'.red);
-                                grunt.fatal(err);
-                            }
-
-                            this.on('changed', function (filepath) {
-                                changedFiles.push(filepath);
-                                reloadTask();
-                            });
-
-                            // On watcher error
-                            this.on('error', function (err) {
-                                if (typeof err === 'string') {
-                                    err = new Error(err);
-                                }
-                                grunt.log.error(err.message);
-                            });
-                        }));
-                    }
-                });
             }
+
+            if (this.data.src) {
+                var cwd = this.data.cwd;
+                var src = this.data.src;
+
+                if (Array.isArray(src)) {
+                    src.forEach(function (item) {
+                        files.push(path.join(cwd || '', item));
+                    });
+                } else {
+                    files.push(path.join(cwd || '', src));
+                }
+            }
+
+            wathcer = new Gaze();
+            wathcer.on('error', function (err) {
+                if (typeof err === 'string') {
+                    err = new Error(err);
+                }
+                grunt.log.error(err.message);
+            });
+
+            wathcer.on('all', function (event, filepath) {
+                console.log('File ' + event + ': ' + filepath);
+                if (changedFiles.indexOf(filepath) === -1) {
+                    changedFiles.push(filepath);
+                    reloadTask();
+                }
+            });
+            files.forEach(function (item) {
+                wathcer.add(item);
+            });
         }
 
         function consoleLogo() {
