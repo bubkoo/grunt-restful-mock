@@ -21,6 +21,7 @@ module.exports = function (grunt) {
     var async = require('async');
     var Gaze = require('gaze').Gaze;
     var Dispatcher = require('./lib/dispatcher');
+    var formatJson = require('./lib/formatJson');
     var readfile = require('./lib/readfile');
 
 
@@ -56,7 +57,7 @@ module.exports = function (grunt) {
             });
             options.debug = grunt.option('debug') || options.debug === true;
 
-            prepareRoute.call(self);
+            processRouteFiles.call(self);
 
             // 检测端口
             if (options.protocol !== 'http' && options.protocol !== 'https') {
@@ -74,7 +75,7 @@ module.exports = function (grunt) {
                     key: options.key || grunt.file.read(path.join(__dirname, 'certs', 'server.key')).toString(),
                     cert: options.cert || grunt.file.read(path.join(__dirname, 'certs', 'server.crt')).toString(),
                     ca: options.ca || grunt.file.read(path.join(__dirname, 'certs', 'ca.crt')).toString(),
-                    passphrase: options.passphrase || 'grunt',
+                    passphrase: options.passphrase || 'grunt'
                 }, app);
             }
 
@@ -113,7 +114,44 @@ module.exports = function (grunt) {
             });
         }
 
-        function prepareRoute() {
+
+        function reloadTask() {
+
+            if (watchers && watchers.length) {
+                // 关闭已经存在的监视
+                // server 单方面从 server 上 close 了，已经连接的 socket 会进入一个 close_wait 状态
+                // 直到客户端关闭浏览器，server 才真正介绍，所以需要手动销毁连接池
+                watchers.forEach(function (watcher) {
+                    watcher.close();
+                });
+                watchers = [];
+            }
+
+            // 销毁 socket 连接
+            if (sockets && sockets.length) {
+                sockets.forEach(function (socket) {
+                    socket.destroy();
+                });
+            }
+
+            server.close(function () {
+                clearFileCache();
+                // Re-init the watch task config
+                grunt.task.init([self.name]);
+
+                // Run the task again
+//                grunt.task.run(self.nameArgs);
+//                done();
+
+                reloadTimes++;
+
+                console.log(('\nRestarting mock. Restart times: ').magenta + (reloadTimes + '\n').green);
+
+                register();
+            });
+        }
+
+        function processRouteFiles() {
 
             this.files.forEach(function (f) {
                 var cwd = f.cwd;
@@ -153,43 +191,6 @@ module.exports = function (grunt) {
 
                 grunt.util._.merge(options.route, routes);
 
-            });
-        }
-
-
-        function reloadTask() {
-
-            if (watchers && watchers.length) {
-                // 关闭已经存在的监视
-                // server 单方面从 server 上 close 了，已经连接的 socket 会进入一个 close_wait 状态
-                // 直到客户端关闭浏览器，server 才真正介绍，所以需要手动销毁连接池
-                watchers.forEach(function (watcher) {
-                    watcher.close();
-                });
-                watchers = [];
-            }
-
-            // 销毁 socket 连接
-            if (sockets && sockets.length) {
-                sockets.forEach(function (socket) {
-                    socket.destroy();
-                });
-            }
-
-            server.close(function () {
-                clearFileCache();
-                // Re-init the watch task config
-                grunt.task.init([self.name]);
-
-                // Run the task again
-//                grunt.task.run(self.nameArgs);
-//                done();
-
-                reloadTimes++;
-
-                console.log(('\nRestarting mock. Restart times: ').magenta + (reloadTimes + '\n').green);
-
-                register();
             });
         }
 
@@ -271,53 +272,6 @@ module.exports = function (grunt) {
             }
         }
 
-        function formatJson(obj, space, level) {
-            if (!obj) {
-                return '';
-            }
-            if (typeof space === 'undefined') {
-                space = '';
-            }
-            if (typeof level === 'undefined') {
-                level = 0;
-            }
-
-            var indent = '    ',
-                isArr = Array.isArray(obj),
-                ret = '',
-                key,
-                val;
-
-            for (key in obj) {
-                if (isArr) {
-                    ret += space + indent;
-                } else {
-                    ret += space + indent + key + ': ';
-                }
-
-                val = obj[key];
-                if (Array.isArray(val) || typeof val === 'object') {
-                    ret += formatJson(val, space + indent, level + 1);
-                } else {
-                    if (typeof val === 'string') {
-                        val = '"' + val + '"';
-                    }
-                    ret += val + ',\n';
-                }
-            }
-            ret = ret.substr(0, ret.length - 2) + '\n';
-
-            if (typeof key !== 'undefined') {
-                if (isArr) {
-                    ret = (level > 0 ? '' : space) + '[\n' + ret + space + ']' + (level > 0 ? ',\n' : '');
-                }
-                else {
-                    ret = (level > 0 ? '' : space) + '{\n' + ret + space + '}' + (level > 0 ? ',\n' : '');
-                }
-            }
-            return ret;
-        }
-
         function createMiddleware(connect, options) {
 
             var middlewares = [],
@@ -370,12 +324,14 @@ module.exports = function (grunt) {
 
                 middlewares.push(function (req, res, next) {
                     var data = formatJson(res.body, '         '),
-                        cookies = formatJson(res.cookies, '         ');
+                        cookies;
 
-                    console.log('     cookies:'.yellow);
-                    if (cookies) {
+                    if (res.cookies) {
+                        cookies = formatJson(res.cookies, '         ');
+                        console.log('     cookies:'.yellow);
                         console.log(cookies);
                     }
+
 
                     console.log('     data:   '.yellow);
                     if (data) {
@@ -401,5 +357,6 @@ module.exports = function (grunt) {
             filepath = cwd ? path.join(cwd, filepath) : filepath;
             return path.join(process.cwd(), filepath);
         }
+
     });
 };
