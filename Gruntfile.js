@@ -71,8 +71,6 @@ module.exports = function (grunt) {
                             }
                         },
 
-
-
                         '/api/fund/other_bank_item': {
                             post: {
                                 data: {

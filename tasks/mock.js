@@ -30,13 +30,16 @@ module.exports = function (grunt) {
         var self = this;
         var options;
         var dispatcher;
-        var watchers = [];
         var wathcer = null;
         var server = null;
         var sockets = [];
         var reloadTimes = 0;
         var changedFiles = [];
         var done = self.async(); // 阻塞式 grunt 任务
+
+        // bugfix: possible EventEmitter memory leak detected. 11 listeners added.
+        // Use emitter.setMaxListeners() to increase limit.
+        process.setMaxListeners(0);
 
         register();
 
@@ -54,7 +57,7 @@ module.exports = function (grunt) {
                 strict: false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
                 end: true,          // 当设置为 false, 将只会匹配 url 前缀
                 debug: false,
-                watch: ''           // 需要监视的文件，文件变化之后自动重启服务
+                watch: []           // 需要监视的文件，文件变化之后自动重启服务
             });
             options.debug = grunt.option('debug') || options.debug === true;
 
@@ -115,7 +118,6 @@ module.exports = function (grunt) {
             });
         }
 
-
         function reloadTask() {
 
             // 关闭已经存在的监视
@@ -131,8 +133,12 @@ module.exports = function (grunt) {
                     socket.destroy();
                 });
             }
+            server.removeAllListeners();
 
             server.close(function () {
+
+                server = null;
+
                 // 删除 require 的缓存
                 clearFileCache();
                 // 重新加载任务的配置文件
@@ -234,23 +240,29 @@ module.exports = function (grunt) {
                 }
             }
 
-            wathcer = new Gaze();
-            wathcer.on('error', function (err) {
-                if (typeof err === 'string') {
-                    err = new Error(err);
+            wathcer = new Gaze(files, {'interval': 1000, 'debounceDelay': 1000}, function (err) {
+                if (err) {
+                    if (typeof err === 'string') {
+                        err = new Error(err);
+                    }
+                    grunt.log.writeln('ERROR'.red);
+                    grunt.fatal(err);
                 }
-                grunt.log.error(err.message);
-            });
 
-            wathcer.on('all', function (event, filepath) {
-                console.log('File ' + event + ': ' + filepath);
-                if (changedFiles.indexOf(filepath) === -1) {
-                    changedFiles.push(filepath);
-                    reloadTask();
-                }
-            });
-            files.forEach(function (item) {
-                wathcer.add(item);
+                this.on('error', function (err) {
+                    if (typeof err === 'string') {
+                        err = new Error(err);
+                    }
+                    grunt.log.error(err.message);
+                });
+
+                this.on('all', function (event, filepath) {
+                    console.log(('[' + event + ']: ').yellow + (filepath).grey);
+                    if (changedFiles.indexOf(filepath) === -1) {
+                        changedFiles.push(filepath);
+                        reloadTask();
+                    }
+                });
             });
         }
 
@@ -272,7 +284,7 @@ module.exports = function (grunt) {
             console.log('Started API mock on ' + target + '\n');
 
             if (options.debug === true) {
-                console.log('Waiting for request...'.italic.grey);
+                console.log('Waiting for request...\n'.italic.grey);
             }
         }
 
@@ -290,7 +302,7 @@ module.exports = function (grunt) {
             if (debug) {
                 middlewares.push(
                     connect.logger({
-                        'format': '\\n[MOCK DEBUG INFO]\\n'.magenta +
+                        'format': '[MOCK DEBUG INFO]\\n'.magenta +
                             ' - Request:\\n'.cyan +
                             '     method: '.yellow + ':method HTTP/:http-version\\n' +
                             '     url:    '.yellow + ':url' + '\\n' +
@@ -342,7 +354,7 @@ module.exports = function (grunt) {
                         console.log(data);
                     }
 
-                    console.log('\nWaiting for next request...'.italic.grey);
+                    console.log('\nWaiting for next request...\n'.italic.grey);
 
                     next();
                 });
@@ -355,7 +367,7 @@ module.exports = function (grunt) {
             }
 
             return middlewares;
-        };
+        }
 
         function getRealPath(filepath, cwd) {
             filepath = cwd ? path.join(cwd, filepath) : filepath;
