@@ -47,17 +47,17 @@ module.exports = function (grunt) {
 
             // Merge task-specific and/or target-specific options with these defaults.
             options = self.options({
-                protocol: 'http',
-                port: '6000',
-                hostname: '127.0.0.1',
-                delay: 0,
+                protocol  : 'http',
+                port      : '6000',
+                hostname  : '127.0.0.1',
+                delay     : 0,
                 statusCode: 200,
-                timeout: false,
-                sensitive: false,   // 当设置为 true, 将区分路由的大小写
-                strict: false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
-                end: true,          // 当设置为 false, 将只会匹配 url 前缀
-                debug: false,
-                watch: []           // 需要监视的文件，文件变化之后自动重启服务
+                timeout   : false,
+                sensitive : false,   // 当设置为 true, 将区分路由的大小写
+                strict    : false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
+                end       : true,          // 当设置为 false, 将只会匹配 url 前缀
+                debug     : false,
+                watch     : []           // 需要监视的文件，文件变化之后自动重启服务
             });
             options.debug = grunt.option('debug') || options.debug === true;
 
@@ -76,9 +76,9 @@ module.exports = function (grunt) {
                 server = http.createServer(app);
             } else if (options.protocol === 'https') {
                 server = https.createServer({
-                    key: options.key || grunt.file.read(path.join(__dirname, 'certs', 'server.key')).toString(),
-                    cert: options.cert || grunt.file.read(path.join(__dirname, 'certs', 'server.crt')).toString(),
-                    ca: options.ca || grunt.file.read(path.join(__dirname, 'certs', 'ca.crt')).toString(),
+                    key       : options.key || grunt.file.read(path.join(__dirname, 'certs', 'server.key')).toString(),
+                    cert      : options.cert || grunt.file.read(path.join(__dirname, 'certs', 'server.crt')).toString(),
+                    ca        : options.ca || grunt.file.read(path.join(__dirname, 'certs', 'ca.crt')).toString(),
                     passphrase: options.passphrase || 'grunt'
                 }, app);
             }
@@ -190,11 +190,19 @@ module.exports = function (grunt) {
                         result = result(grunt);
                     }
 
+                    result = result || {};
+
                     grunt.util._.merge(routes, result);
 
                 });
 
-                grunt.util._.merge(options.route, routes);
+                if (options.route) {
+                    grunt.util._.merge(options.route, routes);
+                }
+                else {
+                    options.route = routes;
+                }
+
 
             });
         }
@@ -302,7 +310,7 @@ module.exports = function (grunt) {
             if (debug) {
                 middlewares.push(
                     connect.logger({
-                        'format': '[MOCK DEBUG INFO]\\n'.magenta +
+                        'format'   : '[MOCK DEBUG INFO]\\n'.magenta +
                             ' - Request:\\n'.cyan +
                             '     method: '.yellow + ':method HTTP/:http-version\\n' +
                             '     url:    '.yellow + ':url' + '\\n' +
@@ -332,7 +340,7 @@ module.exports = function (grunt) {
 
                 middlewares.push(
                     connect.logger({
-                        'format': '' +
+                        'format'   : '' +
                             '     length: '.yellow + ':res[content-length] byte\\n' +
                             '     timing: '.yellow + ':response-time ms',
                         'immediate': true
@@ -361,7 +369,7 @@ module.exports = function (grunt) {
             } else {
                 middlewares.push(
                     connect.logger({
-                        'format': '[:method] :url'.green,
+                        'format'   : '[:method] :url'.green,
                         'immediate': true
                     }));
             }
