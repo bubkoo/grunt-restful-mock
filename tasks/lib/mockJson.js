@@ -9,7 +9,7 @@
                 'extend': extend
             };
             proto.extend({
-                'string': function (options) {
+                'string'     : function (options) {
                     var result = '',
                         placeholders,
                         placeholder,
@@ -52,7 +52,7 @@
 
                     return result;
                 },
-                'number': function (options) {
+                'number'     : function (options) {
                     var result,
                         parts;
                     // 含有小数部分
@@ -76,14 +76,14 @@
                     }
                     return result;
                 },
-                'boolean': function (options) {
+                'boolean'    : function (options) {
                     var result;
                     result = options.rule.iRange
                         ? random.bool(options.rule.iMin, options.rule.iMax, options.template)
                         : options.template;
                     return result;
                 },
-                'array': function (options) {
+                'array'      : function (options) {
                     var result = [],
                         item,
                         i,
@@ -101,7 +101,7 @@
                     }
                     return result;
                 },
-                'object': function (options) {
+                'object'     : function (options) {
                     var result = {},
                         keys,
                         key,
@@ -127,16 +127,16 @@
                     }
                     return result;
                 },
-                'function': function (options) {
+                'function'   : function (options) {
                     var result = options.template(options.data),
                         type = getType(result);
                     if (handle[type]) {
                         result = handle[type]({
                             template: result,
-                            type: type,
-                            rule: options.rule,
-                            root: options.root,
-                            data: options.data
+                            type    : type,
+                            rule    : options.rule,
+                            root    : options.root,
+                            data    : options.data
                         })
                     }
                     return result;
@@ -210,20 +210,20 @@
                 'extend': extend
             };
             proto.extend({
-                'int': function (min, max) {
+                'int'      : function (min, max) {
                     min = isUndefined(min) ? -9007199254740992 : int(min);
                     max = isUndefined(max) ? 9007199254740992 : int(max);
                     return Math.round(Math.random() * (max - min)) + min;
                 },
-                'integer': function (min, max) {
+                'integer'  : function (min, max) {
                     return this.int(min, max);
                 },
-                'natural': function (min, max) {
+                'natural'  : function (min, max) {
                     min = isUndefined(min) ? 0 : int(min);
                     max = isUndefined(max) ? 9007199254740992 : int(max);
                     return Math.round(Math.random() * (max - min)) + min;
                 },
-                'bool': function (min, max, cur) {
+                'bool'     : function (min, max, cur) {
                     if (isUndefined(cur)) {
                         return Math.random() >= 0.5;
                     }
@@ -231,10 +231,10 @@
                     max = isUndefined(max) || isNaN(max) ? 1 : int(max);
                     return Math.random() > min / (min + max) ? !cur : !!cur;
                 },
-                'boolean': function (min, max, cur) {
+                'boolean'  : function (min, max, cur) {
                     return this.bool(min, max, cur);
                 },
-                'float': function (min, max, dMin, dMax) {
+                'float'    : function (min, max, dMin, dMax) {
                     dMin = isUndefined(dMin) ? 0 : dMin;
                     dMin = Math.max(Math.min(dMin, 17), 0);
                     dMax = isUndefined(dMax) ? 17 : dMax;
@@ -245,10 +245,10 @@
                     }
                     return float(ret);
                 },
-                'char': function (pool) {
+                'char'     : function (pool) {
                     var pools = {
-                        lower: 'abcdefghijklmnopqrstuvwxyz',
-                        upper: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+                        lower : 'abcdefghijklmnopqrstuvwxyz',
+                        upper : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
                         number: '0123456789',
                         symbol: '!@#$%^&*()[]'
                     };
@@ -260,7 +260,7 @@
                 'character': function (pool) {
                     return this.char(pool);
                 },
-                'string': function (pool, min, max) {
+                'string'   : function (pool, min, max) {
                     var length,
                         result = '',
                         l = arguments.length;
@@ -285,10 +285,10 @@
                     }
                     return result;
                 },
-                'str': function (pool, min, max) {
+                'str'      : function (pool, min, max) {
                     return this.string(pool, min, max);
                 },
-                'range': function (start, stop, step) {
+                'range'    : function (start, stop, step) {
                     if (arguments.length <= 1) {
                         stop = start || 0;
                         start = 0;
@@ -314,19 +314,19 @@
                 'capitalize': function (word) {
                     return (word + '').charAt(0).toUpperCase() + (word + '').substr(1);
                 },
-                'upper': function (str) {
+                'upper'     : function (str) {
                     return (str + '').toUpperCase();
                 },
-                'lower': function (str) {
+                'lower'     : function (str) {
                     return (str + '').toLowerCase();
                 },
                 // 返回字符串中或数组中的一个
-                'pick': function (arr) {
+                'pick'      : function (arr) {
                     arr = arr || [];
                     return arr[this.natural(0, arr.length - 1)];
                 },
                 // 随机打乱数组
-                'shuffle': function (arr) {
+                'shuffle'   : function (arr) {
                     arr = arr || [];
                     var old = arr.slice(0),
                         result = [],
@@ -341,7 +341,7 @@
                 }
             });
             proto.extend({
-                'parseDate': function () {
+                'parseDate' : function () {
                     return moment(arguments);
                 },
                 'formatDate': function (date, format) {
@@ -352,7 +352,7 @@
                     max = isUndefined(max) ? (+new Date()) : max;
                     return new Date(Math.random() * (max - min));
                 },
-                'date': function (date, format) {
+                'date'      : function (date, format) {
                     if (arguments.length <= 1) {
                         format = date;
                         date = null;
@@ -361,7 +361,7 @@
                     format = format || 'YYYY-MM-DD';
                     return this.formatDate(date, format);
                 },
-                'time': function (date, format) {
+                'time'      : function (date, format) {
                     if (arguments.length <= 1) {
                         format = date;
                         date = null;
@@ -370,7 +370,7 @@
                     format = format || 'HH:mm:ss';
                     return this.formatDate(date, format);
                 },
-                'datetime': function (date, format) {
+                'datetime'  : function (date, format) {
                     if (arguments.length <= 1) {
                         format = date;
                         date = null;
@@ -379,7 +379,7 @@
                     format = format || 'YYYY-MM-DD HH:mm:ss';
                     return this.formatDate(date, format);
                 },
-                'now': function (unit, format) {
+                'now'       : function (unit, format) {
                     if (arguments.length === 1) {
                         if (!/year|month|week|day|hour|minute|second|week/.test(unit)) {
                             format = unit;
@@ -424,7 +424,7 @@
                 }
             });
             proto.extend({
-                'male_first_name': function () {
+                'male_first_name'  : function () {
                     var names = ['James', 'John', 'Robert', 'Michael', 'William', 'David',
                         'Richard', 'Charles', 'Joseph', 'Thomas', 'Christopher', 'Daniel',
                         'Paul', 'Mark', 'Donald', 'George', 'Kenneth', 'Steven', 'Edward',
@@ -440,7 +440,7 @@
                         'Shirley', 'Cynthia', 'Angela', 'Melissa', 'Brenda', 'Amy', 'Anna'];
                     return this.pick(names);
                 },
-                'last_name': function () {
+                'last_name'        : function () {
                     var names = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Miller',
                         'Davis', 'Garcia', 'Rodriguez', 'Wilson', 'Martinez', 'Anderson',
                         'Taylor', 'Thomas', 'Hernandez', 'Moore', 'Martin', 'Jackson',
@@ -448,13 +448,13 @@
                         'Lewis', 'Robinson', 'Walker', 'Perez', 'Hall', 'Young', 'Allen'];
                     return this.pick(names);
                 },
-                'name': function (middle) {
+                'name'             : function (middle) {
                     return this.bool() ? this.male_first_name() : this.female_first_name() +
                         ' ' + middle ? middle : '' + ' ' + this.last_name();
                 }
             });
             proto.extend({
-                'word': function (min, max) {
+                'word'       : function (min, max) {
                     var len = arguments.length;
                     if (len === 0) {
                         len = this.natural(3, 7);
@@ -471,7 +471,7 @@
                     }
                     return result;
                 },
-                'sentence': function (min, max) {
+                'sentence'   : function (min, max) {
                     var len = arguments.length;
                     if (len === 0) {
                         len = this.natural(3, 7);
@@ -488,7 +488,7 @@
                     }
                     return this.capitalize(arr.join(' ')) + '.';
                 },
-                'title': function (min, max) {
+                'title'      : function (min, max) {
                     var len = arguments.length,
                         result = [];
                     if (len === 0) {
@@ -505,7 +505,7 @@
                     }
                     return result.join(' ');
                 },
-                'paragraph': function (min, max) {
+                'paragraph'  : function (min, max) {
                     var len = arguments.length;
                     if (len === 0) {
                         len = this.natural(3, 7);
@@ -522,7 +522,7 @@
                     }
                     return arr.join(' ');
                 },
-                'lorem': function () {
+                'lorem'      : function () {
                     var words = 'lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum'.split(' ');
                     return this.pick(words);
                 },
@@ -539,27 +539,27 @@
                 }
             });
             proto.extend({
-                'url': function () {
+                'url'   : function () {
                     return 'http://www.' + this.domain() + '/' + this.word();
                 },
                 'domain': function (tld) {
                     return this.word() + '.' + (tld || this.tld());
                 },
-                'email': function (domain) {
+                'email' : function (domain) {
                     domain = domain || this.domain();
                     return this.word() + '@' + domain;
                 },
-                'ip': function () {
+                'ip'    : function () {
                     return this.natural(0, 255) + '.' + this.natural(0, 255) + '.' + this.natural(0, 255) + '.' + this.natural(0, 255);
                 },
-                'tlds': [ 'com', 'net', 'cn', 'org', 'edu', 'gov', 'co.uk', 'so', 'io', 'cc', 'name',
+                'tlds'  : [ 'com', 'net', 'cn', 'org', 'edu', 'gov', 'co.uk', 'so', 'io', 'cc', 'name',
                     'me', 'biz', 'com.cn', '.net.cn', 'org.cn', 'mobi', 'tel', 'asia', 'tv', 'info'],
-                'tld': function () {
+                'tld'   : function () {
                     return this.pick(this.tlds);
                 }
             });
             proto.extend({
-                'areaList': function (areaCode) {
+                'areaList'    : function (areaCode) {
                     var key ,
                         value,
                         result = [];
@@ -576,7 +576,7 @@
                     }
                     return result;
                 },
-                'areaOne': function (arr, areaName) {
+                'areaOne'     : function (arr, areaName) {
                     arr = arr || [];
                     var result = [];
                     if (areaName) {
@@ -592,10 +592,10 @@
                     }
                     return result;
                 },
-                'countryList': function () {
+                'countryList' : function () {
                     return this.areaList('0');
                 },
-                'country': function (countryName) {
+                'country'     : function (countryName) {
                     var result = this.countryEx(countryName);
                     if (result) {
                         var index = result.indexOf('/');
@@ -605,7 +605,7 @@
                     }
                     return result;
                 },
-                'countryEx': function (countryName) {
+                'countryEx'   : function (countryName) {
                     var result = this.areaOne(this.countryList(), countryName);
                     if (result && result.length) {
                         return result[2] + '/' + result[0];
@@ -615,10 +615,10 @@
                 'provinceList': function () {
                     return this.areaList('1');
                 },
-                'province': function (provinceName) {
+                'province'    : function (provinceName) {
                     return this.areaOne(this.provinceList(), provinceName);
                 },
-                'cityList': function (provinceName) {
+                'cityList'    : function (provinceName) {
                     var province = this.province(provinceName),
                         result = [];
                     if (province && province.length) {
@@ -626,10 +626,10 @@
                     }
                     return result;
                 },
-                'city': function (provinceName, cityName) {
+                'city'        : function (provinceName, cityName) {
                     return this.areaOne(this.cityList(provinceName), cityName);
                 },
-                'townList': function (provinceName, cityName) {
+                'townList'    : function (provinceName, cityName) {
                     var city = this.city(provinceName, cityName),
                         result = [];
                     if (city && city.length) {
@@ -637,10 +637,10 @@
                     }
                     return result;
                 },
-                'town': function (provinceName, cityName, townName) {
+                'town'        : function (provinceName, cityName, townName) {
                     return this.areaOne(this.townList(provinceName, cityName), townName);
                 },
-                'randomArea': function (join, overSea) {
+                'randomArea'  : function (join, overSea) {
                     if (overSea === true) {
                         return this.country();
                     }
@@ -660,7 +660,7 @@
                     }
                     return result;
                 },
-                'language': function () {
+                'language'    : function () {
                     var lang = ['Afrikaans', 'Azərbaycan dili (Latın)', 'Bahasa Indonesia', 'Bahasa Melayu', 'Bosanski (Latinica)',
                         'Català', 'Čeština', 'Cymraeg', 'Dansk', 'Deutsch', 'Eesti', 'English (United Kingdom)', 'English (United States)',
                         'Español', 'Euskara', 'Filipino', 'Français', 'Gaeilge', 'Gàidhlig', 'Galego', 'Hausa', 'Hrvatski', 'Igbo',
@@ -675,18 +675,18 @@
                         'മലയാളം', 'සිංහල', 'ไทย', 'ខ្មែរ', 'ᏣᎳᎩ', 'ትግርኛ', 'አማርኛ', '한국어', '日本語', '简体中文', '繁體中文'];
                     return this.pick(lang);
                 },
-                'lang': function () {
+                'lang'        : function () {
                     return this.language();
                 },
-                'zipcode': function (len) {
+                'zipcode'     : function (len) {
                     var zip = '';
                     for (var i = 0; i < (len || 6); i++) zip += this.natural(0, 9);
                     return zip;
                 },
-                'zip': function (len) {
+                'zip'         : function (len) {
                     return this.zipcode(len);
                 },
-                'mobile': function () {
+                'mobile'      : function () {
                     // 130~139  145,147 15[012356789] 180~189
                     var result = '',
                         isp = [130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
@@ -703,25 +703,25 @@
                 }
             });
             proto.extend({
-                'd4': function () {
+                'd4'                  : function () {
                     return this.natural(1, 4);
                 },
-                'd6': function () {
+                'd6'                  : function () {
                     return this.natural(1, 6);
                 },
-                'd8': function () {
+                'd8'                  : function () {
                     return this.natural(1, 8);
                 },
-                'd12': function () {
+                'd12'                 : function () {
                     return this.natural(1, 12);
                 },
-                'd20': function () {
+                'd20'                 : function () {
                     return this.natural(1, 20);
                 },
-                'd100': function () {
+                'd100'                : function () {
                     return this.natural(1, 100);
                 },
-                'guid': function () {
+                'guid'                : function () {
                     var pool = 'ABCDEF1234567890',
                         guid = this.string(pool, 8) + '-'
                             + this.string(pool, 4) + '-'
@@ -730,7 +730,7 @@
                             + this.string(pool, 12);
                     return guid;
                 },
-                'id': function () {
+                'id'                  : function () {
                     var id,
                         sum = 0,
                         rank = [ '7', '9', '10', '5', '8', '4', '2', '1', '6', '3', '7', '9', '10', '5', '8', '4', '2' ],
@@ -743,10 +743,10 @@
                     return id;
                 },
                 'autoIncrementInteger': 0,
-                'increment': function (step) {
+                'increment'           : function (step) {
                     return this.autoIncrementInteger += +step || 1;
                 },
-                'inc': function (step) {
+                'inc'                 : function (step) {
                     return this.increment(step);
                 }
             });
@@ -777,7 +777,7 @@
 
         var rRange = /(\d+)-?(\d+)?/,
 
-            matches = (rule || '').match(rRule),
+            matches = ((rule + '') || '').match(rRule),
             key = matches && matches[1] || rule,
             step = matches && matches[2] && int(matches[2]),
             iRange = matches && matches[3] && matches[3].match(rRange),
@@ -790,16 +790,16 @@
             dCount = dRange ? !dRange[2] && dMin || random.int(dMin, dMax) : undefined;
 
         return {
-            rule: rule,
-            key: key,
-            step: step,
+            rule  : rule,
+            key   : key,
+            step  : step,
             iRange: iRange,
-            iMin: iMin,
-            iMax: iMax,
+            iMin  : iMin,
+            iMax  : iMax,
             iCount: iCount,
             dRange: dRange,
-            dMin: dMin,
-            dMax: dMax,
+            dMin  : dMin,
+            dMax  : dMax,
             dCount: dCount
         };
     }
@@ -809,16 +809,17 @@
             data = key;
             key = null;
         }
+        console.log(key);
         var rule = getRules(key),
             type = getType(template);
         root = root || template; // 根模板
         if (handle[type]) {
             return handle[type]({
                 template: template,
-                type: type,
-                rule: rule,
-                root: root,
-                data: data
+                type    : type,
+                rule    : rule,
+                root    : root,
+                data    : data
             });
         }
         return template;
