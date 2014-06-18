@@ -141,17 +141,16 @@ Type: `Object`
 
 定义 API 的路由以及返回数据的模板。
 
-
 ### 数据模板的语法规范
 
-数据模板部分参考了 [mockjs](http://mockjs.com/) 的设计。
+数据模板的语法部分参考了 [mockjson](http://experiments.mennovanslooten.nl/2010/mockjson/) 和 [mockjs](http://mockjs.com/) 的设计，感谢原作者。
 
 **数据模板中的每条数据由三部分构成：属性名、生成规则、属性值**
 
 ```js
-// 属性名   name
-// 生成规则 rule
-// 属性值   value
+// 属性名    name
+// 生成规则  rule
+// 属性值    value
 'name|rule': value
 ```
 
@@ -237,6 +236,17 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 - 占位符可以嵌套使用
 - 属性值的类型由占位符的返回值决定
 
+##### 内置占位符
+
+1. @int(min, max) 和 @integer(min, max)
+
+参数说明：
+- `min` 可选，省略时取默认值 `-9007199254740992`
+- `max` 可选，省略时取默认值 `9007199254740992`
+
+在 `min` 和 `max` 之间生成一个随机整数，等价于 `name|min-max: 100`
+
+2. @natural(min, max)
 
 ### 使用示例
 
