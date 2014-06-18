@@ -5,6 +5,7 @@
 主要有以下特性：
 
 - 根据数据模板随机生产数据
+- 支持 RESTful 风格的 API
 - 模拟 HTTPOnly 的 Cookie
 - 模拟 HTTP 相应的状态码
 - 模拟 HTTP 请求的网络延时
@@ -27,7 +28,7 @@ grunt.loadNpmTasks('grunt-restful-mock');
 
 ## "mock" 任务
 
-### Overview
+### 综述
 在你的项目的 Gruntfile 文件中，添加名为 `mock` 的配置节：
 
 ```js
@@ -49,13 +50,43 @@ grunt.initConfig({
 Type: `String`
 默认值: `"http"`
 
-A string value that is used to do something with whatever.
+HTTP 请求的协议，可选值有：`"http"` 和 `"https"`
 
-#### options.punctuation
+#### options.port
 Type: `String`
-Default value: `'.'`
+默认值: `'6000'`
 
-A string value that is used to do something else with whatever else.
+端口号
+
+#### options.delay
+Type: `Integer`
+默认值: `0`
+
+网络延时毫秒数，默认值为 0，收到请求之后立即响应，在处理 AJAX 请求和响应时，可以根据实际需要配置一定的网络延时。
+
+#### options.statusCode
+Type: `Integer`
+默认值: `200`
+
+响应的状态码，默认值为 200，表示成功的响应。
+
+#### options.debug
+Type: `Boolean`
+默认值: `false`
+
+默认关闭调试模式，在终端中只显示每次请求的 API 路径；如果打开调试模式（true），将在终端中显示每次请求和响应的详细信息，包括请求的 URL、参数，响应的状态码、Cookie、数据等。
+
+#### options.watch
+Type: `Array`
+默认值: `[]`
+
+监视的路由文件列表，当文件改动时，自动重启 mock 任务，关于路由文件后面会有详细介绍。
+
+#### options.sensitive、options.strict 和 options.end
+
+这三个选项是 `Path-to-RegExp` 组件的选项，本插件使用的是 `Path-to-RegExp` 来解析 RESTful 的 URL，选项的含义可以[参看这里](https://github.com/component/path-to-regexp#usage)
+
+
 
 ### Usage Examples
 
