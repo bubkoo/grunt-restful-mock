@@ -303,7 +303,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 - [@fromData(path, data)](#native-placeholder-52)
 
 <a name="native-placeholder-1" id="native-placeholder-1"></a>
-1. @int(min, max) 和 @integer(min, max)
+###### @int(min, max) 和 @integer(min, max)
 
   参数：
   - `min` 可选，缺省值 `-9007199254740992`
@@ -312,7 +312,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   在 `min` 和 `max` 之间生成一个随机整数，等价于 `name|min-max: 100`
 
 <a name="native-placeholder-2" id="native-placeholder-2"></a>
-2. @natural(min, max)
+###### @natural(min, max)
   
   参数：
   - `min` 可选，缺省值 `0`
@@ -321,7 +321,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   在 `min` 和 `max` 之间生成一个随机正整数，等价于 `name|min-max: 100`
 
 <a name="native-placeholder-3" id="native-placeholder-3"></a>
-3. @bool(min, max, cur) 和 @boolean(min, max, cur)
+###### @bool(min, max, cur) 和 @boolean(min, max, cur)
 
   参数：
   - `min` 可选，缺省值 `1`
@@ -331,7 +331,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   随机生成一个布尔值，值为 `cur` 的概率是 `min / (min + max)`，值为 `!cur` 的概率是 `max / (min + max)`，等价于 `'name|min-max': cur`
 
 <a name="native-placeholder-4" id="native-placeholder-4"></a>
-4. @float(min, max, dMin, dMax)
+###### @float(min, max, dMin, dMax)
 
   参数：
   - `min`  可选，缺省值 `-9007199254740992`
@@ -342,7 +342,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   生成一个浮点数，整数部分大于等于 `min` 小于等于 `max`，小数部分保留 `dMin` 到 `dMax` 位，等价于 `'name|1-100.1-10': 100`
 
 <a name="native-placeholder-5" id="native-placeholder-5"></a>
-5. @char(pool) 和 @character(pool)
+###### @char(pool) 和 @character(pool)
   参数
   - `pool` 预设字符，可选，预定义的 pool 有：
     - lower : 'abcdefghijklmnopqrstuvwxyz'
@@ -362,7 +362,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   - @char('ABCDefgh') // 自定义的 pool
   
 <a name="native-placeholder-6" id="native-placeholder-6"></a>
-6. @str(pool, min, max) 和 @string(pool, min, max)
+###### @str(pool, min, max) 和 @string(pool, min, max)
 
   参数：
   - `pool` 同上
@@ -372,7 +372,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   从 `pool` 候选字符中，随机生成一个长度在 `min` 到 `max` 之间的字符串
   
 <a name="native-placeholder-7" id="native-placeholder-7"></a>
-7. @range(start, stop, step)
+###### @range(start, stop, step)
 
   参数：
   - `start` 开始位置，可选，缺省值 `0`
@@ -382,7 +382,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   从 `start` 开始，每次自增 `step`，直到 `stop` 结束，生成一个数组
  
 <a name="native-placeholder-8" id="native-placeholder-8"></a>
-8. @capitalize(word)
+###### @capitalize(word)
 
   参数：
   - `word` 必选 
@@ -390,7 +390,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   将 `word` 首字母大写
 
 <a name="native-placeholder-9" id="native-placeholder-9"></a>
-9. @upper(str)
+###### @upper(str)
   
   参数：
    - `str` 必选
@@ -398,7 +398,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   将 `str` 中的字符转换为大写字母
 
 <a name="native-placeholder-10" id="native-placeholder-10"></a>
-10. @lower(str)
+###### @lower(str)
   
   参数：
    - `str` 必选
@@ -406,7 +406,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   将 `str` 中的字符转换为小写字母
 
 <a name="native-placeholder-11" id="native-placeholder-11"></a>
-11. @pick(arr)
+###### @pick(arr)
 
   参数：
   - `arr` 字符串或数组，必选
@@ -414,7 +414,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   从数组或字符串中随机返回其中一个字符或数组项
 
 <a name="native-placeholder-12" id="native-placeholder-12"></a>
-12. @shuffle(arr)
+###### @shuffle(arr)
 
   参数：
   - `arr` 字符串或数组，必选
@@ -422,7 +422,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   随机打乱字符串或数组中的字符或数组项
 
 <a name="native-placeholder-13" id="native-placeholder-13"></a>
-13. @randomDate(min, max)
+###### @randomDate(min, max)
 
   参数：
   - `min` 最小毫秒数，可选，缺省值 `0`
@@ -431,7 +431,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   从 `min` 到 `max` 之间随机产生一个日期
   
 <a name="native-placeholder-14" id="native-placeholder-14"></a>
-14. @formatDate(data, format)
+###### @formatDate(data, format)
 
   参数：
   - `date` 必选，将由 [moment](http://momentjs.com/) 格式化为日期格式，然后调用其 `format` 方法
@@ -440,12 +440,12 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   注意：两个参数具体的传值可以查看 [moment 官网](http://momentjs.com/)
 
 <a name="native-placeholder-15" id="native-placeholder-15"></a>
-15. @parseDate(...)
+###### @parseDate(...)
 
   该占位符直接返回 `moment(arguments)`，所以参数可以参考 [moment 官网](http://momentjs.com/)
   
 <a name="native-placeholder-16" id="native-placeholder-16"></a>
-16. @date(date, format)
+###### @date(date, format)
 
   参数：
   - `date` 可选，缺省时将由 `randomDate` 随机生成一个
@@ -454,7 +454,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   格式化日期为指定的日期格式
   
 <a name="native-placeholder-17" id="native-placeholder-17"></a>
-17. @time(date, format)
+###### @time(date, format)
 
   参数：
   - `date` 可选，缺省时将由 `randomDate` 随机生成一个
@@ -463,7 +463,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   格式化日期为指定的时间格式
 
 <a name="native-placeholder-18" id="native-placeholder-18"></a>
-18. @datetime(date, format)
+###### @datetime(date, format)
 
   参数：
   - `date` 可选，缺省时将由 `randomDate` 随机生成一个
@@ -472,7 +472,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   格式化日期为指定的日期时间格式
   
 <a name="native-placeholder-19" id="native-placeholder-19"></a>
-19. @now(unit, format)
+###### @now(unit, format)
 
   参数：
   - `unit` 可选，参考 [moment 官网](http://momentjs.com/)
@@ -481,27 +481,27 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   按照指定格式返回当前时间
 
 <a name="native-placeholder-20" id="native-placeholder-20"></a>
-20. @color
+###### @color
 
   生成随机颜色值，例如：`'#080900'`
 
 <a name="native-placeholder-21" id="native-placeholder-21"></a>
-21. @male_first_name
+###### @male_first_name
   
   随机返回一个男性名
 
 <a name="native-placeholder-22" id="native-placeholder-22"></a>
-22. @female_first_name
+###### @female_first_name
   
   随机返回一个女性名
 
 <a name="native-placeholder-23" id="native-placeholder-23"></a>
-23. @last_name
+###### @last_name
 
   随机返回一个姓
   
 <a name="native-placeholder-24" id="native-placeholder-24"></a>
-24. @name(middleName)
+###### @name(middleName)
 
   参数：
   - `middleName` 可选
@@ -509,7 +509,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   随机返回一个名字
 
 <a name="native-placeholder-25" id="native-placeholder-25"></a>
-25. @word(min, max)
+###### @word(min, max)
 
   参数：
   - `min` 可选
@@ -522,7 +522,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   两个参数都没省略时，返回长度为 `min` 到 `max` 之间的一个随机单词
   
 <a name="native-placeholder-26" id="native-placeholder-26"></a>
-26. @sentence(min, max)
+###### @sentence(min, max)
 
   参数：
   - `min` 可选
@@ -535,7 +535,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   两个参数都没省略时，返回长度为 `min` 到 `max` 个随机单词组成的句子
 
 <a name="native-placeholder-27" id="native-placeholder-27"></a>
-27. @title(min, max)
+###### @title(min, max)
 
 参数：
   - `min` 可选
@@ -548,7 +548,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   两个参数都没省略时，返回长度为 `min` 到 `max` 个随机单词组成的标题
 
 <a name="native-placeholder-28" id="native-placeholder-28"></a>
-28. @paragraph(min, max)
+###### @paragraph(min, max)
 
 参数：
   - `min` 可选
@@ -561,22 +561,22 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   两个参数都没省略时，返回长度为 `min` 到 `max` 个随机句子组成的段落
 
 <a name="native-placeholder-29" id="native-placeholder-29"></a>
-29. @lorem
+###### @lorem
 
   返回一个 lorem 随机单词
 
 <a name="native-placeholder-30" id="native-placeholder-30"></a>
-30. @lorem_ipsum
+###### @lorem_ipsum
 
   返回一个 lorem 随机段落
 
 <a name="native-placeholder-31" id="native-placeholder-31"></a>
-31. @tld
+###### @tld
 
   返回一个随机域名后缀 ( com、net、me、org... )
 
 <a name="native-placeholder-32" id="native-placeholder-32"></a>
-32. @domain(tld)
+###### @domain(tld)
 
   参数
   - `tld` 可选，省略时将随机产生一个域名后缀
@@ -584,7 +584,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   返回一个随机域名
   
 <a name="native-placeholder-33" id="native-placeholder-33"></a>
-33. @email(domain)
+###### @email(domain)
 
   参数
   - `domain` 可选，省略时将随机产生一个域名
@@ -592,22 +592,22 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   返回一个随机邮箱
 
 <a name="native-placeholder-34" id="native-placeholder-34"></a>
-34. @url
+###### @url
 
   随机生成一个 URL
   
 <a name="native-placeholder-35" id="native-placeholder-35"></a>
-35. @ip
+###### @ip
 
   随机生成一个 IP 地址
   
 <a name="native-placeholder-36" id="native-placeholder-36"></a>
-36. @mobile
+###### @mobile
 
   随机生成一个大陆的手机号码
   
 <a name="native-placeholder-37" id="native-placeholder-37"></a>
-37. @zip(len) 和 @zipcode(len)
+###### @zip(len) 和 @zipcode(len)
 
   参数：
   - `len` 可选，邮政编码的长度，缺省值为 `6`
@@ -615,22 +615,22 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   随机生成一个邮政编码
 
 <a name="native-placeholder-38" id="native-placeholder-38"></a>
-38. @lang 和 @language
+###### @lang 和 @language
 
   随机返回一个语言的名称
 
 <a name="native-placeholder-39" id="native-placeholder-39"></a>
-39. @countryList
+###### @countryList
 
   返回国家数组
   
 <a name="native-placeholder-40" id="native-placeholder-40"></a>
-40. @provinceList
+###### @provinceList
 
   返回中国的省份数组  
 
 <a name="native-placeholder-41" id="native-placeholder-41"></a>
-41. @randomArea(join)
+###### @randomArea(join)
 
   参数：
   - `join` 分隔符，可选，缺省为 `'-'`
@@ -638,52 +638,52 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   返回一个随机的省市区所代表的地址
 
 <a name="native-placeholder-42" id="native-placeholder-42"></a>
-42. @d4
+###### @d4
 
   返回 `1` 到 `4` 之间的随机数
 
 <a name="native-placeholder-43" id="native-placeholder-43"></a>
-43. @d6
+###### @d6
 
   返回 `1` 到 `6` 之间的随机数
   
 <a name="native-placeholder-44" id="native-placeholder-44"></a>
-44. @d8
+###### @d8
 
   返回 `1` 到 `8` 之间的随机数
 
 <a name="native-placeholder-45" id="native-placeholder-45"></a>
-45. @d12
+###### @d12
 
   返回 `1` 到 `12` 之间的随机数
 
 <a name="native-placeholder-46" id="native-placeholder-46"></a>
-46. @d20
+###### @d20
 
   返回 `1` 到 `20` 之间的随机数
 
 <a name="native-placeholder-47" id="native-placeholder-47"></a>
-47. @d50
+###### @d50
 
   返回 `1` 到 `50` 之间的随机数
 
 <a name="native-placeholder-48" id="native-placeholder-48"></a>
-48. @d100
+###### @d100
 
   返回 `1` 到 `100` 之间的随机数
   
 <a name="native-placeholder-49" id="native-placeholder-49"></a>
-49. @guid
+###### @guid
 
   随机生成一个 GUID，不重复
 
 <a name="native-placeholder-50" id="native-placeholder-50"></a>
-50. @id
+###### @id
 
   随机生成一个 ID，一般情况不会重复
 
 <a name="native-placeholder-51" id="native-placeholder-51"></a>
-51. @inc(step) 和 @increment(step)
+###### @inc(step) 和 @increment(step)
 
   参数：
   - `step` 自增步长，缺省为 `1`
@@ -691,7 +691,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
    返回从 `0` 开始的自增数，每次调用自增 `step`
 
 <a name="native-placeholder-52" id="native-placeholder-52"></a>
-52. @fromData(path, data)
+###### @fromData(path, data)
 
   参数：
   - `path` 数据的路径，必选，例如 `'address.province'` 表示返回 `data.address.province` 的值
@@ -843,90 +843,91 @@ grunt.initConfig({
 
 1. JS 文件
 
-```JS
-module.exports = {
-    'path/to/API1':{...},
-    'path/to/API2':{...},
-};
-```
-或者像下面这样：
-```JS
-module.exports = function(){
-    return {
-        'path/to/API1':{...},
-        'path/to/API2':{...},
-    }
-};
-```
+  ```JS
+  module.exports = {
+      'path/to/API1':{...},
+      'path/to/API2':{...},
+  };
+  ```
+  或者像下面这样：
+
+  ```JS
+  module.exports = function(){
+      return {
+          'path/to/API1':{...},
+          'path/to/API2':{...},
+      }
+  };
+  ```
 
 2. coffee 文件
 
-```coffee
-module.exports =
-  '/path/to/API1':
-    'get':
-      data:
-        'msg': 'success'
-        'info':
-          'email': '@EMAIL'
-          'mobile': '@MOBILE'
+  ```coffee
+  module.exports =
+    '/path/to/API1':
+      'get':
+        data:
+          'msg': 'success'
+          'info':
+            'email': '@EMAIL'
+            'mobile': '@MOBILE'
 
-  '/path/to/API2':
-    'post':
-      data:
-        'msg': 'failed',
-        'info':
-          'username': 'John'
-          'pwd':'NOZUONODIE'
-```
+    '/path/to/API2':
+      'post':
+        data:
+          'msg': 'failed',
+          'info':
+            'username': 'John'
+            'pwd':'NOZUONODIE'
+  ```
 
 3. yaml 文件
 
-```yaml
-/path/to/API1:
-  get:
-    data:
-      mag: success
-      info:
-        email: @EMAIL
-        mobile: @MOBILE
+  ```yaml
+  /path/to/API1:
+    get:
+      data:
+        mag: success
+        info:
+          email: @EMAIL
+          mobile: @MOBILE
 
-/path/to/API2
-  post:
-    data:
-      msg: failed
-      info:
-        username: John
-        pwd: NOZUONODIE
-```
+  /path/to/API2
+    post:
+      data:
+        msg: failed
+        info:
+          username: John
+          pwd: NOZUONODIE
+  ```
 
 4. JSON 文件
 
-```json
-{
-    "/path/to/API1": {
-        "get": {
-            "msg": "success",
-            "info": {
-                "email": "@EMAIL",
-                "mobile": "@MOBILE"
-            }
-        }
-    },
+  ```json
+  {
+      "/path/to/API1": {
+          "get": {
+              "msg": "success",
+              "info": {
+                  "email": "@EMAIL",
+                  "mobile": "@MOBILE"
+              }
+          }
+      },
 
-    "path/to/API2": {
-        "post": {
-            "data": {
-                "msg": "failed",
-                "info": {
-                    "username": "John",
-                    "pwd": "NOZUONODIE"
-                }
-            }
-        }
-    }
-}
-```
+      "path/to/API2": {
+          "post": {
+              "data": {
+                  "msg": "failed",
+                  "info": {
+                      "username": "John",
+                      "pwd": "NOZUONODIE"
+                  }
+              }
+          }
+      }
+  }
+  ```
 
 #### 推荐使用方式
 
