@@ -712,30 +712,38 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 
 在 options 选项中定义 route 配置。
 
-
 ```js
 grunt.initConfig({
   mock: {
       your_target: {
           options: {
+              // 在这里可以定义一些全局的选项
+              // 比如网络延时，全局的 cookie 和 statusCode
+
+              delay: 200, 定义所有路由的延时为 200ms，可以在具体的路由中覆盖该定义
+
+              cookie: {}, // 定义全局的 cookie
+
               // 定义路由规则
               route: {
+
                  // API 的路径
-                 '/path/to/API': {
-                    // 处理 get 请求
+                 '/path/to/API1': {
+
+                    // GET 请求
                     get: {
-                        // 这里我定义该 API 的 get 请求延时 500ms
+                        // 这里我定义该 API 的 get 请求延时 500ms，覆盖全局中的定义
                         delay: 500,
-                        // 返回的 cookie
+
+                        // 返回的 cookie，这里定义的 cookie 将于全局 cookie 进行合并，返回合并后的 cookie
                         cookie: {
-                            // 返回 cookie 的键值
+                            // cookie 的键值
                             id: 123,
                             username: 'John',
                             // cookie 的选项，该选项将应用于以上的 cookie
                             options:{
                                 // cookie 的有效期，这里是一小时
-                                maxAge: 1000 * 60 * 60,
-
+                                maxAge: 1000 * 60 * 60
                             }
                         },
                         // 返回的数据
@@ -745,16 +753,38 @@ grunt.initConfig({
                             email: 'John@company.com'
                         }
                     },
-                    post: {
 
-                        cookie:{
-                        },
+                    // POST 请求
+                    post: {
+                        // 对于该路由的 post 请求，采用全局选项中的设置
+
+                        // 在 data 中使用数据模板
                         data:{
+                            'count|100': 100,
+                            'pageIndex|0-10': 100,
+                            'items|0-30': [
+                                {
+                                    'username': '@name',
+                                    'email': '@email',
+                                    'gender': '@bool',
+                                    'age|18-99': 100
+                                }
+                            ]
                         }
                     },
+
+                    // DELETE 请求
                     delete:{
-                    },
-                 }
+                        // 这里定义 statusCode 为 403，访问该路由时直接返回 403 状态码
+                        statusCode: 403
+                    }
+
+                    // 其他未定义的 HTTP 请求的方式都将返回 404
+                 },
+
+                 // 定义其他路由
+                 'path/to/api2': {}
+                 'path/to/api3': {}
               }
           }
       }
@@ -762,19 +792,163 @@ grunt.initConfig({
 });
 ```
 
-#### Custom Options
-In this example, custom options are used to do something else with whatever else. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result in this case would be `Testing: 1 2 3 !!!`
+#### 在单独文件中定义路由规则
+
+**为什么要在单独的文件中定义路由规则呢？**
+
+1. 为了增加路由规则的可维护性，推荐将不同 domain 的路由规则放在不同的文件中
+2. 协同开发时，由每个开发者自己去维护自身所关注的 API 的路由
+
+**注意**：不推荐同时将路由规则同时放在 `Gruntfile` 和单独的文件中，虽然你可以这样做
+
+**如何配置？**
+
+在上述配置的基础上，可以选择性地删除或保留 `route` 配置节，增加如下配置：
 
 ```js
 grunt.initConfig({
-  restful_mock: {
-    options: {
-      separator: ': ',
-      punctuation: ' !!!',
-    },
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
+  mock: {
+
+      your_target1: {
+          options: {
+              delay: 200,
+              statusCode: 200,
+              cookie: {...},
+              route: {...}
+          },
+
+          // 这里配置 route 所在的文件
+          cwd: 'mock/target1',
+          src: ['*.js', '*.yaml', '*.coffee', '*.json']
+      },
+
+      your_target2: {
+          options: {
+              delay: 200,
+              statusCode: 200,
+              cookie: {...},
+              route: {...}
+          },
+
+          // 这里配置 route 所在的文件
+          cwd: 'mock/target2',
+          src: ['*.js', '*.yaml', '*.coffee', '*.json']
+      }
+  }
 });
 ```
+
+**注意：**
+
+- 任务运行时，将合并这些文件中所定义的所有路由规则，包括 `Gruntfile` 中定义的
+- 默认情况下，`Gruntfile` 和这里定义的路由配置文件都将被监视，一旦这些文件有修改，mock 将自动重启
+- 虽然 `options` 中可以配置 `watch` 选项，但这个选项在一般情况下不需要配置，除非你想监视除开上述文件的变化来触发 mock 的重启
+- 路由文件支持 `JS`、`coffee`、yaml`、`JSON` 格式的文件
+
+四种文件的格式分别如下：
+
+1. JS 文件
+
+```JS
+module.exports = {
+    'path/to/API1':{...},
+    'path/to/API2':{...},
+};
+```
+或者像下面这样：
+```JS
+module.exports = function(){
+    return {
+        'path/to/API1':{...},
+        'path/to/API2':{...},
+    }
+};
+```
+
+2. coffee 文件
+
+```coffee
+module.exports =
+  '/path/to/API1':
+    'get':
+      data:
+        'msg': 'success'
+        'info':
+          'email': '@EMAIL'
+          'mobile': '@MOBILE'
+
+  '/path/to/API2':
+    'post':
+      data:
+        'msg': 'failed',
+        'info':
+          'username': 'John'
+          'pwd':'NOZUONODIE'
+```
+
+3. yaml 文件
+
+```yaml
+/path/to/API1:
+  get:
+    data:
+      mag: success
+      info:
+        email: @EMAIL
+        mobile: @MOBILE
+
+/path/to/API2
+  post:
+    data:
+      msg: failed
+      info:
+        username: John
+        pwd: NOZUONODIE
+```
+
+4. JSON 文件
+
+```json
+{
+    "/path/to/API1": {
+        "get": {
+            "msg": "success",
+            "info": {
+                "email": "@EMAIL",
+                "mobile": "@MOBILE"
+            }
+        }
+    },
+
+    "path/to/API2": {
+        "post": {
+            "data": {
+                "msg": "failed",
+                "info": {
+                    "username": "John",
+                    "pwd": "NOZUONODIE"
+                }
+            }
+        }
+    }
+}
+```
+
+#### 推荐使用方式
+
+1. 与 nginx 配合使用
+
+mock 的本资就是在本地（127.0.0.1）的某个端口上开启了一个 HTTP Server 服务，
+但真实环境下 API 的 hostname 都不会是 127.0.0.1，这个时候就需要借助 nginx
+的代理功能了，具体如何配置 nginx 请参考网上的教程。
+
+2. 开启多个 mock 任务
+
+mock 之所以设计为 Grunt 插件，是方便开发人员可以在开发环境下方便使用。同时，
+mock 开启之后将一直处于监听状态，所以要运行其他 Grunt 任务或者开启多个 mock，
+都需要新打开一个终端。这并不影响我们的使用，因为 mock 一旦开启，我们一般就不需要去理会它了。
+
+3. 如何借助 mock 来避免跨域开发
+
+很多时候我们在本地开发时，API 的调用却是跨域的（上线后不跨域），这时同样要借助强大的 nginx。
+修改 hosts 文件，将 API 的 hostname 指向本地，再做一个 nginx 代理即可解决该问题。
