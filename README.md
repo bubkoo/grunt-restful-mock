@@ -7,7 +7,7 @@
 - 根据数据模板随机生产数据
 - 支持 RESTful 风格的 API
 - 模拟 HTTPOnly 的 Cookie
-- 模拟 HTTP 相应的状态码
+- 模拟 HTTP 响应的状态码
 - 模拟 HTTP 请求的网络延时
 
 ## 开始使用
@@ -144,6 +144,8 @@ Type: `Object`
 
 ### 数据模板的语法规范
 
+数据模板部分参考了 [mockjs](http://mockjs.com/) 的设计。
+
 **数据模板中的每条数据由三部分构成：属性名、生成规则、属性值**
 
 ```js
@@ -157,17 +159,29 @@ Type: `Object`
   - 属性名 和 生成规则 之间用 `|` 分隔
   - 生成规则 是可选的
   - 生成规则 有 7 种格式：
-    1. `'name|min-max': value`
-    2. `'name|count': value`
-    3. `'name|min-max.dmin-dmax': value`
-    4. `'name|min-max.dcount': value`
-    5. `'name|count.dmin-dmax': value`
-    6. `'name|count.dcount': value`
-    7. `'name|+step': value`
+    1.`'name|min-max': value`
+    2.`'name|count': value`
+    3.`'name|min-max.dmin-dmax': value`
+    4.`'name|min-max.dcount': value`
+    5.`'name|count.dmin-dmax': value`
+    6.`'name|count.dcount': value`
+    7.`'name|+step': value`
   - **生成规则 的 含义 需要依赖 属性值 才能确定**
   - 属性值 中可以含有 `@占位符`
   - 属性值 还指定了最终值的初始值和类型 
 
+#### 生成规则和示例
+
+##### 属性值是字符串 **String**
+
+1. `'name|min-max': 'value'` 通过重复 `'value'` 生成一个字符串，重复次数大于等于 `min`，小于等于 `max`
+2. `'name|count': 'value'` 通过重复 `'value'` 生成一个字符串，重复次数等于 `count`
+
+##### 属性值是数字 **Number**
+
+1. `'name|+1': 100` 属性值自动加 `1`，初始值为 `100`
+2. `'name|1-100': 100` 生成一个大于等于 `1` 小于等于 `100` 的整数，属性值 `100` 只用来确定类型
+3. `'name|1-100.1-10': 100` 生成一个浮点数，整数部分大于等于 `1` 小于等于 `100`，小数部分保留 `1` 到 `10` 位
 
 
 ### 使用示例
