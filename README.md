@@ -86,22 +86,17 @@ Type: `Array`
 
 这三个选项是 `Path-to-RegExp` 组件的选项，本插件使用的是 `Path-to-RegExp` 来解析 RESTful 的 URL，选项的含义可以[参看这里](https://github.com/component/path-to-regexp#usage)
 
-#### options.route
-Type: `Object`
-默认值: `null`
-
-定义 API 的路由以及返回的数据和 Cookie 的数据模板。
-
-- cookie 选项
-
+#### options.cookie
 Type: `Object|Array`
 默认值: `null`
 
-配置将要返回的 cookie，可以是一个对象或数组。
+全局级别的 cookie 设置，在 options 中的 cookie 设置将出现在每个 API 的响应结果中。在某些情况下需要配置全局的 cookie，例如在需要在每次响应后，从 cookie 中取到用户的 ID，就可以在 options 中将该 cookie 配置为全局的。
 
-cookie 的选项[请参考](https://github.com/defunctzombie/node-cookie#more)
+cookie 中的 options 选项可以[请参考](https://github.com/defunctzombie/node-cookie#more)。
 
-对象格式：
+cookie 项可以是一个对象或数组，下面分别看看两种配置：
+
+- 对象格式：
 
 ```js
 cookie: {
@@ -120,8 +115,7 @@ cookie: {
     }
 }
 ```
-
-数组格式：使用数组格式可以方便将一些 cookie 分类设置
+- 数组格式：使用数组格式可以方便将一些 cookie 分类设置，分别设置不同的选项
 
 ```js
 cookie: [
@@ -139,7 +133,19 @@ cookie: [
 ]
 ```
 
-- 数据模板
+
+
+#### options.route
+Type: `Object`
+默认值: `null`
+
+定义 API 的路由以及返回数据的模板。
+
+
+
+
+
+
 
 ### 使用示例
 
