@@ -86,21 +86,114 @@ Type: `Array`
 
 这三个选项是 `Path-to-RegExp` 组件的选项，本插件使用的是 `Path-to-RegExp` 来解析 RESTful 的 URL，选项的含义可以[参看这里](https://github.com/component/path-to-regexp#usage)
 
+#### options.route
+Type: `Object`
+默认值: `null`
 
+定义 API 的路由以及返回的数据和 Cookie 的数据模板。
 
-### Usage Examples
+- cookie 选项
 
-#### Default Options
-In this example, the default options are used to do something with whatever. So if the `testing` file has the content `Testing` and the `123` file had the content `1 2 3`, the generated result would be `Testing, 1 2 3.`
+Type: `Object|Array`
+默认值: `null`
+
+配置将要返回的 cookie，可以是一个对象或数组。
+
+cookie 的选项[请参考](https://github.com/defunctzombie/node-cookie#more)
+
+对象格式：
+
+```js
+cookie: {
+    // 下面是 cookie 名和对应的值
+    id: 123,
+    name: 'John',
+
+    // cookie 的选项，可选项
+    // 注意：这里的设置将用于上面两个 cookie
+    // 如果对不同的 cookie 想使用不同的设置，可以使用后面介绍的数组格式
+    options:{
+        // cookie 的有效期，这里是一小时
+        maxAge: 1000 * 60 * 60,
+        domain: 'some.com',
+        path: '/cookie/path'
+    }
+}
+```
+
+数组格式：使用数组格式可以方便将一些 cookie 分类设置
+
+```js
+cookie: [
+    {
+        id: 123,
+        options: {
+            maxAge: 1000 * 60 * 60,
+            domain: 'some.com',
+            path: '/cookie/path'
+        }
+    },
+    {
+        name: 'John'
+    }
+]
+```
+
+- 数据模板
+
+### 使用示例
+
+#### 基本使用示例
+
+在 options 选项中定义 route 配置。
+
 
 ```js
 grunt.initConfig({
-  restful_mock: {
-    options: {},
-    files: {
-      'dest/default_options': ['src/testing', 'src/123'],
-    },
-  },
+  mock: {
+      your_target: {
+          options: {
+              // 定义路由规则
+              route: {
+                 // API 的路径
+                 '/path/to/API': {
+                    // 处理 get 请求
+                    get: {
+                        // 这里我定义该 API 的 get 请求延时 500ms
+                        delay: 500,
+                        // 返回的 cookie
+                        cookie: {
+                            // 返回 cookie 的键值
+                            id: 123,
+                            username: 'John',
+                            // cookie 的选项，该选项将应用于以上的 cookie
+                            options:{
+                                // cookie 的有效期，这里是一小时
+                                maxAge: 1000 * 60 * 60,
+
+                            }
+                        },
+                        // 返回的数据
+                        data: {
+                            code: 200,
+                            username: 'John',
+                            email: 'John@company.com'
+                        }
+                    },
+                    post: {
+
+                        cookie:{
+                        },
+                        data:{
+                        }
+                    },
+                    delete:{
+                    },
+                 }
+              }
+          }
+      }
+  }
 });
 ```
 
