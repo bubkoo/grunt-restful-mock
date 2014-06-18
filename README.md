@@ -241,7 +241,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 
 1. @int(min, max) 和 @integer(min, max)
 
-  参数说明：
+  参数：
   - `min` 可选，省略时取默认值 `-9007199254740992`
   - `max` 可选，省略时取默认值 `9007199254740992`
 
@@ -249,11 +249,52 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 
 2. @natural(min, max)
   
-  参数说明：
+  参数：
   - `min` 可选，省略时取默认值 `0`
   - `max` 可选，省略时取默认值 `9007199254740992`
 
   在 `min` 和 `max` 之间生成一个随机正整数，等价于 `name|min-max: 100`
+
+3. @bool(min, max, cur) 和 @boolean(min, max, cur)
+
+  参数：
+  - `min` 可选，省略时取默认值 `1`
+  - `max` 可选，省略时取默认值 `1`
+  - `cur` 可选，省略时将随机产生一个 `bool` 值
+
+  随机生成一个布尔值，值为 `cur` 的概率是 `min / (min + max)`，值为 `!cur` 的概率是 `max / (min + max)`，等价于 `'name|min-max': cur`
+
+4. @float(min, max, dMin, dMax)
+
+  参数：
+  - `min`  可选，省略时取默认值 `-9007199254740992`
+  - `max`  可选，省略时取默认值 `9007199254740992`
+  - `dMin` 可选，省略时取默认值 `0`
+  - `dMax` 可选，省略时取默认值 `17`
+  
+  生成一个浮点数，整数部分大于等于 `min` 小于等于 `max`，小数部分保留 `dMin` 到 `dMax` 位，等价于 `'name|1-100.1-10': 100`
+
+5. @char(pool) 和 @character(pool)
+  参数
+  - `pool` 可选，预定义的 pool 有：
+    - lower : 'abcdefghijklmnopqrstuvwxyz'
+    - upper : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    - number: '0123456789'
+    - symbol: '!@#$%^&*()[]'
+    
+    省略时的默认值是上述四种 pool 的组合
+  
+  从 `pool` 中随机选择一个字符作为返回的字符，使用示例：
+  - @char() // 使用默认值
+  - @char('lower')
+  - @char('upper')
+  - @char('number')
+  - @char('symbol')
+  - @char('alpha') // alpha = lower + upper
+  - @char('ABCDefgh') // 自定义的 pool
+  
+  
+  
 
 
 ### 使用示例
