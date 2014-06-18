@@ -142,8 +142,31 @@ Type: `Object`
 定义 API 的路由以及返回数据的模板。
 
 
+### 数据模板的语法规范
 
+**数据模板中的每条数据由三部分构成：属性名、生成规则、属性值**
 
+```js
+// 属性名   name
+// 生成规则 rule
+// 属性值   value
+'name|rule': value
+```
+
+注意：
+  - 属性名 和 生成规则 之间用 `|` 分隔
+  - 生成规则 是可选的
+  - 生成规则 有 7 种格式：
+    1. `'name|min-max': value`
+    2. `'name|count': value`
+    3. `'name|min-max.dmin-dmax': value`
+    4. `'name|min-max.dcount': value`
+    5. `'name|count.dmin-dmax': value`
+    6. `'name|count.dcount': value`
+    7. `'name|+step': value`
+  - **生成规则 的 含义 需要依赖 属性值 才能确定**
+  - 属性值 中可以含有 `@占位符`
+  - 属性值 还指定了最终值的初始值和类型 
 
 
 
