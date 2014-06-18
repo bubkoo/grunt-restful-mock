@@ -53,11 +53,11 @@ module.exports = function (grunt) {
                 delay     : 0,
                 statusCode: 200,
                 timeout   : false,
-                sensitive : false,   // 当设置为 true, 将区分路由的大小写
+                sensitive : false,      // 当设置为 true, 将区分路由的大小写
                 strict    : false,      // 当设置为 true, 路由末尾的斜杠将影响匹配
-                end       : true,          // 当设置为 false, 将只会匹配 url 前缀
+                end       : true,       // 当设置为 false, 将只会匹配 url 前缀
                 debug     : false,
-                watch     : []           // 需要监视的文件，文件变化之后自动重启服务
+                watch     : []          // 需要监视的文件，文件变化之后自动重启服务
             });
             options.debug = grunt.option('debug') || options.debug === true;
 
