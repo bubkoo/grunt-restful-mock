@@ -159,12 +159,19 @@ Type: `Object`
   - 属性名 和 生成规则 之间用 `|` 分隔
   - 生成规则 是可选的
   - 生成规则 有 7 种格式：
+    
     1.`'name|min-max': value`
+    
     2.`'name|count': value`
+    
     3.`'name|min-max.dmin-dmax': value`
+    
     4.`'name|min-max.dcount': value`
+    
     5.`'name|count.dmin-dmax': value`
+    
     6.`'name|count.dcount': value`
+    
     7.`'name|+step': value`
   - **生成规则 的 含义 需要依赖 属性值 才能确定**
   - 属性值 中可以含有 `@占位符`
