@@ -15,7 +15,7 @@
                         placeholder,
                         handed,
                         i = 0,
-                        len = options.rule.iCount || 1;
+                        len = options.rule.iCount || 0;
 
                     if (options.template.length) {
                         while (len--) {
@@ -93,7 +93,7 @@
                         j,
                         len = options.template.length,
                         count;
-                    count = options.rule.iCount || 1;
+                    count = options.rule.iCount || 0;
                     for (i = 0; i < count; i++) {
                         j = 0;
                         while (j < len) {
@@ -878,7 +878,6 @@
             data = key;
             key = null;
         }
-        console.log(key);
         var rule = getRules(key),
             type = getType(template);
         root = root || template; // 根模板
