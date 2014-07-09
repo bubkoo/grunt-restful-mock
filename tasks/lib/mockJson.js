@@ -15,7 +15,7 @@
                         placeholder,
                         handed,
                         i = 0,
-                        len = options.rule.iCount || 0;
+                        len = options.rule.iCount || 1;
 
                     if (options.template.length) {
                         while (len--) {
