@@ -173,18 +173,16 @@ Router.prototype.handle = function (req, res) {
 
 function handle(req, res, options) {
     handleCookies(req, res, options.cookies);
-    handleJSON(req, res, options);
+    if (options.jsonp) {
+        handleJSONP(req, res, options);
+    } else {
+        handleJSON(req, res, options);
+    }
 }
 
 function handleJSON(req, res, options) {
     // 生成 mock data
-    var raw = options.isRaw,
-        ret = mockJson(options.data, req.params);
-    if (raw) {
-        res.body = ret.data;
-    } else {
-        res.body = ret;
-    }
+    res.body = generateJSON(options.data, req.params, options.isRaw);
     var body = JSON.stringify(res.body),
         headers = {
             'Content-Type'  : 'application/json',
@@ -196,6 +194,28 @@ function handleJSON(req, res, options) {
 }
 
 function handleJSONP(req, res, options) {
+    var body,
+        headers,
+        key = typeof options.jsonp !== 'string' ? 'callback' : options.jsonp,
+        callback = req.params[key];
+
+    res.body = generateJSON(options.data, req.params, options.isRaw);
+    body = JSON.stringify(res.body);
+
+    if (callback) {
+        body = callback + '(' + body + ')';
+    }
+    headers = {
+        'Content-Type'  : callback ? 'application/x-javascript' : 'application/json',
+        'Content-Length': Buffer.byteLength(body)
+    };
+    res.writeHead(options.statusCode, headers);
+    res.end(body);
+}
+
+function generateJSON(tpl, params, isRaw) {
+    var ret = mockJson(tpl, params);
+    return isRaw ? ret.data : ret;
 }
 
 function handleCookies(req, res, cookiesTemplate) {
