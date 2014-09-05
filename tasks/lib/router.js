@@ -31,14 +31,15 @@ function Router(options) {
 
 Router.prototype.add = function (rules) {
 
+    // 只提供了路由字符串，返回空对象
     if ('strng' === typeof rules) {
         rules = {};
         rules[rules] = {
             '*': {
                 timeout: this.timeout,
-                delay: this.delay,
+                delay  : this.delay,
                 cookies: this.cookies,
-                data: {
+                data   : {
                 }
             }
         };
@@ -51,14 +52,17 @@ Router.prototype.add = function (rules) {
         method,
         options,
         cookies,
-        layer;
+        layer,
+        rRule = /(data)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/,
+        key,
+        val;
 
     for (rule in rules) {
 
         layer = new Layer(rule, {
             sensitive: this.caseSensitive,
-            strict: this.strict,
-            end: this.end
+            strict   : this.strict,
+            end      : this.end
         });
 
         layer.methods = {};
@@ -71,7 +75,6 @@ Router.prototype.add = function (rules) {
             options.delay = options.delay || this.delay;
             options.timeout = 'undefined' === typeof options.timeout ? this.timeout : options.timeout;
 
-//            options.cookies = options.cookies || this.cookies;
             // cookies 应该是合并式，而不是覆盖式
             if (options.cookies && this.cookies) {
                 cookies = merge({}, options.cookies, this.cookies);
@@ -80,7 +83,29 @@ Router.prototype.add = function (rules) {
             }
             options.cookies = cookies;
 
+            // 处理 data 是数组的情况
+            // path/to/api: {
+            //     get: {
+            //         'data:1-10':[
+            //
+            //         ]
+            //     }
+            // }
+            if (!options.data) {
+                for (key in options) {
+                    if (Object.prototype.hasOwnProperty.call(options, key)) {
+                        if (rRule.test(key)) {
+                            options.data = {};
+                            options.data[key] = options[key];
+                            options.isRaw = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
             options.data = options.data || {};
+
 
             layer.methods[method.toLowerCase()] = options;
         }
@@ -153,10 +178,16 @@ function handle(req, res, options) {
 
 function handleJSON(req, res, options) {
     // 生成 mock data
-    res.body = mockJson(options.data, req.params);
+    var raw = options.isRaw,
+        ret = mockJson(options.data, req.params);
+    if (raw) {
+        res.body = ret.data;
+    } else {
+        res.body = ret;
+    }
     var body = JSON.stringify(res.body),
         headers = {
-            'Content-Type': 'application/json',
+            'Content-Type'  : 'application/json',
             'Content-Length': Buffer.byteLength(body)
         };
 
