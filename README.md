@@ -8,6 +8,7 @@
 
 - 根据数据模板随机生成数据
 - 支持 RESTful 风格的 API
+- 模拟 JSONP 请求的相应
 - 模拟 HTTPOnly 的 Cookie
 - 模拟 HTTP 响应状态码
 - 模拟 HTTP 请求的网络延时
@@ -78,6 +79,23 @@ Type: `Integer`
 默认值: `200`
 
 响应的状态码，默认值为 200，表示成功的响应。
+
+#### options.jsonp
+Type: `String` 或 `Boolean`
+默认值: `null`
+
+定义该路由为 JSONP 请求，如果值为 `true`，将被转换为字符串 `callback`，其值指定了 url 参数中的参数名，例如：
+
+```js
+path/to/api?callback=show:{
+    get:{
+        jsonp: 'callback',
+        data: {} // 这里定义数据模板
+    }
+}
+```
+
+将返回 `show(data)` 这样的形式。
 
 #### options.debug
 Type: `Boolean`
