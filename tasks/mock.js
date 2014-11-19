@@ -21,8 +21,8 @@ module.exports = function (grunt) {
     var async = require('async');
     var Gaze = require('gaze').Gaze;
     var Dispatcher = require('./lib/dispatcher');
-    var formatJson = require('./lib/formatJson');
-    var readfile = require('./lib/readfile');
+    var formatJson = require('./lib/utils/formatJson');
+    var readfile = require('./lib/utils/readfile');
 
 
     grunt.registerMultiTask('mock', 'Start a API mock server.', function () {

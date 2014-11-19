@@ -4,6 +4,7 @@
         areaList = require('./areaList'),
         rRule = /(.+)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/,
         rPlaceholder = /(?:[^\\])?@([^@#%&()\?\s\/\.]+)(?:\((.*?)\)(?!\)))?/g,
+
         handle = function () {
             var proto = {
                 'extend': extend
@@ -444,9 +445,9 @@
             });
             proto.extend({
                 color: function () {
-                    var colour = Math.floor(Math.random() * (16 * 16 * 16 * 16 * 16 * 16 - 1)).toString(16);
-                    colour = '#' + ('000000' + colour).slice(-6);
-                    return this.upper(colour);
+                    var color = Math.floor(Math.random() * (16 * 16 * 16 * 16 * 16 * 16 - 1)).toString(16);
+                    color = '#' + ('000000' + color).slice(-6);
+                    return this.upper(color);
                 }
             });
             proto.extend({
@@ -847,15 +848,21 @@
         var rRange = /(\d+)-?(\d+)?/,
 
             matches = ((rule + '') || '').match(rRule),
+            // 键
             key = matches && matches[1] || rule,
+            //
             step = matches && matches[2] && int(matches[2]),
+
+            // 整数部分范围
             iRange = matches && matches[3] && matches[3].match(rRange),
-            iMin = iRange && int(iRange[1], 10),
-            iMax = iRange && int(iRange[2], 10),
+            iMin = iRange && int(iRange[1]),
+            iMax = iRange && int(iRange[2]),
             iCount = iRange ? !iRange[2] && iMin || random.int(iMin, iMax) : undefined,
+
+            // 小数范围
             dRange = matches && matches[4] && matches[4].match(rRange),
-            dMin = dRange && int(dRange[1], 10),
-            dMax = dRange && int(dRange[2], 10),
+            dMin = dRange && int(dRange[1]),
+            dMax = dRange && int(dRange[2]),
             dCount = dRange ? !dRange[2] && dMin || random.int(dMin, dMax) : undefined;
 
         return {
@@ -899,8 +906,8 @@
 
     module.exports = generate;
 
-// Helpers
-// ----------------
+    // Helpers
+    // ----------------
 
     function getType(object) {
         if (object === null || object === undefined) {
@@ -921,7 +928,7 @@
     }
 
     function int(value) {
-        return parseInt(value);
+        return parseInt(value, 10);
     }
 
     function float(value) {
