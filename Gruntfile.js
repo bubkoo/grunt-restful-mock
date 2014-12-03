@@ -39,29 +39,20 @@ module.exports = function (grunt) {
             victory: {
                 options: {
                     port: '6001',
-
                     debug: true,
-
                     route: {
-
-                        '/api/safe_center/state': {
+                        '/demo/for/inline1': {
                             'get': {
-                                cookies: null,
-
                                 data: {
                                     'code': '0',
-
                                     'data': {
-                                        // 累积收益，最小单位为分，100表示1元
-                                        'bind_email': '',
-                                        'bind_phone': '',
-                                        'set_wallet_pwd': true
+                                        'name': 'bubkoo',
+                                        'email': 'bubkoo@163.com'
                                     }
                                 }
                             }
                         },
-
-                        '/api/fund/unbind_cash_card': {
+                        '/demo/for/inline2': {
                             post: {
                                 delay: 3000,
                                 data: {
@@ -70,7 +61,6 @@ module.exports = function (grunt) {
                                 }
                             }
                         },
-
                         '/api/fund/other_bank_item': {
                             post: {
                                 data: {
