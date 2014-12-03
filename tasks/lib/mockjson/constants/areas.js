@@ -4440,6 +4440,3 @@ module.exports = {
     '621100': ['定西市', '620000', 'ding xi shi'],
     '621102': ['安定区', '621100', 'an ding qu']
 };
-
-
-//return areaList;

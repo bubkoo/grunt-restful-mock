@@ -1,6 +1,6 @@
 var async = require('async');
 var Layer = require('./layer');
-var mockJson = require('./mockJson');
+var mockJSON = require('./mockJSON');
 var parseUrl = require('parseurl');
 var sign = require('cookie-signature').sign;
 var cookie = require('cookie');
@@ -91,7 +91,7 @@ Router.prototype.add = function (rules) {
             // 处理 data 是数组的情况
             //   path/to/api: {
             //       get: {
-            //         'data:1-10':[
+            //         'data|1-10':[
             //             ...
             //          ]
             //       }
@@ -102,7 +102,7 @@ Router.prototype.add = function (rules) {
                         if (rRule.test(key)) {
                             options.data = {};
                             options.data[key] = options[key];
-                            options.isRaw = true;
+                            options.rootShift = true;
                             break;
                         }
                     }
@@ -144,20 +144,19 @@ Router.prototype.handle = function (req, res) {
         // url 匹配
         if (layer.match(url.pathname)) {
             // clone query params
-            params = merge({}, req.params);
+            params = merge({}, req.query);
             // request body
             merge(params, req.body);
             // restful 参数
             req.params = merge(params, layer.params); // 注意：这里覆盖了req.params
 
-
-            options = merge({}, strict ?
-                methods[method] :
-                getOptions(methods, method, params));
+            options = strict ? methods[method] : getOptions(methods, method, params);
 
             if (!options) {
                 continue;
             }
+
+            options = merge({}, options);
 
             if (options.statusCode && options.statusCode !== 200) {
                 options.statusCode = parseInt(options.statusCode, 10);
@@ -208,7 +207,7 @@ function handle(req, res, options) {
 
 function handleJSON(req, res, options) {
     // 生成 mock data
-    res.body = generateJSON(options.data, req.params, options.isRaw);
+    res.body = generateJSON(options.data, req.params, options.rootShift);
     var body = JSON.stringify(res.body),
         headers = {
             'Content-Type': 'application/json',
@@ -225,7 +224,7 @@ function handleJSONP(req, res, options) {
         key = typeof options.jsonp !== 'string' ? 'callback' : options.jsonp,
         callback = req.params[key];
 
-    res.body = generateJSON(options.data, req.params, options.isRaw);
+    res.body = generateJSON(options.data, req.params, options.rootShift);
     body = JSON.stringify(res.body);
 
     if (callback) {
@@ -239,9 +238,9 @@ function handleJSONP(req, res, options) {
     res.end(body);
 }
 
-function generateJSON(tpl, params, isRaw) {
-    var ret = mockJson(tpl, params);
-    return isRaw ? ret.data : ret;
+function generateJSON(tpl, params, shift) {
+    var ret = mockJSON(tpl, params);
+    return shift ? ret.data : ret;
 }
 
 function handleCookies(req, res, cookiesTemplate) {
@@ -257,7 +256,7 @@ function handleCookies(req, res, cookiesTemplate) {
         return;
     }
 
-    cookies = mockJson(cookiesTemplate, req.params);
+    cookies = mockJSON(cookiesTemplate, req.params);
     if (!Array.isArray(cookies)) {
         cookies = [ cookies ];
     }
