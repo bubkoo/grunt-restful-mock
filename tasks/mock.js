@@ -28,7 +28,7 @@ module.exports = function (grunt) {
     var parseUrl = require('parseurl');
 
     var Dispatcher = require('./lib/dispatcher');
-    var formatJson = require('./lib/utils/formatJson');
+    var formatJSON = require('./lib/utils/formatJSON');
     var readfile = require('./lib/utils/readfile');
 
 
@@ -179,7 +179,7 @@ module.exports = function (grunt) {
                 if (options.debug === true) {
                     app.use(function (req, res, next) {
                         console.log('     params: '.yellow);
-                        console.log(formatJson(req.params, '         '));
+                        console.log(formatJSON(req.params, '         '));
                         console.log(' - Response:'.cyan);
                         console.log('     status: '.yellow + (res.statusCode === 200 ? 200 : (res.statusCode + '').red));
                         next();
@@ -190,11 +190,11 @@ module.exports = function (grunt) {
                         immediate: true
                     }));
                     app.use(function (req, res, next) {
-                        var data = formatJson(res.body, '         '),
+                        var data = formatJSON(res.body, '         '),
                             cookies;
 
                         if (res.cookies) {
-                            cookies = formatJson(res.cookies, '         ');
+                            cookies = formatJSON(res.cookies, '         ');
                             console.log('     cookies:'.yellow);
                             console.log(cookies);
                         }
