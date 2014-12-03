@@ -1,11 +1,6 @@
-/**
- * Module dependencies.
- */
+
 var Router = require('./router');
 
-/**
- * Expose `Application`.
- */
 module.exports = Application;
 
 function Application(options) {

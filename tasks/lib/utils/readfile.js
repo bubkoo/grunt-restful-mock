@@ -1,3 +1,4 @@
+
 var path = require('path');
 var yaml = require('js-yaml');
 var fs = require('fs');
@@ -27,5 +28,4 @@ module.exports = function(file) {
 
     // unknown
     throw new Error(file + ' is an unsupported filetype');
-
 };

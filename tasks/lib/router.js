@@ -1,6 +1,4 @@
-/**
- * Module dependencies.
- */
+
 var async = require('async');
 var Layer = require('./layer');
 var mockJson = require('./mockJson');
@@ -8,10 +6,6 @@ var parseUrl = require('parseurl');
 var sign = require('cookie-signature').sign;
 var cookie = require('cookie');
 
-/**
- * Expose `Router`.
- */
-module.exports = Router;
 
 function Router(options) {
     this.delay = options.delay;
@@ -170,6 +164,14 @@ Router.prototype.handle = function (req, res) {
     handle404(req, res);
     return false;
 };
+
+// Exports
+// -------
+
+module.exports = Router;
+
+// Helpers
+// -------
 
 function handle(req, res, options) {
     handleCookies(req, res, options.cookies);
