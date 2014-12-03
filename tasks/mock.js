@@ -25,6 +25,7 @@ module.exports = function (grunt) {
     var portscanner = require('portscanner');
     var async = require('async');
     var Gaze = require('gaze').Gaze;
+    var parseUrl = require('parseurl');
 
     var Dispatcher = require('./lib/dispatcher');
     var formatJson = require('./lib/utils/formatJson');
@@ -138,7 +139,7 @@ module.exports = function (grunt) {
                 app.use(function (req, res, next) {
                     if (!req.query) {
                         req.query = ~req.url.indexOf('?')
-                            ? qs.parse(req._parsedUrl.query)
+                            ? qs.parse(parseUrl(req).query)
                             : {};
                     }
                     next();

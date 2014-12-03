@@ -1,13 +1,4 @@
-/**
- * Module dependencies.
- */
 var pathRegexp = require('path-to-regexp');
-
-/**
- * Expose `Layer`.
- */
-
-module.exports = Layer;
 
 function Layer(path, options) {
     if (!(this instanceof Layer)) {
@@ -19,12 +10,10 @@ function Layer(path, options) {
 }
 
 /**
- * Check if this route matches `path`, if so
- * populate `.params`.
+ * Check if this route matches `path`, if so populate `.params`.
  *
  * @param {String} path
  * @return {Boolean}
- * @api private
  */
 
 Layer.prototype.match = function (path) {
@@ -61,3 +50,5 @@ Layer.prototype.match = function (path) {
 
     return true;
 };
+
+module.exports = Layer;

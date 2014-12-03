@@ -1,4 +1,3 @@
-
 var async = require('async');
 var Layer = require('./layer');
 var mockJson = require('./mockJson');
@@ -8,10 +7,14 @@ var cookie = require('cookie');
 
 
 function Router(options) {
+    // 模拟请求延时
     this.delay = options.delay;
+    // 模拟请求超时
     this.timeout = options.timeout;
+    // 全局 cookie
     this.cookies = options.cookies;
 
+    // 调试模式
     this.debug = options.debug;
 
     this.sensitive = options.sensitive;
@@ -31,45 +34,53 @@ Router.prototype.add = function (rules) {
         rules[rules] = {
             '*': {
                 timeout: this.timeout,
-                delay  : this.delay,
+                delay: this.delay,
                 cookies: this.cookies,
-                data   : {
-                }
+                data: { }
             }
         };
     }
 
     rules = rules || {};
 
-    var rule,
-        methods,
-        method,
-        options,
-        cookies,
-        layer,
-        rRule = /(data)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/,
-        key,
-        val;
+    var path;
+    var methods;
+    var method;
+    var options;
+    var cookies;
+    var layer;
+    var rRule = /(data)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/;
+    var key;
+    var val;
 
-    for (rule in rules) {
+    for (path in rules) {
 
-        layer = new Layer(rule, {
+        if (!rules.hasOwnProperty(path)) {
+            continue;
+        }
+
+        layer = new Layer(path, {
             sensitive: this.caseSensitive,
-            strict   : this.strict,
-            end      : this.end
+            strict: this.strict,
+            end: this.end
         });
 
         layer.methods = {};
 
-        methods = rules[rule];
+        methods = rules[path];
         for (method in methods) {
+
+            if (!methods.hasOwnProperty(method)) {
+                continue
+            }
 
             options = methods[method];
 
+            // 具体每条路由的选项
             options.delay = options.delay || this.delay;
             options.timeout = 'undefined' === typeof options.timeout ? this.timeout : options.timeout;
 
-            // cookies 应该是合并式，而不是覆盖式
+            // cookies 是合并的，而不是覆盖
             if (options.cookies && this.cookies) {
                 cookies = merge({}, options.cookies, this.cookies);
             } else {
@@ -78,13 +89,13 @@ Router.prototype.add = function (rules) {
             options.cookies = cookies;
 
             // 处理 data 是数组的情况
-            // path/to/api: {
-            //     get: {
+            //   path/to/api: {
+            //       get: {
             //         'data:1-10':[
-            //
-            //         ]
-            //     }
-            // }
+            //             ...
+            //          ]
+            //       }
+            //   }
             if (!options.data) {
                 for (key in options) {
                     if (Object.prototype.hasOwnProperty.call(options, key)) {
@@ -100,8 +111,14 @@ Router.prototype.add = function (rules) {
 
             options.data = options.data || {};
 
-
-            layer.methods[method.toLowerCase()] = options;
+            // method 可以是如下值：
+            // get         指定一个 HTTP 谓词
+            // get|post    竖线分隔，表示两个谓词共用同一套接口
+            // *           代表所有 HTTP 谓词
+            // get[param1=value1]
+            // get[param1=value1, param2=value2 ...]
+            // get|post[param1=value]|get[param2=value]
+            layer.methods[method] = options;
         }
 
         this.stack.push(layer);
@@ -109,31 +126,38 @@ Router.prototype.add = function (rules) {
 };
 
 Router.prototype.handle = function (req, res) {
-    var
-        url = parseUrl(req),
-        method = req.method.toLowerCase(),
+    var url = parseUrl(req);
+    var method = req.method.toLowerCase();
 
-        strict,
-        methods,
-        params,
-        layer,
-        options,
+    var strict;
+    var methods;
+    var params;
+    var layer;
+    var options;
 
-        i,
-        len = this.stack.length;
-
-
-    for (i = 0; i < len; i++) {
+    for (var i = 0, len = this.stack.length; i < len; i++) {
         layer = this.stack[i];
         methods = layer.methods;
-        if ((strict = methods.hasOwnProperty(method) || methods.hasOwnProperty('*')) && layer.match(url.pathname)) {
+        // just for speed up
+        strict = methods.hasOwnProperty(method);
 
-            options = merge({}, strict ? methods[method] : methods['*']);
-
-            // 合并参数
-            params = merge({}, req.query);
+        // url 匹配
+        if (layer.match(url.pathname)) {
+            // clone query params
+            params = merge({}, req.params);
+            // request body
             merge(params, req.body);
-            req.params = merge(params, layer.params);
+            // restful 参数
+            req.params = merge(params, layer.params); // 注意：这里覆盖了req.params
+
+
+            options = merge({}, strict ?
+                methods[method] :
+                getOptions(methods, method, params));
+
+            if (!options) {
+                continue;
+            }
 
             if (options.statusCode && options.statusCode !== 200) {
                 options.statusCode = parseInt(options.statusCode, 10);
@@ -187,7 +211,7 @@ function handleJSON(req, res, options) {
     res.body = generateJSON(options.data, req.params, options.isRaw);
     var body = JSON.stringify(res.body),
         headers = {
-            'Content-Type'  : 'application/json',
+            'Content-Type': 'application/json',
             'Content-Length': Buffer.byteLength(body)
         };
 
@@ -208,7 +232,7 @@ function handleJSONP(req, res, options) {
         body = callback + '(' + body + ')';
     }
     headers = {
-        'Content-Type'  : callback ? 'application/x-javascript' : 'application/json',
+        'Content-Type': callback ? 'application/x-javascript' : 'application/json',
         'Content-Length': Buffer.byteLength(body)
     };
     res.writeHead(options.statusCode, headers);
@@ -360,4 +384,57 @@ function delay(ms, callback) {
         tick = +new Date();
     }
     callback();
+}
+
+function getOptions(methods, method, params) {
+    method = method.toLowerCase();
+    for (var key in methods) {
+        if (!methods.hasOwnProperty(key)) {
+            continue;
+        }
+
+        var sections = key.split(/\s*\|\s*/g);
+        var section;
+        var matches;
+        var innerMethod;
+        var innerParams;
+
+        while (section = sections.shift()) {
+            matches = section.match(/(get|post|put|delete|head|options|trace|connect)(?:\s*\[\s*([^\]].*?)\s*\]\s*)?/i);
+            if (matches) {
+                innerMethod = matches[1];
+                innerParams = matches[2];
+
+                if (innerMethod && innerMethod.toLowerCase() === method) {
+                    if (!innerParams || checkParams(innerParams, params)) {
+                        return methods[key];
+                    }
+                }
+            }
+        }
+    }
+    if (methods.hasOwnProperty('*')) {
+        return methods['*'];
+    }
+}
+
+function checkParams(paramStr, params) {
+    var parts = paramStr.split(/\s*,\s*/g);
+    var part;
+
+    while (part = parts.shift()) {
+        var kv = part.split(/\s*=\s*/g);
+        var key = kv[0];
+        var value = kv[1];
+        if (params.hasOwnProperty(key)) {
+            // 兼容 get[param] 这种情况，只需要包含某个参数即可
+            if (kv.length === 2 && value !== params[key]) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
