@@ -2,27 +2,29 @@
 
 # grunt-restful-mock
 
-> 模拟 AJAX 请求返回的 JSON 数据，帮助前端工程师减少对后端接口的依赖，在接口规范的基础之上，实现与后端并行开发。
+> 模拟 AJAX 请求返回的 JSON 数据，减少前端工程师对后端接口的依赖，在接口规范的基础之上，实现与后端并行开发。
 
 **主要特性：**
 
-- 根据数据模板随机生成数据
-- 支持 RESTful 风格的 API
-- 模拟 JSONP 请求的相应
+- 基于数据模板生成随机数据
+- 支持 RESTful 风格的 RUI
+- 支持 JSONP
 - 模拟 HTTPOnly 的 Cookie
-- 模拟 HTTP 响应状态码
+- 模拟 HTTP 响应状态码，模拟请求超时
 - 模拟 HTTP 请求的网络延时
 - 热重启，修改 mock 配置后自动重启服务
 
 **存在的意义：**
 
-使用过 [mockjax](https://github.com/appendto/jquery-mockjax) 的同学应该会遇到一个痛苦的问题，那就是需要在业务代码中添加许多不必要的 mock 配置，代码上线时需要人肉删除这些 JS 代码，容易出错而且很不友好，同时 mock 环境和测试环境的切换工作也不是很方便。作者在经历过这些痛点之后，基于 grunt 开发了该插件。意义不多说，用过才知道。
-
-
+使用过 [mockjax](https://github.com/appendto/jquery-mockjax) 的同学应该会遇到一个
+痛苦的问题，那就是需要在业务代码中添加许多不必要的 mock 配置，代码上线时需要人肉删除这些 JS
+代码，容易出错而且很有侵入性，同时 mock 环境和测试环境的切换工作也不是很方便。作者在经历过
+这些痛点之后，基于 grunt 开发了该插件。
 
 ## 开始使用
 
-该插件需要 Grunt `~0.4.5`，如果你还没有使用过 [Grunt](http://gruntjs.com/)，请移步 [Grunt 新手上路](http://gruntjs.com/getting-started)。
+该插件需要 Grunt `~0.4.5`，如果你还没有使用过 [Grunt](http://gruntjs.com/)，请移步
+ [Grunt 新手上路](http://gruntjs.com/getting-started)。
 
 熟悉 Grunt 的运作之后，你可以使用如下命令来安装本插件：
 
@@ -30,7 +32,7 @@
 npm install grunt-restful-mock --save-dev
 ```
 
-安装之后，通过下面代码来加载本插件：
+加载插件：
 
 ```js
 grunt.loadNpmTasks('grunt-restful-mock');
@@ -39,6 +41,7 @@ grunt.loadNpmTasks('grunt-restful-mock');
 ## "mock" 任务
 
 ### 综述
+
 在你的项目的 Gruntfile 文件中，添加名为 `mock` 的配置节：
 
 ```js
@@ -72,7 +75,8 @@ Type: `String`
 Type: `Integer`
 默认值: `0`
 
-网络延时毫秒数，默认值为 0，收到请求之后立即响应，在处理 AJAX 请求和响应时，可以根据实际需要配置一定的网络延时。
+网络延时（毫秒），默认值为 0（收到请求之后立即响应），在处理 AJAX 请求和响应时，可以
+根据实际需要配置一定的网络延时。
 
 #### options.statusCode
 Type: `Integer`
@@ -84,7 +88,7 @@ Type: `Integer`
 Type: `String` 或 `Boolean`
 默认值: `null`
 
-定义该路由为 JSONP 请求，如果值为 `true`，将被转换为字符串 `callback`，其值指定了 url 参数中的参数名，例如：
+定义该路由为 JSONP 请求，如果值为 `true`，将被转换为字符串 `callback`，该值指定了 url 参数中的参数名，例如：
 
 ```js
 path/to/api?callback=show:{
@@ -95,7 +99,7 @@ path/to/api?callback=show:{
 }
 ```
 
-将返回 `show(data)` 这样的形式。
+将返回 `show(data)` 这样的 JavaScript 文本，前端收到响应后通过 `script` 标签嵌入到页面中。
 
 #### options.debug
 Type: `Boolean`
