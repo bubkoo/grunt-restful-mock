@@ -754,26 +754,22 @@ grunt.initConfig({
               // 比如网络延时，全局的 cookie 和 statusCode
 
               delay: 200, // 定义所有路由的延时为 200ms，可以在具体的路由中覆盖该定义
-
               cookie: {}, // 定义全局的 cookie
 
               // 定义路由规则
               route: {
-
                  // API 的路径
                  '/path/to/API1': {
-
                     // GET 请求
-                    get: {
+                    'get': {
                         // 这里我定义该 API 的 get 请求延时 500ms，覆盖全局中的定义
                         delay: 500,
-
                         // 返回的 cookie，这里定义的 cookie 将于全局 cookie 进行合并，返回合并后的 cookie
                         cookie: {
-                            // cookie 的键值
+                            // cookie 键值
                             id: 123,
-                            username: 'John',
-                            // cookie 的选项，该选项将应用于以上的 cookie
+                            username: 'bubkoo',
+                            // cookie 选项，该选项将应用于以上的 cookie
                             options:{
                                 // cookie 的有效期，这里是一小时
                                 maxAge: 1000 * 60 * 60
@@ -782,13 +778,13 @@ grunt.initConfig({
                         // 返回的数据
                         data: {
                             code: 200,
-                            username: 'John',
-                            email: 'John@company.com'
+                            username: 'bubkoo',
+                            email: 'bubkoo@163.com'
                         }
                     },
 
                     // POST 请求
-                    post: {
+                    'post': {
                         // 对于该路由的 post 请求，采用全局选项中的设置
 
                         // 在 data 中使用数据模板
@@ -807,7 +803,7 @@ grunt.initConfig({
                     },
 
                     // DELETE 请求
-                    delete:{
+                    'delete': {
                         // 这里定义 statusCode 为 403，访问该路由时直接返回 403 状态码
                         statusCode: 403
                     }
@@ -815,9 +811,36 @@ grunt.initConfig({
                     // 其他未定义的 HTTP 请求的方式都将返回 404
                  },
 
-                 // 定义其他路由
-                 'path/to/api2': {}
-                 'path/to/api3': {}
+                 // 组合定义 HTTP 谓词
+                 'path/to/api2': {
+                     'get|post': { // 共享 get 和 post 请求
+
+                     }
+                 },
+
+                 // 万能谓词
+                 'path/to/api3': {
+                     '*': { // 接收所有 HTTP 谓词
+                     }
+                 },
+
+                 // 共享同一路由，根据 URL 中的参数返回不同的结果
+                 'path/to/api4': {
+                     // path/to/api4?param1=value1
+                     'get[param1=value1]': {
+
+                     },
+                     // path/to/api4?param2=value2&param3=value3
+                     'get[param2=value2, param3=value3]': {
+
+                     },
+                     // 组合使用
+                     'get|post[param1=value1]|post[param2=value2, param3=value3]':{
+
+                     }
+                 }
+
+                 // 其他未定义的路由都将返回 404
               }
           }
       }
@@ -972,8 +995,8 @@ grunt.initConfig({
 
 1. 与 nginx 配合使用
 
-  mock 的本资就是在本地（127.0.0.1）的某个端口上开启了一个 HTTP Server 服务，
-  但真实环境下 API 的 hostname 都不会是 127.0.0.1，这个时候就需要借助 nginx
+  mock 的本质就是在本地（127.0.0.1）的某个端口上开启了一个 HTTP Server 服务，
+  但真实环境下 API 的 host 都不会是 127.0.0.1，这个时候就需要借助 nginx
   的代理功能了，具体如何配置 nginx 请参考网上的教程。
 
 2. 开启多个 mock 任务
@@ -985,8 +1008,10 @@ grunt.initConfig({
 3. 如何借助 mock 来避免跨域开发
 
   很多时候我们在本地开发时，API 的调用却是跨域的（上线后不跨域），这时同样要借助强大的 nginx。
-  修改 hosts 文件，将 API 的 hostname 指向本地，再做一个 nginx 代理即可解决该问题。
+  修改 hosts 文件，将 API 的 host 指向本地，再做一个 nginx 代理即可解决该问题。
 
 ## 历史
 
+- 2014-12-04 组合 HTTP 谓词（`get|post`），谓词混同参数（`get[param1=value1]`）
 - 2014-12-03 更新 connect 到最新的 v3.3.3，修复一些被弃用的方法。
+- 2014-12-02 重构 random，将 random 按类别分放在不同的文件中。
