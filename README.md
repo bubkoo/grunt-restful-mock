@@ -71,6 +71,12 @@ Type: `String`
 
 端口号
 
+#### options.host
+Type: `String`
+默认值: `"127.0.0.1"`
+
+主机名
+
 #### options.delay
 Type: `Integer`
 默认值: `0`
@@ -105,23 +111,28 @@ path/to/api?callback=show:{
 Type: `Boolean`
 默认值: `false`
 
-默认关闭调试模式，在终端中只显示每次请求的 API 路径；如果打开调试模式（true），将在终端中显示每次请求和响应的详细信息，包括请求的 URL、参数，响应的状态码、Cookie、数据等。
+默认关闭调试模式，在终端中只显示每次请求的 API 路径；如果打开调试模式（true），将在终端中
+显示每次请求和响应的详细信息，包括请求的 URL、参数，响应的状态码、Cookie、数据等。
 
 #### options.watch
 Type: `Array`
 默认值: `[]`
 
-监视的路由文件列表，当文件改动时，自动重启 mock 任务，关于路由文件后面会有详细介绍。
+监视的路由文件列表，当文件改动时，自动重启 mock 任务，关于路由文件后面会有详细介绍。默认会监视
+`Gruntfile.js` 和 mock 配置节中指定的配置文件所在的文件夹。
 
 #### options.sensitive、options.strict 和 options.end
 
-这三个选项是 `Path-to-RegExp` 组件的选项，本插件使用的是 `Path-to-RegExp` 来解析 RESTful 的 URL，选项的含义可以[参看这里](https://github.com/component/path-to-regexp#usage)
+这三个选项是 `Path-to-RegExp` 组件的选项，本插件使用的是 `Path-to-RegExp` 来解
+析 RESTful 的 URL，选项的含义可以[参看这里](https://github.com/component/path-to-regexp#usage)
 
 #### options.cookie
 Type: `Object|Array`
 默认值: `null`
 
-全局级别的 cookie 设置，在 options 中的 cookie 设置将出现在每个 API 的响应结果中。在某些情况下需要配置全局的 cookie，例如在需要在每次响应后，从 cookie 中取到用户的 ID，就可以在 options 中将该 cookie 配置为全局的。
+全局级别的 cookie 设置，在 options 中的 cookie 设置将出现在每个 API 的响应结果中。
+在某些情况下需要配置全局的 cookie，例如在需要在每次响应后，从 cookie 中取到用户的 ID，
+就可以在 options 中将该 cookie 配置为全局的。
 
 cookie 中的 options 选项可以[请参考](https://github.com/defunctzombie/node-cookie#more)。
 
@@ -164,8 +175,6 @@ cookie: [
 ]
 ```
 
-
-
 #### options.route
 Type: `Object`
 默认值: `null`
@@ -174,7 +183,8 @@ Type: `Object`
 
 ### 数据模板的语法规范
 
-数据模板的语法部分参考了 [mockjson](http://experiments.mennovanslooten.nl/2010/mockjson/) 和 [mockjs](http://mockjs.com/) 的设计，感谢原作者。
+数据模板的语法部分参考了 [mockjson](http://experiments.mennovanslooten.nl/2010/mockjson/)
+和 [mockjs](http://mockjs.com/) 的设计，感谢原作者。
 
 **数据模板中的每条数据由三部分构成：属性名、生成规则、属性值**
 
@@ -186,20 +196,20 @@ Type: `Object`
 ```
 
 注意：
-  - 属性名 和 生成规则 之间用 `|` 分隔
-  - 生成规则 是可选的
-  - 生成规则 有 7 种格式：
-    
-    1. `'name|min-max': value`    
+  - 属性名和生成规则 之间用 `|` 分隔
+  - 生成规则是可选的
+  - 生成规则有 7 种格式：
+    1. `'name|min-max': value`
     2. `'name|count': value`
     3. `'name|min-max.dmin-dmax': value`
     4. `'name|min-max.dcount': value`
     5. `'name|count.dmin-dmax': value`
     6. `'name|count.dcount': value`
     7. `'name|+step': value`
-  - **生成规则 的 含义 需要依赖 属性值 才能确定**
-  - 属性值 中可以含有 `@占位符`
-  - 属性值 还指定了最终值的初始值和类型 
+
+  - **生成规则的含义需要依赖属性值才能确定**
+  - 属性值中可以含有`@占位符`
+  - 属性值还指定了最终值的初始值和类型
 
 #### 生成规则和示例
 
