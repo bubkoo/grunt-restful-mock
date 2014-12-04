@@ -835,7 +835,7 @@ grunt.initConfig({
 
                      },
                      // 组合使用
-                     'get|post[param1=value1]|post[param2=value2, param3=value3]':{
+                     'get|post[param1=value1]|post[param2=value2, param3=value3]': {
 
                      }
                  }
