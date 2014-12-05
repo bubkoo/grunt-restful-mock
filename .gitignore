@@ -1,6 +1,5 @@
 .idea
 .DS_Store
-mock
 node_modules
 npm-debug.log
 tmp

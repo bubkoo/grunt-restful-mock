@@ -1,0 +1,11 @@
+{
+    "/demo/for/json": {
+        "post": {
+            "delay": 3000,
+            "data": {
+                "code": "0",
+                "msg": ""
+            }
+        }
+    }
+}
