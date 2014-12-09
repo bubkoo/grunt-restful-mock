@@ -9,6 +9,7 @@
 - 基于数据模板生成随机数据
 - 支持 RESTful 风格的 RUI
 - 支持 JSONP
+- 支持同一 URL，根据 POST body 或者 URI param 不同返回不同数据
 - 模拟 HTTPOnly 的 Cookie
 - 模拟 HTTP 响应状态码，模拟请求超时
 - 模拟 HTTP 请求的网络延时
