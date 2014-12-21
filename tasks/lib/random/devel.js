@@ -1,3 +1,5 @@
+var autoIncrementInteger = 0;
+
 module.exports = {
     'fromData': function (path, data) {
 
@@ -25,4 +27,3 @@ module.exports = {
     }
 };
 
-var autoIncrementInteger = 0;
