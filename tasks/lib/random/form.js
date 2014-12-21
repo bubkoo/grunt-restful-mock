@@ -2,11 +2,11 @@ module.exports = {
 
     'guid': function () {
         var pool = 'ABCDEF1234567890';
-        return this.string(pool, 8) + '-'
-            + this.string(pool, 4) + '-'
-            + this.string(pool, 4) + '-'
-            + this.string(pool, 4) + '-'
-            + this.string(pool, 12);
+        return this.string(pool, 8) + '-' +
+            this.string(pool, 4) + '-' +
+            this.string(pool, 4) + '-' +
+            this.string(pool, 4) + '-' +
+            this.string(pool, 12);
     },
 
     'id': function () {

@@ -1,7 +1,4 @@
-
 var Router = require('./router');
-
-module.exports = Application;
 
 function Application(options) {
     this.options = options;
@@ -11,3 +8,5 @@ function Application(options) {
 Application.prototype.handle = function (req, res) {
     return this.router.handle(req, res);
 };
+
+module.exports = Application;

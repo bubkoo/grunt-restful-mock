@@ -1,3 +1,8 @@
+function endsWith(str, end) {
+    var index = str.length - end.length;
+    return index >= 0 && str.indexOf(end, index) === index;
+}
+
 function formatJson(obj, space, level) {
     if (!obj) {
         return;
@@ -44,11 +49,6 @@ function formatJson(obj, space, level) {
         ret = (level > 0 ? '' : space) + '{\n' + ret + space + '}' + (level > 0 ? ',\n' : '');
     }
     return ret;
-}
-
-function endsWith(str, end) {
-    var index = str.length - end.length;
-    return index >= 0 && str.indexOf(end, index) === index;
 }
 
 module.exports = formatJson;

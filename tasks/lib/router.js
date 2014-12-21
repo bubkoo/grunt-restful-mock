@@ -29,7 +29,7 @@ function Router(options) {
 Router.prototype.add = function (rules) {
 
     // 只提供了路由字符串，返回空对象
-    if ('strng' === typeof rules) {
+    if ('string' === typeof rules) {
         rules = {};
         rules[rules] = {
             '*': {
@@ -71,7 +71,7 @@ Router.prototype.add = function (rules) {
         for (method in methods) {
 
             if (!methods.hasOwnProperty(method)) {
-                continue
+                continue;
             }
 
             options = methods[method];
@@ -282,7 +282,7 @@ function handle404(req, res) {
 function handleTimeout(req, res, timeout) {
     if (typeof timeout === 'number' && timeout > 0) {
         delay(timeout, function () {
-            handleStatusCode(req, res, 504)
+            handleStatusCode(req, res, 504);
         });
     } else {
         handleStatusCode(req, res, 504);
@@ -303,10 +303,10 @@ function setCookie(req, res, name, val, options) {
         throw new Error('cookieParser("secret") required for signed cookies');
     }
 
-    if ('number' == typeof val) {
+    if ('number' === typeof val) {
         val = val.toString();
     }
-    if ('object' == typeof val) {
+    if ('object' === typeof val) {
         val = 'j:' + JSON.stringify(val);
     }
     if (signed) {

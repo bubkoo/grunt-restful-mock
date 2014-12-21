@@ -24,7 +24,9 @@ Layer.prototype.match = function (path) {
     var key;
     var val;
 
-    if (!m) return false;
+    if (!m) {
+        return false;
+    }
 
     this.path = m[0];
 
@@ -32,9 +34,7 @@ Layer.prototype.match = function (path) {
         key = keys[i - 1];
 
         try {
-            val = 'string' == typeof m[i]
-                ? decodeURIComponent(m[i])
-                : m[i];
+            val = 'string' === typeof m[i] ? decodeURIComponent(m[i]) : m[i];
         } catch (e) {
             var err = new Error("Failed to decode param '" + m[i] + "'");
             err.status = 400;

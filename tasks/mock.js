@@ -138,9 +138,8 @@ module.exports = function (grunt) {
                 // 解析 url 参数
                 app.use(function (req, res, next) {
                     if (!req.query) {
-                        req.query = ~req.url.indexOf('?')
-                            ? qs.parse(parseUrl(req).query)
-                            : {};
+                        req.query = ~req.url.indexOf('?') ?
+                            qs.parse(parseUrl(req).query) : {};
                     }
                     next();
                 });
@@ -239,7 +238,7 @@ module.exports = function (grunt) {
                                 // 创建路由分发
                                 dispatcher = new Dispatcher(options);
                                 // 监视配置文件变化，自动重启服务
-                                watchConfigFile.call(self);
+                                watchConfigFile();
                                 // 打印 logo 信息
                                 printLogo();
                             })
@@ -312,9 +311,9 @@ module.exports = function (grunt) {
                 }
             }
 
-            if (this.data.src) {
-                var cwd = this.data.cwd;
-                var src = this.data.src;
+            if (self.data.src) {
+                var cwd = self.data.cwd;
+                var src = self.data.src;
 
                 if (Array.isArray(src)) {
                     src.forEach(function (item) {

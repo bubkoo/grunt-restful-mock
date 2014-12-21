@@ -40,9 +40,7 @@ var handle = {
                 result = result.replace(placeholder, handed);
             }
         } else {
-            result = options.rule.iRange
-                ? random.string(len)
-                : options.template
+            result = options.rule.iRange ? random.string(len) : options.template;
         }
 
         return result;
@@ -75,8 +73,8 @@ var handle = {
 
     'boolean': function (options) {
         var result;
-        result = options.rule.iRange
-            ? random.bool(options.rule.iMin, options.rule.iMax, options.template)
+        result = options.rule.iRange ?
+            random.bool(options.rule.iMin, options.rule.iMax, options.template)
             : options.template;
         return result;
     },
@@ -137,7 +135,7 @@ var handle = {
                 rule: options.rule,
                 root: options.root,
                 data: options.data
-            })
+            });
         }
         return result;
     },
@@ -272,7 +270,7 @@ module.exports = generate;
 
 function getType(object) {
     if (object === null || object === undefined) {
-        return String(object)
+        return String(object);
     } else {
         return Object.prototype.toString.call(object).match(/\[object (\w+)\]/)[1].toLowerCase();
     }
