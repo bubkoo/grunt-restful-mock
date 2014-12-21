@@ -174,9 +174,7 @@ Router.prototype.handle = function (req, res) {
             } else {
                 options.delay = parseInt(options.delay, 10);
                 if (options.delay) {
-                    delay(options.delay, function () {
-                        handle(req, res, options);
-                    });
+                    delay(options.delay, handle.bind(null, req, res, options));
                 } else {
                     handle(req, res, options);
                 }
