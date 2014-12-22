@@ -208,6 +208,7 @@ function handleJSON(req, res, options) {
     res.body = generateJSON(options.data, req.params, options.rootShift);
     var body = JSON.stringify(res.body),
         headers = {
+            'Access-Control-Allow-Origin': '*',  // 支持跨域请求
             'Content-Type': 'application/json',
             'Content-Length': Buffer.byteLength(body)
         };
