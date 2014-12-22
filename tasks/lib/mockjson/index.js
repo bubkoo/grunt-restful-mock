@@ -170,12 +170,17 @@ var handle = {
         if (params) {
             params = params.split(/\s*,\s*/g);
             for (i = 0, len = params.length; i < len; i++) {
-                // 处理嵌套 placeholder
-                placeholders = params[i].match(rPlaceholder);
-                if (placeholders) {
-                    for (j = 0, k = placeholders.length; j < k; j++) {
-                        handled = handle.placeholder(placeholders[j], options);
-                        params[i] = params[i].replace(placeholders[j], handled);
+                // 优先尝试转换为数字
+                if (isNumeric(params[i])) {
+                    params[i] = toFloat(params[i]);
+                } else {
+                    // 处理嵌套 placeholder
+                    placeholders = params[i].match(rPlaceholder);
+                    if (placeholders) {
+                        for (j = 0, k = placeholders.length; j < k; j++) {
+                            handled = handle.placeholder(placeholders[j], options);
+                            params[i] = params[i].replace(placeholders[j], handled);
+                        }
                     }
                 }
             }
