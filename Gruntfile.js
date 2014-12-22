@@ -66,17 +66,6 @@ module.exports = function (grunt) {
                 cwd: 'mock',
                 src: ['*.js', '*.yaml', '*.coffee', '*.json']
             }
-        },
-
-        jasmine: {
-            random: {
-                src: 'tasks/lib/random/*.js',
-                options: {
-                    specs: 'test/jasmine/random/*.spec.js',
-                    outfile: 'test/jasmine/random.html',
-                    template: require('grunt-template-jasmine-requirejs')
-                }
-            }
         }
 
     });
