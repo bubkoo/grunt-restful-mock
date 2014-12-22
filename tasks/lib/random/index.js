@@ -12,7 +12,19 @@ var names = require('./names');
 var network = require('./network');
 
 
-module.exports = extend({}, base, dx, arr, address, datetime, form, network, names, article, lorem, color, devel);
+var random = extend({}, base, dx, arr, address, datetime, form, network, names, article, lorem, color, devel);
+
+for (var key in random) {
+    if (random.hasOwnProperty(key)) {
+        var upper = key.toUpperCase();
+        if (upper === key) {
+            continue;
+        }
+        random[upper] = random[key];
+    }
+}
+
+module.exports = random;
 
 
 // Helpers

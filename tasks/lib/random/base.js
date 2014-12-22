@@ -65,24 +65,33 @@ module.exports = {
         var result = '';
         var len = arguments.length;
 
+        var typeStr = typeof pool;
+
         if (len === 3) {
             strLength = this.natural(min, max);
         } else if (len === 2) {
-            if ('string' === typeof pool) {
+            if ('string' === typeStr) {
                 strLength = min;
             } else {
                 strLength = this.natural(pool, min);
                 pool = undefined;
             }
         } else if (len === 1) {
-            strLength = pool;
-            pool = undefined;
+            if (typeStr === 'number') {
+                strLength = pool;
+                pool = undefined;
+            } else {
+                strLength = this.natural(3, 9);
+            }
         } else {
+            pool = undefined;
             strLength = this.natural(3, 9);
         }
+
         while (strLength--) {
             result += this.char(pool);
         }
+
         return result;
     },
 

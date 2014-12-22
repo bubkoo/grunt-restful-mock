@@ -141,62 +141,57 @@ var handle = {
     },
 
     'placeholder': function (placeholder, options) {
-
-        function getRandonKeys() {
-            var ret = {};
-            for (var name in random) {
-                ret[name.toLowerCase()] = name;
-            }
-            return ret;
-        }
-
         // 全局匹配复位
         rPlaceholder.exec('');
 
-        var result = '',
-            parts = rPlaceholder.exec(placeholder),
-            method,
-            methodName = parts && parts[1],
-            lMethodName = methodName && methodName.toLowerCase(),
-            aMethodName = getRandonKeys()[lMethodName],
-            params = parts && parts[2],
-            i,
-            len,
-            placeholders,
-            handled,
-            j,
-            k;
+        var result = '';
+        var parts = rPlaceholder.exec(placeholder);
+        var methodName = parts && parts[1];
 
-        if (params) {
-            params = params.split(/\s*,\s*/g);
-            for (i = 0, len = params.length; i < len; i++) {
-                // 优先尝试转换为数字
-                if (isNumeric(params[i])) {
-                    params[i] = toFloat(params[i]);
-                } else {
-                    // 处理嵌套 placeholder
-                    placeholders = params[i].match(rPlaceholder);
-                    if (placeholders) {
-                        for (j = 0, k = placeholders.length; j < k; j++) {
-                            handled = handle.placeholder(placeholders[j], options);
-                            params[i] = params[i].replace(placeholders[j], handled);
-                        }
+        methodName = methodName.toUpperCase();
+
+        var method = random[methodName];
+
+        if (!method) {
+            return placeholder;
+        }
+
+        var params = parts && parts[2];
+        var placeholders;
+        var handled;
+
+        params = params && params.split(/\s*,\s*/g);
+        params = params || [];
+
+        for (var i = 0, len = params.length; i < len; i++) {
+            // 优先尝试转换为数字
+            if (isNumeric(params[i])) {
+                params[i] = toFloat(params[i]);
+            } else if (params[i] === 'true' || params[i] === 'false') {
+                params[i] = Boolean(params[i]);
+            } else {
+                // 处理嵌套 placeholder
+                placeholders = params[i].match(rPlaceholder);
+                if (placeholders) {
+                    for (var j = 0, k = placeholders.length; j < k; j++) {
+                        handled = handle.placeholder(placeholders[j], options);
+                        params[i] = params[i].replace(placeholders[j], handled);
                     }
+                } else {
+                    // 处理字符串，将字符串首位的引号去掉，因为本来就是字符串
+                    // '"param"' -> 'param'
+                    // '\'param\'' -> 'param'
+                    params[i] = params[i].replace(/^('|")(.*)(\1)$/, '$2');
                 }
             }
         }
 
-        if (!(aMethodName in random)) {
-            return placeholder;
-        }
-
-        method = random[aMethodName];
         switch (getType(method)) {
             case 'array':
                 result = random.pick(method);
                 break;
             case 'function':
-                if (aMethodName === 'fromData') {
+                if (methodName === 'FROMDATA') {
                     params.push(options.data);
                 }
                 result = method.apply(random, params);
