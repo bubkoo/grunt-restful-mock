@@ -69,7 +69,14 @@ module.exports = function (grunt) {
         },
 
         jasmine: {
-            tests: ['test/*_test.js']
+            random: {
+                src: 'tasks/lib/random/*.js',
+                options: {
+                    specs: 'test/jasmine/random/*.spec.js',
+                    outfile: 'test/jasmine/random.html',
+                    template: require('grunt-template-jasmine-requirejs')
+                }
+            }
         }
 
     });
