@@ -34,8 +34,20 @@ module.exports = {
 
                     'capitalize': '@capitalize("mock")',
                     'upper': '@upper("mock")',
-                    'lower': '@lower("MOCK")',
+                    'lower': '@lower("MOCK")'
                 },
+
+                'd':{
+                    'd5':'@d5',
+                    'd10':'@d10',
+                    'd20':'@d20',
+                    'd50':'@d50',
+                    'd100':'@d100',
+                    'd200':'@d200',
+                    'd500':'@d500',
+                    'd1000':'@d1000'
+                },
+
                 'date': {
 
                 }
