@@ -87,6 +87,11 @@ var handle = {
             len = options.template.length,
             count;
         count = options.rule.iCount || 0;
+        
+        // 支持“从属性值 [{}, {} ...] 中随机选取 1 个元素，作为最终值”
+        if (count == 1) return options.template[random.int(0, len-1)];
+        if (!count) count = 1;
+
         for (i = 0; i < count; i++) {
             j = 0;
             while (j < len) {
