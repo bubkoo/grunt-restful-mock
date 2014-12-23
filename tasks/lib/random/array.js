@@ -24,7 +24,7 @@ module.exports = {
     // 返回字符串中或数组中的一个
     'pick': function (arr) {
         arr = arr || [];
-        return arr[this.natural(0, arr.length - 1)];
+        return arr[this.int(0, arr.length - 1)];
     },
 
     // 随机打乱数组

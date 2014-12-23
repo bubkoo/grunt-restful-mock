@@ -7,12 +7,11 @@ var datetime = require('./datetime');
 var devel = require('./devel');
 var dx = require('./dx');
 var form = require('./form');
-var lorem = require('./lorem');
 var names = require('./names');
 var network = require('./network');
 
 
-var random = extend({}, base, dx, arr, address, datetime, form, network, names, article, lorem, color, devel);
+var random = extend({}, base, dx, arr, address, datetime, form, network, names, article, color, devel);
 
 for (var key in random) {
     if (random.hasOwnProperty(key)) {
