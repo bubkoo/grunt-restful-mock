@@ -6,18 +6,18 @@
 
 - 基于数据模板生成随机数据
 - 支持 RESTful 风格的 RUI
-- 支持 JSONP
-- 支持同一 URL，根据 POST body 或者 URI param 不同返回不同数据
+- 兼容 JSONP 请求
 - 模拟 HTTPOnly 的 Cookie
 - 模拟 HTTP 响应状态码，模拟请求超时
 - 模拟 HTTP 请求的网络延时
 - 热重启，修改 mock 配置后自动重启服务
+- 支持同一 URL，根据 POST body 或者 URI param 不同返回不同数据
 
 **存在的意义：**
 
 使用过 [mockjax](https://github.com/appendto/jquery-mockjax) 的同学应该会遇到一个
-痛苦的问题，那就是需要在业务代码中添加许多不必要的 mock 配置，代码上线时需要人肉删除这些 JS
-代码，容易出错而且很有侵入性，同时 mock 环境和测试环境的切换工作也不是很方便。作者在经历过
+苦恼的问题，那就是需要在业务代码中添加许多不必要的 mock 配置，代码上线时需要人肉删除这些 JS
+代码，容易出错而且很有侵入性，同时 mock 环境和测试环境的切换也不是很方便。作者在经历过
 这些痛点之后，基于 grunt 开发了该插件。
 
 ## TODO
@@ -63,44 +63,56 @@ grunt.initConfig({
 ### 选项（Options）
 
 #### options.protocol
+
 Type: `String`
+
 默认值: `"http"`
 
 HTTP 请求的协议，可选值有：`"http"` 和 `"https"`
 
 #### options.port
+
 Type: `String`
+
 默认值: `'6000'`
 
 端口号
 
 #### options.host
+
 Type: `String`
+
 默认值: `"127.0.0.1"`
 
 主机名
 
 #### options.delay
+
 Type: `Integer`
+
 默认值: `0`
 
 网络延时（毫秒），默认值为 0（收到请求之后立即响应），在处理 AJAX 请求和响应时，可以
-根据实际需要配置一定的网络延时。
+根据实际需要配置一定的网络延时，来模拟实际的网络环境。
 
 #### options.statusCode
+
 Type: `Integer`
+
 默认值: `200`
 
 响应的状态码，默认值为 200，表示成功的响应。
 
 #### options.jsonp
+
 Type: `String` 或 `Boolean`
+
 默认值: `null`
 
 定义该路由为 JSONP 请求，如果值为 `true`，将被转换为字符串 `callback`，该值指定了 url 参数中的参数名，例如：
 
 ```js
-path/to/api?callback=show:{
+path/to/api?callback=show: {
     get:{
         jsonp: 'callback',
         data: {} // 这里定义数据模板
@@ -111,30 +123,36 @@ path/to/api?callback=show:{
 将返回 `show(data)` 这样的 JavaScript 文本，前端收到响应后通过 `script` 标签嵌入到页面中。
 
 #### options.debug
+
 Type: `Boolean`
+
 默认值: `false`
 
-默认关闭调试模式，在终端中只显示每次请求的 API 路径；如果打开调试模式（true），将在终端中
+默认关闭调试模式，在终端中只显示每次请求的 API 路径；如果打开调试模式（`true`），将在终端中
 显示每次请求和响应的详细信息，包括请求的 URL、参数，响应的状态码、Cookie、数据等。
 
 #### options.watch
+
 Type: `Array`
+
 默认值: `[]`
 
-监视的路由文件列表，当文件改动时，自动重启 mock 任务，关于路由文件后面会有详细介绍。默认会监视
-`Gruntfile.js` 和 mock 配置节中指定的配置文件所在的文件夹。
+监视的文件列表，当文件改动时，自动重启 mock 任务，关于路由文件后面会有详细介绍。默认会监视
+`Gruntfile.js` 和 mock 配置节中指定的配置文件文件夹中的文件。
 
 #### options.sensitive、options.strict 和 options.end
 
 这三个选项是 `Path-to-RegExp` 组件的选项，本插件使用的是 `Path-to-RegExp` 来解
-析 RESTful 的 URL，选项的含义可以[参看这里](https://github.com/component/path-to-regexp#usage)
+析 RESTful 的 URL，选项的含义可以[参看这里](https://github.com/component/path-to-regexp#usage)。
 
 #### options.cookie
+
 Type: `Object|Array`
+
 默认值: `null`
 
 全局级别的 cookie 设置，在 options 中的 cookie 设置将出现在每个 API 的响应结果中。
-在某些情况下需要配置全局的 cookie，例如在需要在每次响应后，从 cookie 中取到用户的 ID，
+在某些情况下需要配置全局的 cookie，例如在需要在每次响应后，从 cookie 中取到用户的 token，
 就可以在 options 中将该 cookie 配置为全局的。
 
 cookie 中的 options 选项可以[请参考](https://github.com/defunctzombie/node-cookie#more)。
@@ -160,7 +178,8 @@ cookie: {
     }
 }
 ```
-- 数组格式：使用数组格式可以方便将一些 cookie 分类设置，分别设置不同的选项
+
+- 数组格式：使用数组格式可以方便将一些 cookie 分类设置，分别设置不同的 Cookie 选项：
 
 ```js
 cookie: [
@@ -179,12 +198,19 @@ cookie: [
 ```
 
 #### options.route
+
 Type: `Object`
+
 默认值: `null`
 
 定义 API 的路由以及返回数据的模板。
 
-### 数据模板的语法规范
+
+
+
+
+
+## 数据模板语法规则
 
 数据模板的语法部分参考了 [mockjson](http://experiments.mennovanslooten.nl/2010/mockjson/)
 和 [mockjs](http://mockjs.com/) 的设计，感谢原作者。
@@ -192,13 +218,14 @@ Type: `Object`
 **数据模板中的每条数据由三部分构成：属性名、生成规则、属性值**
 
 ```js
-// 属性名    name
-// 生成规则  rule
-// 属性值    value
 'name|rule': value
+// name  -> 属性名
+// rule  -> 生成规则
+// value -> 属性值
 ```
 
-注意：
+**注意：**
+
   - 属性名和生成规则 之间用 `|` 分隔
   - 生成规则是可选的
   - 生成规则有 7 种格式：
@@ -209,26 +236,32 @@ Type: `Object`
     5. `'name|count.dmin-dmax': value`
     6. `'name|count.dcount': value`
     7. `'name|+step': value`
+  - 生成规则的含义更具具体属性值才能确定
+  - 属性值可以是 `@占位符`
+  - 属性值指定了最终值的初始值和类型
 
-  - **生成规则的含义需要依赖属性值才能确定**
-  - 属性值中可以含有`@占位符`
-  - 属性值还指定了最终值的初始值和类型
 
-#### 生成规则和示例
+### 生成规则和示例
 
-##### 属性值是字符串 **String**
+#### 属性值是数字 **Number**
 
-1. `'name|min-max': 'value'` 通过重复 `'value'` 生成一个字符串，重复次数大于等于 `min`，小于等于 `max`
-2. `'name|count': 'value'` 通过重复 `'value'` 生成一个字符串，重复次数等于 `count`
+- `'name|1-100': 1` 
+  生成一个随机整数，整数大于等于 `1` 小于等于 `100`，属性值 `1` 只用于确定数据类型。
+  
+- `'name|1-100.1-4': 1` 
+  生成一个随机浮点数，整数部分大于等于 `1` 小于等于 `100`，小数部分保留 `1` 到 `4` 位，小数部分随机生成。
 
-##### 属性值是数字 **Number**
+- `'name|1-100.1-4': 1.23456` 
+  生成一个随机浮点数，整数部分大于等于 `1` 小于等于 `100`，小数部分保留 `1` 到 `4` 位，小数部分为原数字小数部分(`23456`)截取 `1` 到 `4` 之间的随机随机长度，所以小数部分只可能是：`2`、`23`、`234` 或 `2345`。
 
-1. `'name|+1': 100` 属性值自动加 `1`，初始值为 `100`
-2. `'name|1-100': 100` 生成一个大于等于 `1` 小于等于 `100` 的整数，属性值 `100` 只用来确定类型
-3. `'name|1-100.1-10': 100` 生成一个浮点数，整数部分大于等于 `1` 小于等于 `100`，小数部分保留 `1` 到 `10` 位
-4. `'name|1-100.2': 100` 生成一个浮点数，整数部分大于等于 `1` 小于等于 `100`，小数部分保留 `2` 位
-5. `'name|100.1-10': 100` 生成一个浮点数，整数部分大于等于 `100`，小数部分保留 `1` 到 `10` 位
-6. `'name|100.2': 100` 生成一个浮点数，整数部分大于等于 `100`，小数部分保留 `2` 位
+- `'name|1-100.1-4': 1.2` 
+  生成一个随机浮点数，整数部分大于等于 `1` 小于等于 `100`，小数部分保留 `1` 到 `4` 位，小数部分为原数字小数部分(`2`)截取 `1` 到 `4` 之间的随机随机长度，原小数位数不足时生成随机数补齐，所以小数部分为：`2`、`2x`、`2xx` 或 `2xxx`。
+  
+- `'name|1-100.2': 100` 
+  生成一个随机浮点数，整数部分大于等于 `1` 小于等于 `100`，小数部分保留 `2` 位，小数部分随机生成
+4. `'name|100.1-10': 100` 生成一个浮点数，整数部分大于等于 `100`，小数部分保留 `1` 到 `10` 位
+5. `'name|100.2': 100` 生成一个浮点数，整数部分大于等于 `100`，小数部分保留 `2` 位
+6. `'name|+1': 100` 属性值自动加 `1`，初始值为 `100`
 
   示例：
   ```js
@@ -246,6 +279,13 @@ Type: `Object`
      "number4": 123.1231091814
   }
   ```
+
+
+#### 属性值是字符串 **String**
+
+1. `'name|min-max': 'value'` 通过重复 `'value'` 生成一个字符串，重复次数大于等于 `min`，小于等于 `max`
+2. `'name|count': 'value'` 通过重复 `'value'` 生成一个字符串，重复次数等于 `count`
+
 
 ##### 属性值是布尔型 **Boolean**
 
