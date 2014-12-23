@@ -206,18 +206,19 @@ function handle(req, res, options) {
 function handleJSON(req, res, options) {
     // 生成 mock data
     res.body = generateJSON(options.data, req.params, options.rootShift);
-    var body = JSON.stringify(res.body),
-        headers = {
-            /*
-             * 支持跨域请求
-             */
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'X-Requested-With, accept, origin, content-type',
-            'Access-Control-Allow-Methods': 'PUT,GET,POST,DELETE,OPTIONS',
 
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(body)
-        };
+    var body = JSON.stringify(res.body);
+    var headers = {
+        /*
+         * 支持跨域请求
+         */
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'X-Requested-With, accept, origin, content-type',
+        'Access-Control-Allow-Methods': 'PUT,GET,POST,DELETE,OPTIONS',
+
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(body)
+    };
 
     res.writeHead(options.statusCode, headers);
     res.end(body);

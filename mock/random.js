@@ -2,6 +2,35 @@ module.exports = {
     '/demo/for/random': {
         'get': {
             'data': {
+                'rules': {
+                    'number1|10': 1,        // 返回 10
+                    'number2|1-10': 1,      // 返回 1-10 之间的数
+                    'number3|1-10.1-4': 1,  // 返回整数部分 1-10 之间，小数位数为 1-4 位
+                    'number4|1-10.1-4': 1.123456,  // 返回整数部分 1-10 之间，小数位数为 1-4 位，小数部分来源于原数字
+                    'number5|1-10.2': 1,           // 整数部分 1-10，小数固定两位
+                    'number6|1-10.2': 1.123456,    // 整数部分 1-10，小数固定两位，小数部分为 12
+                    'number7|10.1-4': 1,           // 整数固定为 10，小数位数为 1-4 位
+                    'number8|10.2': 1,             // 整数固定为 10，小数位数为 2 位
+                    'number9|+1': 1,
+
+                    'string1|1-4': 'Mock',
+                    'string2|2': 'Mock',
+
+                    'boolean1|1': true,
+                    'boolean2|9-10': true,
+
+                    'array1|2': [1, 2, 3],
+                    'array2|2-5': [1, 2, 3],
+
+                    'object1|2': {key1: 'value1', key2: 'value2', key3: 'value3'},
+                    'object2|1-3': {key1: 'value1', key2: 'value2', key3: 'value3', key4: 'value4'},
+
+                    'function1|2': function () {
+                        return 'Mock';
+                    }
+
+                },
+
                 'base': {
                     'int1': '@int',
                     'int2': '@int(10)',
@@ -57,7 +86,9 @@ module.exports = {
                 },
 
                 'datetime': {
-
+                    'randomDate': '@randomDate',
+                    //                    'date':'@date(@randomDate, "YYYY-MM-DD")',
+                    //                    'time':'@time(@randomDate, "HH:mm:ss")'
                 },
 
                 'form': {

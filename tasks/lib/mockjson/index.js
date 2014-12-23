@@ -7,32 +7,34 @@ var handle = {
     'string': function (options) {
         var result = '',
             placeholders,
-            placeholder,
-            handed,
             i = 0,
             len = options.rule.iCount || 1;
 
-        if (options.template.length) {
+        if (options.template) {
+            // 重复字符串
             while (len--) {
                 result += options.template;
             }
+
             // 处理模板中的占位符
             placeholders = result.match(rPlaceholder) || [];
             for (i = 0, len = placeholders.length; i < len; i++) {
-                placeholder = placeholders[i];
-                handed = handle.placeholder(placeholder, options);
+                var placeholder = placeholders[i];
+                var handed = handle.placeholder(placeholder, options);
+                var type = getType(handed);
 
                 // 有且仅有一个 placeholder, 适当地做类型转换
                 if (len === 1 &&
                     result === placeholder &&
                     typeof result !== typeof handed) {
+
                     if (/^(true|false)$/.test(handed)) {
                         result = handed === 'true' ? true : handed === 'false' ? false : handed;
-                    }
-                    else if (isNumeric(handed)) {
+                    } else if (type === 'date') { // 日期检查必须放在 isNumeric 前面
+                        result = handed + '';
+                    } else if (isNumeric(handed)) {
                         result = toFloat(handed);
-                    }
-                    else {
+                    } else {
                         result = handed;
                     }
                     break;
@@ -47,15 +49,22 @@ var handle = {
     },
 
     'number': function (options) {
-        var result,
-            parts;
+        var result, parts;
+
         // 含有小数部分
         if (options.rule.dRange) {
+            // 分隔原数字
+            // 1 -> [1]
+            // 3.14 -> [3, 14]
             parts = (options.template + '').split('.');
-            // 优先使用由范围所产生的整数
+
+            // 优先使用由规则所产生的整数
             parts[0] = options.rule.iRange ? options.rule.iCount : parts[0];
+
+            // 截取原数字的小数位数到指定的位数
             parts[1] = (parts[1] || '').slice(0, options.rule.dCount);
-            // 补全小数部分
+
+            // 位数不足时，补全小数部分
             while (parts[1].length < options.rule.dCount) {
                 parts[1] += random.char('number');
             }
@@ -64,70 +73,73 @@ var handle = {
             // 只包含整数部分
             result = options.rule.iCount;
         }
-        else {
+        else if (options.rule.step !== undefined) {
             // 自增/减
+            // TODO: step
+            result = options.template + options.rule.step;
+        } else {
             result = options.template;
         }
+
         return result;
     },
 
     'boolean': function (options) {
-        var result;
-        result = options.rule.iRange ?
-            random.bool(options.rule.iMin, options.rule.iMax, options.template)
-            : options.template;
+        var result = options.template;
+
+        result = options.rule.iMax ?
+            random.bool(options.rule.iMin, options.rule.iMax, result) :
+            options.rule.iCount ?
+                random.bool(1, 1, result) : result;
+
         return result;
     },
 
     'array': function (options) {
-        var result = [],
-            item,
-            i,
-            j,
-            len = options.template.length,
-            count;
-        count = options.rule.iCount || 0;
-        for (i = 0; i < count; i++) {
-            j = 0;
+        var result = [];
+        var len = options.template.length;    // 原数组长度
+        var count = options.rule.iCount || 0; // 重复次数
+
+        while (count--) {
+            var j = 0;
             while (j < len) {
-                item = generate(options.template[j], j, options.data, options.root);
+                var item = generate(options.template[j], j, options.data, options.root);
                 result.push(item);
                 j++;
             }
         }
+
         return result;
     },
 
     'object': function (options) {
-        var result = {},
-            keys,
-            key,
-            parsedKey,
-            inc,
-            i,
-            length;
-        keys = getKeys(options.template);
+        var result = {};
+        var keys = getKeys(options.template);
+
         // 随机选取 count 个属性
         if (options.rule.iRange && options.rule.iCount > 0) {
             keys = random.shuffle(keys);
             keys = keys.slice(0, options.rule.iCount);
         }
-        for (i = 0, length = keys.length; i < length; i++) {
-            key = keys[i];
-            parsedKey = key.replace(rRule, '$1');
+
+        for (var i = 0, length = keys.length; i < length; i++) {
+            var key = keys[i];
+            var parsedKey = key.replace(rRule, '$1');
             result[parsedKey] = generate(options.template[key], key, options.data, options.root);
 
-            inc = key.match(rRule);
+            var inc = key.match(rRule);
             if (inc && inc[2] && 'number' === getType(options.template[key])) {
                 options.template[key] += toInt(inc[2]);
             }
         }
+
         return result;
     },
 
     'function': function (options) {
-        var result = options.template(options.data),
-            type = getType(result);
+        var result = options.template(options.data);
+        var type = getType(result);
+
         if (handle[type]) {
             result = handle[type]({
                 template: result,
@@ -137,6 +149,7 @@ var handle = {
                 data: options.data
             });
         }
+
         return result;
     },
 
@@ -200,6 +213,7 @@ var handle = {
                 }
                 break;
         }
+
         return result;
     }
 };
@@ -249,6 +263,7 @@ function generate(template, key, data, root) {
     }
     var rule = getRules(key),
         type = getType(template);
+
     root = root || template; // 根模板
     if (handle[type]) {
         return handle[type]({
