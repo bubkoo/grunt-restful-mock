@@ -1,7 +1,7 @@
 var random = require('../random');
 
 var rRule = /(.+)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/;
-var rPlaceholder = /@(\w[\w|\d]*)(?:\((.*)\)(?![\)\w\d]))?/g;
+var rPlaceholder = /@(\w[\w|\d]*)(?:(\(.*\))(?![\)\w\d]))?/g;
 
 var handle = {
     'number': function (options) {
@@ -109,38 +109,6 @@ var handle = {
         return result;
     },
 
-    '_parseString': function (options, raw) {
-        var result = options.template;
-        var phs = result.match(rPlaceholder) || [];
-        var length = phs.length;
-
-        if (raw) {
-            result = {
-                template: result,
-                handled: [],
-                placeholders: []
-            };
-        }
-
-        for (var i = 0; i < length; i++) {
-            var ph = phs[i];
-            var handed = this.placeholder(ph, options);
-
-            if (raw) {
-                result.handled.push(handed);
-                result.placeholders.push(ph);
-            } else {
-                if (length === 1 && ph === result) {
-                    result = handed; // 保留原数据格式
-                } else {
-                    result = result.replace(ph, handed);
-                }
-            }
-        }
-
-        return result;
-    },
-
     'string': function (options) {
         var result = '';
         var length = options.rule.iCount || 1;
@@ -152,119 +120,28 @@ var handle = {
                 result += template;
             }
             options.template = result;
-            result = this._parseString(options);
+
+            if (result.match(rPlaceholder)) {
+                result = renderPlaceholder(result);
+            }
+
         } else {
             // 没有提供模板则随机生成长度为 length 的字符串
             result = options.rule.iRange ? random.string(length) : template;
         }
         return result;
-    },
-
-    'placeholder': function (placeholder, options) {
-        // 全局匹配复位
-        rPlaceholder.exec('');
-
-        var result = '';
-        var parts = rPlaceholder.exec(placeholder);
-        var methodName = parts && parts[1];
-        var params = parts && parts[2];
-
-        methodName = methodName.toUpperCase();
-        var method = random[methodName];
-        if (!method) {
-            return placeholder;
-        }
-
-        // 尝试获取 placeholder 的参数
-        // '1' -> [1]
-        // '1, 2, 3' ->[1, 2, 3]
-        // '1, "str1"' -> [1,'str1']
-        // 如果参数中有嵌套的 placeholder 将获取失败，例如
-        // ‘@int’ -> '@int'
-        // '@int, 1' -> '@int, 1'
-        params = params ? getArguments(params) : [];
-
-        // 如果获取参数成功，那么 params 为参数数组，否则为字符串
-        if (typeof params === 'string') {
-            params = this._parseString({
-                template: params,
-                data: options.data,
-                root: options.root,
-                rule: {}
-            }, true);
-            params = reGetArguments(params);
-        }
-
-        if (getType(method) === 'function') {
-            if (methodName === 'FROMDATA') {
-                params = options.data;
-            }
-            result = method.apply(random, params);
-            if (isUndefined(result)) {
-                result = '';
-            }
-        } else {
-            // 不是 function，直接返回获取到的数据
-            result = method;
-        }
-
-        return result;
     }
 };
 
-
-function getArguments(paramStr) {
-    var fun;
-
-    try {
-        fun = new Function('return [' + paramStr + ']');
-        return fun();
-    } catch (error) {
-        // 参数不合法时，抛出异常
-        // 包含嵌套的占位符时会抛出异常
-        return paramStr;
+function renderPlaceholder(template) {
+    while (template.match(rPlaceholder)) {
+        template = template.replace(rPlaceholder, function (input, method, args) {
+            args = args || '()';
+            return 'this.' + method + args;
+        });
     }
-}
-
-function reGetArguments(rawData) {
-    var result = rawData.template;
-    var handled = rawData.handled;
-    var phs = rawData.placeholders;
-
-    var objParam = [];
-
-    for (var i = 0, l = handled.length; i < l; i++) {
-        var type = typeof handled[i];
-
-        type === 'undefined' && (handled[i] = '');
-        // 简单类型直接替换
-        if (type === 'boolean' || type === 'string' ||
-            type === 'number' || type === 'undefined') {
-            result = result.replace(phs[i], handled[i]);
-        } else {
-            // PS:
-            //   @randomDate, "YYYY-MM-DD HH:mm:ss"
-            result = result.replace(phs[i], '"{[<' + objParam.length + '>]}"');
-            objParam.push(handled[i]);
-        }
-    }
-
-    result = getArguments(result);
-
-    if (typeof result === 'string') {
-        // 再次失败，已经无力了，返回空数组
-        result = [];
-    } else {
-        for (i = 0, l = objParam.length; i < l; i++) {
-            for (m = 0, n = result.length; m < n; m++) {
-                if (result[m] === '{[<' + i + '>]}') {
-                    result[m] = objParam[i];
-                }
-            }
-        }
-    }
-
-    return result;
+    var fn = new Function('return ' + template + ';');
+    return fn.call(random);
 }
 
 function getRules(rule) {
@@ -351,15 +228,4 @@ function toInt(value) {
 
 function toFloat(value) {
     return parseFloat(value);
-}
-
-function isUndefined(value) {
-    return typeof value === 'undefined';
-}
-
-function isNumeric(value) {
-    if (value === null || value === '') {
-        return false;
-    }
-    return !isNaN(value) && isFinite(value);
 }

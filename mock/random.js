@@ -80,6 +80,8 @@ module.exports = {
                     'pick1': '@pick([1, 2, 3, 4, 5])',
                     'pick2': '@pickOne([1, 2, 3, 4, 5])',
                     'pick3': '@pickSome([1, 2, 3, 4, 5])',
+                    'range1': '@range(1, 10, 2)',
+                    'range2': '@range(@int(1,5), @int(6,20), 2)',
                 },
 
                 'address': {
