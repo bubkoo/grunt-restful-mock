@@ -1,7 +1,4 @@
-function endsWith(str, end) {
-    var index = str.length - end.length;
-    return index >= 0 && str.indexOf(end, index) === index;
-}
+var moment = require('moment');
 
 function formatJson(obj, space, level) {
     if (!obj) {
@@ -28,6 +25,11 @@ function formatJson(obj, space, level) {
         }
 
         val = obj[key];
+
+        if (val instanceof Date || val instanceof moment) {
+            val = val.toString();
+        }
+
         if (Array.isArray(val) || typeof val === 'object') {
             ret += formatJson(val, space + indent, level + 1);
         } else {
@@ -52,3 +54,12 @@ function formatJson(obj, space, level) {
 }
 
 module.exports = formatJson;
+
+
+// Helpers
+// -------
+
+function endsWith(str, end) {
+    var index = str.length - end.length;
+    return index >= 0 && str.indexOf(end, index) === index;
+}

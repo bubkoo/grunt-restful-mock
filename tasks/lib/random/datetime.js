@@ -2,7 +2,7 @@ var moment = require('moment');
 
 module.exports = {
     'parseDate': function () {
-        return moment(arguments);
+        return moment(arguments).format();
     },
 
     'formatDate': function (date, format) {
