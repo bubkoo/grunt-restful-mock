@@ -23,16 +23,12 @@ module.exports = {
     },
 
     // 返回字符串中或数组中的一个
-    'pick': function (arr) {
+    'pickOne': function (arr) {
         arr = arr || [];
         return arr[this.int(0, arr.length - 1)];
     },
 
-    'pickOne': function (arr) {
-        return this.pick(arr);
-    },
-
-    'pickSome': function (arr, count) {
+    'pickSome': function (arr, count, shuffle) {
         if (!count) {
             count = this.int(1, arr.length);
         } else if (count > arr.length) {
@@ -43,8 +39,25 @@ module.exports = {
             return [ this.pickOne(arr) ];
         }
 
-        var shuffled = this.shuffle(arr);
-        return shuffled.slice(count - 1);
+        var idx = [];
+        while (count) {
+            var index = this.int(0, arr.length - 1);
+            if (idx.indexOf(index) === -1) {
+                count -= 1;
+                idx.push(index);
+            }
+        }
+
+        if (!shuffle) {
+            idx.sort();
+        }
+
+        var result = [];
+        while (idx.length) {
+            index = idx.shift();
+            result.push(arr[index]);
+        }
+        return result;
     },
 
     // 随机打乱数组

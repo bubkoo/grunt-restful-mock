@@ -6,7 +6,7 @@ module.exports = {
             'Paul', 'Mark', 'Donald', 'George', 'Kenneth', 'Steven', 'Edward',
             'Brian', 'Ronald', 'Anthony', 'Kevin', 'Jason', 'Matthew', 'Gary',
             'Timothy', 'Jose', 'Larry', 'Jeffrey', 'Frank', 'Scott', 'Eric'];
-        return this.pick(names);
+        return this.pickOne(names);
     },
 
     'maleFirstName': function () {
@@ -19,7 +19,7 @@ module.exports = {
             'Karen', 'Betty', 'Helen', 'Sandra', 'Donna', 'Carol', 'Ruth', 'Sharon',
             'Michelle', 'Laura', 'Sarah', 'Kimberly', 'Deborah', 'Jessica',
             'Shirley', 'Cynthia', 'Angela', 'Melissa', 'Brenda', 'Amy', 'Anna'];
-        return this.pick(names);
+        return this.pickOne(names);
     },
 
     'femaleFirstName': function () {
@@ -32,7 +32,7 @@ module.exports = {
             'Taylor', 'Thomas', 'Hernandez', 'Moore', 'Martin', 'Jackson',
             'Thompson', 'White', 'Lopez', 'Lee', 'Gonzalez', 'Harris', 'Clark',
             'Lewis', 'Robinson', 'Walker', 'Perez', 'Hall', 'Young', 'Allen'];
-        return this.pick(names);
+        return this.pickOne(names);
     },
 
     'lastName': function () {

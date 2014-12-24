@@ -77,11 +77,14 @@ module.exports = {
                 },
 
                 'array': {
-                    'pick1': '@pick([1, 2, 3, 4, 5])',
-                    'pick2': '@pickOne([1, 2, 3, 4, 5])',
-                    'pick3': '@pickSome([1, 2, 3, 4, 5])',
+                    'pickOne1': '@pickOne([1, 2, 3, 4, 5, 6, 7, 8, 9])',
+                    'pickOne2': '@pickOne("abcdefgh")',
+                    'pickSome1': '@pickSome([1, 2, 3, 4, 5, 6, 7, 8, 9])',
+                    'pickSome2': '@pickSome([1, 2, 3, 4, 5, 6, 7, 8, 9], 4)',
+                    'pickSome3': '@pickSome([1, 2, 3, 4, 5, 6, 7, 8, 9], 4, true)',
                     'range1': '@range(1, 10, 2)',
                     'range2': '@range(@int(1,5), @int(6,20), 2)',
+                    'shuffle': '@shuffle([1,2,3,4,5,6,7,8,9])'
                 },
 
                 'address': {

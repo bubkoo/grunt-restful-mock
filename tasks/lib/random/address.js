@@ -35,7 +35,7 @@ module.exports = {
             }
             result = result || [];
         } else {
-            result = this.pick(arr);
+            result = this.pickOne(arr);
         }
         return result;
     },

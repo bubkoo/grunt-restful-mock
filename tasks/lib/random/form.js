@@ -45,7 +45,7 @@ module.exports = {
             'বাংলা (ভারত)', 'ਪੰਜਾਬੀ (ਗੁਰਮੁਖੀ)', ' ગુજરાતી', 'ଓଡ଼ିଆ', 'தமிழ்', 'తెలుగు',
             'ಕನ್ನಡ ', 'മലയാളം', 'සිංහල', 'ไทย', 'ខ្មែរ', 'ᏣᎳᎩ', 'ትግርኛ',
             'አማርኛ', '한국어', '日本語', '简体中文', '繁體中文'];
-        return this.pick(lang);
+        return this.pickOne(lang);
     },
 
     'lang': function () {
@@ -74,7 +74,7 @@ module.exports = {
         while (i--) {
             result += this.natural(0, 9) + '';
         }
-        result = this.pick(isp) + result;
+        result = this.pickOne(isp) + result;
 
         return result;
     }

@@ -26,6 +26,6 @@ module.exports = {
             'io', 'cc', 'name', 'me', 'biz', 'com.cn', '.net.cn', 'org.cn',
             'mobi', 'tel', 'asia', 'tv', 'info'];
 
-        return this.pick(tlds);
+        return this.pickOne(tlds);
     }
 };
