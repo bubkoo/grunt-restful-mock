@@ -28,7 +28,9 @@ module.exports = {
         return arr[this.int(0, arr.length - 1)];
     },
 
-    'pickOne': this.pick,
+    'pickOne': function (arr) {
+        return this.pick(arr);
+    },
 
     'pickSome': function (arr, count) {
         if (!count) {

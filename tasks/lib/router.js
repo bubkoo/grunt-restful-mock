@@ -245,7 +245,7 @@ function handleJSONP(req, res, options) {
 }
 
 function generateJSON(tpl, params, shift) {
-    var ret = mockJSON(tpl, params);
+    var ret = mockJSON(null, tpl, params);
     return shift ? ret.data : ret;
 }
 
@@ -262,7 +262,7 @@ function handleCookies(req, res, cookiesTemplate) {
         return;
     }
 
-    cookies = mockJSON(cookiesTemplate, req.params);
+    cookies = mockJSON(null, cookiesTemplate, req.params);
     if (!Array.isArray(cookies)) {
         cookies = [ cookies ];
     }

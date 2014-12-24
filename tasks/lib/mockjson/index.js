@@ -1,53 +1,9 @@
 var random = require('../random');
 
 var rRule = /(.+)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/;
-var rPlaceholder = /(?:[^\\])?@([^@#%&()\?\s\/\.]+)(?:\((.*?)\)(?!\)))?/g;
+var rPlaceholder = /@(\w[\w|\d]*)(?:\((.*)\)(?![\)\w\d]))?/g;
 
 var handle = {
-    'string': function (options) {
-        var result = '',
-            placeholders,
-            i = 0,
-            len = options.rule.iCount || 1;
-
-        if (options.template) {
-            // 重复字符串
-            while (len--) {
-                result += options.template;
-            }
-
-            // 处理模板中的占位符
-            placeholders = result.match(rPlaceholder) || [];
-            for (i = 0, len = placeholders.length; i < len; i++) {
-                var placeholder = placeholders[i];
-                var handed = handle.placeholder(placeholder, options);
-                var type = getType(handed);
-
-                // 有且仅有一个 placeholder, 适当地做类型转换
-                if (len === 1 &&
-                    result === placeholder &&
-                    typeof result !== typeof handed) {
-
-                    if (/^(true|false)$/.test(handed)) {
-                        result = handed === 'true' ? true : handed === 'false' ? false : handed;
-                    } else if (type === 'date') { // 日期检查必须放在 isNumeric 前面
-                        result = handed + '';
-                    } else if (isNumeric(handed)) {
-                        result = toFloat(handed);
-                    } else {
-                        result = handed;
-                    }
-                    break;
-                }
-                result = result.replace(placeholder, handed);
-            }
-        } else {
-            result = options.rule.iRange ? random.string(len) : options.template;
-        }
-
-        return result;
-    },
-
     'number': function (options) {
         var result, parts;
 
@@ -103,7 +59,7 @@ var handle = {
         while (count--) {
             var j = 0;
             while (j < len) {
-                var item = generate(options.template[j], j, options.data, options.root);
+                var item = generate(j, options.template[j], options.data, options.root);
                 result.push(item);
                 j++;
             }
@@ -125,7 +81,7 @@ var handle = {
         for (var i = 0, length = keys.length; i < length; i++) {
             var key = keys[i];
             var parsedKey = key.replace(rRule, '$1');
-            result[parsedKey] = generate(options.template[key], key, options.data, options.root);
+            result[parsedKey] = generate(key, options.template[key], options.data, options.root);
 
             var inc = key.match(rRule);
             if (inc && inc[2] && 'number' === getType(options.template[key])) {
@@ -153,6 +109,57 @@ var handle = {
         return result;
     },
 
+    '_parseString': function (options, raw) {
+        var result = options.template;
+        var phs = result.match(rPlaceholder) || [];
+        var length = phs.length;
+
+        if (raw) {
+            result = {
+                template: result,
+                handled: [],
+                placeholders: []
+            };
+        }
+
+        for (var i = 0; i < length; i++) {
+            var ph = phs[i];
+            var handed = this.placeholder(ph, options);
+
+            if (raw) {
+                result.handled.push(handed);
+                result.placeholders.push(ph);
+            } else {
+                if (length === 1 && ph === result) {
+                    result = handed; // 保留原数据格式
+                } else {
+                    result = result.replace(ph, handed);
+                }
+            }
+        }
+
+        return result;
+    },
+
+    'string': function (options) {
+        var result = '';
+        var length = options.rule.iCount || 1;
+        var template = options.template;
+
+        if (template) {
+            // 重复字符串
+            while (length--) {
+                result += template;
+            }
+            options.template = result;
+            result = this._parseString(options);
+        } else {
+            // 没有提供模板则随机生成长度为 length 的字符串
+            result = options.rule.iRange ? random.string(length) : template;
+        }
+        return result;
+    },
+
     'placeholder': function (placeholder, options) {
         // 全局匹配复位
         rPlaceholder.exec('');
@@ -160,64 +167,105 @@ var handle = {
         var result = '';
         var parts = rPlaceholder.exec(placeholder);
         var methodName = parts && parts[1];
+        var params = parts && parts[2];
 
         methodName = methodName.toUpperCase();
-
         var method = random[methodName];
-
         if (!method) {
             return placeholder;
         }
 
-        var params = parts && parts[2];
-        var placeholders;
-        var handled;
+        // 尝试获取 placeholder 的参数
+        // '1' -> [1]
+        // '1, 2, 3' ->[1, 2, 3]
+        // '1, "str1"' -> [1,'str1']
+        // 如果参数中有嵌套的 placeholder 将获取失败，例如
+        // ‘@int’ -> '@int'
+        // '@int, 1' -> '@int, 1'
+        params = params ? getArguments(params) : [];
 
-        params = params && params.split(/\s*,\s*/g);
-        params = params || [];
-
-        for (var i = 0, len = params.length; i < len; i++) {
-            // 优先尝试转换为数字
-            if (isNumeric(params[i])) {
-                params[i] = toFloat(params[i]);
-            } else if (params[i] === 'true' || params[i] === 'false') {
-                params[i] = Boolean(params[i]);
-            } else {
-                // 处理嵌套 placeholder
-                placeholders = params[i].match(rPlaceholder);
-                if (placeholders) {
-                    for (var j = 0, k = placeholders.length; j < k; j++) {
-                        handled = handle.placeholder(placeholders[j], options);
-                        params[i] = params[i].replace(placeholders[j], handled);
-                    }
-                } else {
-                    // 处理字符串，将字符串首位的引号去掉，因为本来就是字符串
-                    // '"param"' -> 'param'
-                    // '\'param\'' -> 'param'
-                    params[i] = params[i].replace(/^('|")(.*)(\1)$/, '$2');
-                }
-            }
+        // 如果获取参数成功，那么 params 为参数数组，否则为字符串
+        if (typeof params === 'string') {
+            params = this._parseString({
+                template: params,
+                data: options.data,
+                root: options.root,
+                rule: {}
+            }, true);
+            params = reGetArguments(params);
         }
 
-        switch (getType(method)) {
-            case 'array':
-                result = random.pick(method);
-                break;
-            case 'function':
-                if (methodName === 'FROMDATA') {
-                    params.push(options.data);
-                }
-                result = method.apply(random, params);
-                if (isUndefined(result)) {
-                    result = '';
-                }
-                break;
+        if (getType(method) === 'function') {
+            if (methodName === 'FROMDATA') {
+                params = options.data;
+            }
+            result = method.apply(random, params);
+            if (isUndefined(result)) {
+                result = '';
+            }
+        } else {
+            // 不是 function，直接返回获取到的数据
+            result = method;
         }
 
         return result;
     }
 };
 
+
+function getArguments(paramStr) {
+    var fun;
+
+    try {
+        fun = new Function('return [' + paramStr + ']');
+        return fun();
+    } catch (error) {
+        // 参数不合法时，抛出异常
+        // 包含嵌套的占位符时会抛出异常
+        return paramStr;
+    }
+}
+
+function reGetArguments(rawData) {
+    var result = rawData.template;
+    var handled = rawData.handled;
+    var phs = rawData.placeholders;
+
+    var objParam = [];
+
+    for (var i = 0, l = handled.length; i < l; i++) {
+        var type = typeof handled[i];
+
+        type === 'undefined' && (handled[i] = '');
+        // 简单类型直接替换
+        if (type === 'boolean' || type === 'string' ||
+            type === 'number' || type === 'undefined') {
+            result = result.replace(phs[i], handled[i]);
+        } else {
+            // PS:
+            //   @randomDate, "YYYY-MM-DD HH:mm:ss"
+            result = result.replace(phs[i], '"{[<' + objParam.length + '>]}"');
+            objParam.push(handled[i]);
+        }
+    }
+
+    result = getArguments(result);
+
+    if (typeof result === 'string') {
+        // 再次失败，已经无力了，返回空数组
+        result = [];
+    } else {
+        for (i = 0, l = objParam.length; i < l; i++) {
+            for (m = 0, n = result.length; m < n; m++) {
+                if (result[m] === '{[<' + i + '>]}') {
+                    result[m] = objParam[i];
+                }
+            }
+        }
+    }
+
+    return result;
+}
 
 function getRules(rule) {
 
@@ -256,13 +304,9 @@ function getRules(rule) {
     };
 }
 
-function generate(template, key, data, root) {
-    if (arguments.length === 2) {
-        data = key;
-        key = null;
-    }
-    var rule = getRules(key),
-        type = getType(template);
+function generate(key, template, data, root) {
+    var rule = getRules(key);
+    var type = getType(template);
 
     root = root || template; // 根模板
     if (handle[type]) {

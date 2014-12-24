@@ -19,8 +19,8 @@ module.exports = {
                     'boolean1|1': true,
                     'boolean2|9-10': true,
 
-                    'array1|2': [1, 2, 3],
-                    'array2|2-5': [1, 2, 3],
+                    'array1|2': [1, 2, 3],   // 重复数组 2 次
+                    'array2|2-5': [1, 2, 3], // 重复数组 2-5 次
 
                     'object1|2': {key1: 'value1', key2: 'value2', key3: 'value3'},
                     'object2|1-3': {key1: 'value1', key2: 'value2', key3: 'value3', key4: 'value4'},
@@ -28,7 +28,6 @@ module.exports = {
                     'function1|2': function () {
                         return 'Mock';
                     }
-
                 },
 
                 'base': {
@@ -78,7 +77,9 @@ module.exports = {
                 },
 
                 'array': {
-                    'pick': '@pick([1, 2, 3, 4, 5])'
+                    'pick1': '@pick([1, 2, 3, 4, 5])',
+                    'pick2': '@pickOne([1, 2, 3, 4, 5])',
+                    'pick3': '@pickSome([1, 2, 3, 4, 5])',
                 },
 
                 'address': {
@@ -86,9 +87,15 @@ module.exports = {
                 },
 
                 'datetime': {
+                    'now1': '@now',
+                    'now2': '@now("YYYY年MM月DD日 HH时mm分ss秒")',
+                    'now3': '@now("month", "YYYY-MM-DD HH:mm:ss")',
                     'randomDate': '@randomDate',
-                    //                    'date':'@date(@randomDate, "YYYY-MM-DD")',
-                    //                    'time':'@time(@randomDate, "HH:mm:ss")'
+                    'date': '@date(@randomDate, "YYYY-MM-DD")',
+                    'time': '@time(@randomDate, "HH:mm:ss")',
+                    'datetime': '@datetime(@randomDate, "YYYY-MM-DD HH:mm:ss")',
+                    'formatDate': '@formatDate(@randomDate, "YYYY-MM-DD HH:mm:ss")',
+                    'parseDate': '@parseDate("2014-12-24 10:56:02")'
                 },
 
                 'form': {
@@ -147,7 +154,9 @@ module.exports = {
                     'color': '@color'
                 },
 
-                'devel': {}
+                'devel': {
+
+                }
             }
         }
     }
