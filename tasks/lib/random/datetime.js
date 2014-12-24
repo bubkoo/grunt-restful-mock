@@ -47,7 +47,7 @@ module.exports = {
 
     'now': function (unit, format) {
         if (arguments.length === 1) {
-            if (!/year|month|week|day|hour|minute|second|week/.test(unit)) {
+            if (!/year|month|week|day|hour|minute|second/.test(unit)) {
                 format = unit;
                 unit = '';
             }
@@ -79,7 +79,7 @@ module.exports = {
                 date.setMilliseconds(0);
                 break;
         }
-        return this.format(date, format);
+        return this.formatDate(date, format);
     }
 };
 
