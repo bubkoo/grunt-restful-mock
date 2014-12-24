@@ -1,5 +1,6 @@
 module.exports = {
 
+    // 生成一个数组
     'range': function (start, stop, step) {
         if (arguments.length <= 1) {
             stop = start || 0;
@@ -25,6 +26,23 @@ module.exports = {
     'pick': function (arr) {
         arr = arr || [];
         return arr[this.int(0, arr.length - 1)];
+    },
+
+    'pickOne': this.pick,
+
+    'pickSome': function (arr, count) {
+        if (!count) {
+            count = this.int(1, arr.length);
+        } else if (count > arr.length) {
+            count = arr.length;
+        }
+
+        if (count === 1) {
+            return [ this.pickOne(arr) ];
+        }
+
+        var shuffled = this.shuffle(arr);
+        return shuffled.slice(count - 1);
     },
 
     // 随机打乱数组
