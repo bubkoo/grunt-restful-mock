@@ -40,8 +40,9 @@ module.exports = {
         }
 
         var idx = [];
+        var index;
         while (count) {
-            var index = this.int(0, arr.length - 1);
+            index = this.int(0, arr.length - 1);
             if (idx.indexOf(index) === -1) {
                 count -= 1;
                 idx.push(index);

@@ -1,8 +1,9 @@
-var random = require('../random');
+var nativeRandom = require('../random');
 
 var rRule = /(.+)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/;
 var rPlaceholder = /@(\w[\w|\d]*)(?:(\(.*\))(?![\)\w\d]))?/g;
 
+var random;
 var handle = {
     'number': function (options) {
         var result;
@@ -204,8 +205,9 @@ function generate(key, template, data, root) {
     return template;
 }
 
-module.exports = function (template, data) {
-    // 外部调用时，初始化 formData
+module.exports = function (template, data, placeholders) {
+    random = nativeRandom.extend(placeholders);
+    // 初始化 formData
     random.params = data;
     return generate(null, template, data, template);
 };

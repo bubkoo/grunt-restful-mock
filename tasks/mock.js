@@ -63,13 +63,12 @@ module.exports = function (grunt) {
                     strict: false,    // 当设置为 true, 路由末尾的斜杠将影响匹配
                     end: true,        // 当设置为 false, 将只会匹配 url 前缀
                     debug: false,     // 调试模式下将输出所有请求和响应详情
-                    watch: []         // 需要监视的文件，文件变化之后自动重启服务
+                    watch: [],        // 需要监视的文件，文件变化之后自动重启服务
+                    placeholders: {}
                 });
 
                 // 合并选项中和终端中的 debug 选项
                 options.debug = grunt.option('debug') || options.debug === true;
-
-                console.log(options);
 
                 next();
             },

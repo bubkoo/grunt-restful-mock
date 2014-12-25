@@ -1,44 +1,38 @@
-var address = require('./address');
-var arr = require('./array');
-var article = require('./article');
-var base = require('./base');
-var color = require('./color');
-var datetime = require('./datetime');
-var devel = require('./devel');
-var dx = require('./dx');
-var form = require('./form');
-var names = require('./names');
-var network = require('./network');
-
-
-var random = extend({}, base, dx, arr, address, datetime, form, network, names, article, color, devel);
-
-// to upper case
-for (var key in random) {
-    if (random.hasOwnProperty(key)) {
-        var upper = key.toUpperCase();
-        if (upper === key) {
-            continue;
-        }
-        random[upper] = random[key];
+var random = {
+    extend: function () {
+        var args = Array.prototype.slice.call(arguments, 0);
+        args.unshift(this);
+        args.unshift({});
+        return merge.apply(null, args);
     }
-}
+};
+
+'base dx array address datetime form network names article color devel'.split(' ')
+    .forEach(function (name) {
+        var module = require('./' + name);
+        merge(random, module);
+    });
 
 module.exports = random;
-
 
 // Helpers
 // -------
 
-function extend() {
-    var target = arguments[0];
+function merge() {
+    var result = arguments[0] || {};
     for (var i = 1, length = arguments.length; i < length; i++) {
-        var source = arguments[i];
+        var source = arguments[i] || {};
         for (var method in source) {
             if (source.hasOwnProperty(method)) {
-                target[method] = source[method];
+                result[method] = source[method];
+                // to upper case
+                var upper = method.toUpperCase();
+                if (upper === method) {
+                    continue;
+                }
+                result[upper] = source[method];
             }
         }
     }
-    return target;
+    return result;
 }

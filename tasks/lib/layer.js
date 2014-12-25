@@ -31,8 +31,9 @@ Layer.prototype.match = function (path) {
     for (var i = 1, len = matches.length; i < len; ++i) {
         var key = keys[i - 1];
 
+        var val;
         try {
-            var val = 'string' === typeof matches[i] ?
+            val = 'string' === typeof matches[i] ?
                 decodeURIComponent(matches[i]) :
                 matches[i];
         } catch (e) {

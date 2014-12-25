@@ -42,7 +42,7 @@ module.exports = function (grunt) {
                     debug: true,
                     placeholders: {
                         hello: function (name) {
-                            return 'hello' + name;
+                            return 'hello ' + name;
                         }
                     },
                     route: {

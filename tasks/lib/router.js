@@ -6,6 +6,7 @@ var cookie = require('cookie');
 
 
 function Router(options) {
+    this.placeholders = options.placeholders;
     // 模拟请求延时
     this.delay = options.delay;
     // 模拟请求超时
@@ -65,14 +66,18 @@ Router.prototype.add = function (rules) {
 
             var options = methods[method];
 
+
+            options.placeholders = merge({}, this.placeholders, options.placeholders);
             // 具体每条路由的选项
             options.delay = options.delay || this.delay;
-            options.timeout = 'undefined' === typeof options.timeout ? this.timeout : options.timeout;
+            options.timeout = 'undefined' === typeof options.timeout ?
+                this.timeout :
+                options.timeout;
 
             var cookies;
             // cookies 是合并的，而不是覆盖
             if (options.cookies && this.cookies) {
-                cookies = merge({}, options.cookies, this.cookies);
+                cookies = merge({}, this.cookies, options.cookies);
             } else {
                 cookies = options.cookies || this.cookies;
             }
@@ -178,7 +183,7 @@ module.exports = Router;
 // -------
 
 function handle(req, res, options) {
-    handleCookies(req, res, options.cookies);
+    handleCookies(req, res, options);
     if (options.jsonp) {
         handleJSONP(req, res, options);
     } else {
@@ -188,7 +193,7 @@ function handle(req, res, options) {
 
 function handleJSON(req, res, options) {
     // 生成 mock data
-    res.body = generateJSON(options.data, req.params, options.dataShift);
+    res.body = generateJSON(options.data, req.params, options);
 
     var body = JSON.stringify(res.body);
     var headers = {
@@ -211,7 +216,7 @@ function handleJSONP(req, res, options) {
     var key = typeof options.jsonp !== 'string' ? 'callback' : options.jsonp;
     var callback = req.params[key];
 
-    res.body = generateJSON(options.data, req.params, options.dataShift);
+    res.body = generateJSON(options.data, req.params, options);
     var body = JSON.stringify(res.body);
 
     if (callback) {
@@ -225,17 +230,18 @@ function handleJSONP(req, res, options) {
     res.end(body);
 }
 
-function generateJSON(tpl, params, shift) {
-    var ret = mockJSON(tpl, params);
-    return shift ? ret.data : ret;
+function generateJSON(tpl, params, options) {
+    var ret = mockJSON(tpl, params, options.placeholders);
+    return options.dataShift ? ret.data : ret;
 }
 
-function handleCookies(req, res, cookiesTemplate) {
-    if (!cookiesTemplate) {
+function handleCookies(req, res, options) {
+    var template = options.cookies;
+    if (!template) {
         return;
     }
 
-    var cookies = mockJSON(cookiesTemplate, req.params);
+    var cookies = mockJSON(template, req.params, options.placeholders);
     if (!Array.isArray(cookies)) {
         cookies = [ cookies ];
     }
@@ -321,34 +327,40 @@ function setCookie(req, res, name, val, options) {
     res.setHeader('Set-Cookie', headerVal);
 }
 
-function merge(target, source) {
-    target = target || {};
-    source = source || {};
+function merge() {
+    var target = arguments[0] || {};
 
-
-    for (var key in source) {
-        var src = target[ key ];
-        var copy = source[ key ];
-        if (target === copy) {
-            continue;
-        }
-
-        var copyIsArray = Array.isArray(copy);
-        if (copyIsArray || Object.prototype.toString.call(copy) === '[object Object]') {
-            var clone;
-            if (copyIsArray) {
-                copyIsArray = false;
-                clone = src && Array.isArray(src) ? src : [];
+    for (var i = 1, length = arguments.length; i < length; i++) {
+        var source = arguments[i] || {};
+        for (var key in source) {
+            if (!Object.prototype.hasOwnProperty.call(source, key)) {
+                continue;
             }
-            else {
-                clone = src && typeof src === 'object' ? src : {};
+
+            var src = target[ key ];
+            var copy = source[ key ];
+            if (target === copy) {
+                continue;
             }
-            target[ key ] = merge(clone, copy);
-        }
-        else if (copy !== undefined) {
-            target[ key ] = copy;
+
+            var copyIsArray = Array.isArray(copy);
+            if (copyIsArray || Object.prototype.toString.call(copy) === '[object Object]') {
+                var clone;
+                if (copyIsArray) {
+                    copyIsArray = false;
+                    clone = src && Array.isArray(src) ? src : [];
+                }
+                else {
+                    clone = src && typeof src === 'object' ? src : {};
+                }
+                target[ key ] = merge(clone, copy);
+            }
+            else if (copy !== undefined) {
+                target[ key ] = copy;
+            }
         }
     }
+
     return target;
 }
 
