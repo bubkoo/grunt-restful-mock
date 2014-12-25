@@ -40,6 +40,11 @@ module.exports = function (grunt) {
                 options: {
                     port: '6001',
                     debug: true,
+                    placeholders: {
+                        hello: function (name) {
+                            return 'hello' + name;
+                        }
+                    },
                     route: {
                         '/demo/for/inline1': {
                             'get': {

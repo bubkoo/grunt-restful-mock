@@ -19,24 +19,24 @@ function Layer(path, options) {
 Layer.prototype.match = function (path) {
     var keys = this.keys;
     var params = this.params = {};
-    var m = this.regexp.exec(path);
+    var matches = this.regexp.exec(path);
     var n = 0;
-    var key;
-    var val;
 
-    if (!m) {
+    if (!matches) {
         return false;
     }
 
-    this.path = m[0];
+    this.path = matches[0];
 
-    for (var i = 1, len = m.length; i < len; ++i) {
-        key = keys[i - 1];
+    for (var i = 1, len = matches.length; i < len; ++i) {
+        var key = keys[i - 1];
 
         try {
-            val = 'string' === typeof m[i] ? decodeURIComponent(m[i]) : m[i];
+            var val = 'string' === typeof matches[i] ?
+                decodeURIComponent(matches[i]) :
+                matches[i];
         } catch (e) {
-            var err = new Error("Failed to decode param '" + m[i] + "'");
+            var err = new Error("Failed to decode param '" + matches[i] + "'");
             err.status = 400;
             throw err;
         }

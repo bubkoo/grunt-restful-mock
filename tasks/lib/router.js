@@ -1,4 +1,3 @@
-var async = require('async');
 var Layer = require('./layer');
 var mockJSON = require('./mockJSON');
 var parseUrl = require('parseurl');
@@ -27,7 +26,6 @@ function Router(options) {
 }
 
 Router.prototype.add = function (rules) {
-
     // 只提供了路由字符串，返回空对象
     if ('string' === typeof rules) {
         rules = {};
@@ -43,23 +41,14 @@ Router.prototype.add = function (rules) {
 
     rules = rules || {};
 
-    var path;
-    var methods;
-    var method;
-    var options;
-    var cookies;
-    var layer;
     var rRule = /(data)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/;
-    var key;
-    var val;
 
-    for (path in rules) {
-
+    for (var path in rules) {
         if (!rules.hasOwnProperty(path)) {
             continue;
         }
 
-        layer = new Layer(path, {
+        var layer = new Layer(path, {
             sensitive: this.caseSensitive,
             strict: this.strict,
             end: this.end
@@ -67,19 +56,20 @@ Router.prototype.add = function (rules) {
 
         layer.methods = {};
 
-        methods = rules[path];
-        for (method in methods) {
+        var methods = rules[path];
+        for (var method in methods) {
 
             if (!methods.hasOwnProperty(method)) {
                 continue;
             }
 
-            options = methods[method];
+            var options = methods[method];
 
             // 具体每条路由的选项
             options.delay = options.delay || this.delay;
             options.timeout = 'undefined' === typeof options.timeout ? this.timeout : options.timeout;
 
+            var cookies;
             // cookies 是合并的，而不是覆盖
             if (options.cookies && this.cookies) {
                 cookies = merge({}, options.cookies, this.cookies);
@@ -97,7 +87,7 @@ Router.prototype.add = function (rules) {
             //       }
             //   }
             if (!options.data) {
-                for (key in options) {
+                for (var key in options) {
                     if (Object.prototype.hasOwnProperty.call(options, key)) {
                         if (rRule.test(key)) {
                             options.data = {};
@@ -129,29 +119,22 @@ Router.prototype.handle = function (req, res) {
     var url = parseUrl(req);
     var method = req.method.toLowerCase();
 
-    var strict;
-    var methods;
-    var params;
-    var layer;
-    var options;
-
     for (var i = 0, len = this.stack.length; i < len; i++) {
-        layer = this.stack[i];
-        methods = layer.methods;
+        var layer = this.stack[i];
+        var methods = layer.methods;
         // just for speed up
-        strict = methods.hasOwnProperty(method);
+        var strict = methods.hasOwnProperty(method);
 
         // url 匹配
         if (layer.match(url.pathname)) {
             // clone query params
-            params = merge({}, req.query);
+            var params = merge({}, req.query);
             // request body
             merge(params, req.body);
             // restful 参数
             req.params = merge(params, layer.params); // 注意：这里覆盖了req.params
 
-            options = strict ? methods[method] : getOptions(methods, method, params);
-
+            var options = strict ? methods[method] : getOptions(methods, method, params);
             if (!options) {
                 continue;
             }
@@ -225,18 +208,16 @@ function handleJSON(req, res, options) {
 }
 
 function handleJSONP(req, res, options) {
-    var body,
-        headers,
-        key = typeof options.jsonp !== 'string' ? 'callback' : options.jsonp,
-        callback = req.params[key];
+    var key = typeof options.jsonp !== 'string' ? 'callback' : options.jsonp;
+    var callback = req.params[key];
 
     res.body = generateJSON(options.data, req.params, options.rootShift);
-    body = JSON.stringify(res.body);
+    var body = JSON.stringify(res.body);
 
     if (callback) {
         body = callback + '(' + body + ')';
     }
-    headers = {
+    var headers = {
         'Content-Type': callback ? 'application/x-javascript' : 'application/json',
         'Content-Length': Buffer.byteLength(body)
     };
@@ -250,31 +231,22 @@ function generateJSON(tpl, params, shift) {
 }
 
 function handleCookies(req, res, cookiesTemplate) {
-    var cookies,
-        cookie,
-        cookieOptions,
-        cookieName,
-        cookieValue,
-        i,
-        j;
-
     if (!cookiesTemplate) {
         return;
     }
 
-    cookies = mockJSON(cookiesTemplate, req.params);
+    var cookies = mockJSON(cookiesTemplate, req.params);
     if (!Array.isArray(cookies)) {
         cookies = [ cookies ];
     }
     res.cookies = cookies;
-    j = cookies.length;
 
-    for (i = 0; i < j; i++) {
-        cookie = cookies[i];
-        cookieOptions = cookie.options || {};
-        for (cookieName in cookie) {
+    for (var i = 0, j = cookies.length; i < j; i++) {
+        var cookie = cookies[i];
+        var cookieOptions = cookie.options || {};
+        for (var cookieName in cookie) {
             if (cookieName !== 'options') {
-                cookieValue = cookie[cookieName];
+                var cookieValue = cookie[cookieName];
                 setCookie(req, res, cookieName, cookieValue, cookieOptions);
             }
         }
@@ -353,19 +325,17 @@ function merge(target, source) {
     target = target || {};
     source = source || {};
 
-    var key,
-        copyIsArray,
-        clone,
-        src,
-        copy;
 
-    for (key in source) {
-        src = target[ key ];
-        copy = source[ key ];
+    for (var key in source) {
+        var src = target[ key ];
+        var copy = source[ key ];
         if (target === copy) {
             continue;
         }
-        if ((copyIsArray = Array.isArray(copy)) || Object.prototype.toString.call(copy) === '[object Object]') {
+
+        var copyIsArray = Array.isArray(copy);
+        if (copyIsArray || Object.prototype.toString.call(copy) === '[object Object]') {
+            var clone;
             if (copyIsArray) {
                 copyIsArray = false;
                 clone = src && Array.isArray(src) ? src : [];
@@ -383,8 +353,9 @@ function merge(target, source) {
 }
 
 function delay(ms, callback) {
-    var now = +new Date(),
-        tick = now;
+    var now = +new Date();
+    var tick = now;
+
     while (tick - now < ms) {
         tick = +new Date();
     }
@@ -400,15 +371,12 @@ function getOptions(methods, method, params) {
 
         var sections = key.split(/\s*\|\s*/g);
         var section;
-        var matches;
-        var innerMethod;
-        var innerParams;
 
         while (section = sections.shift()) {
-            matches = section.match(/(get|post|put|delete|head|options|trace|connect)(?:\s*\[\s*([^\]].*?)\s*\]\s*)?/i);
+            var matches = section.match(/(get|post|put|delete|head|options|trace|connect)(?:\s*\[\s*([^\]].*?)\s*\]\s*)?/i);
             if (matches) {
-                innerMethod = matches[1];
-                innerParams = matches[2];
+                var innerMethod = matches[1];
+                var innerParams = matches[2];
 
                 if (innerMethod && innerMethod.toLowerCase() === method) {
                     if (!innerParams || checkParams(innerParams, params)) {

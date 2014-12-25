@@ -5,14 +5,14 @@ var rPlaceholder = /@(\w[\w|\d]*)(?:(\(.*\))(?![\)\w\d]))?/g;
 
 var handle = {
     'number': function (options) {
-        var result, parts;
+        var result;
 
         // 含有小数部分
         if (options.rule.dRange) {
             // 分隔原数字
             // 1 -> [1]
             // 3.14 -> [3, 14]
-            parts = (options.template + '').split('.');
+            var parts = (options.template + '').split('.');
 
             // 优先使用由规则所产生的整数
             parts[0] = options.rule.iRange ? options.rule.iCount : parts[0];

@@ -27,6 +27,6 @@ module.exports = {
             'data': {
                 'formItem': '@formItem("message")'
             }
-        },
+        }
     }
 };

@@ -69,6 +69,8 @@ module.exports = function (grunt) {
                 // 合并选项中和终端中的 debug 选项
                 options.debug = grunt.option('debug') || options.debug === true;
 
+                console.log(options);
+
                 next();
             },
 

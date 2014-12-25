@@ -11,20 +11,19 @@ function formatJson(obj, space, level) {
         level = 0;
     }
 
-    var indent = '    ',
-        isArr = Array.isArray(obj),
-        ret = '',
-        key,
-        val;
+    var indent = '    ';
+    var isArr = Array.isArray(obj);
+    var ret = '';
+    var val;
 
-    for (key in obj) {
+    for (var key in obj) {
         if (isArr) {
             ret += space + indent;
         } else {
             ret += space + indent + key + ': ';
         }
 
-        val = obj[key];
+        val = obj[ key ];
 
         if (val instanceof Date || val instanceof moment) {
             val = val.toString();

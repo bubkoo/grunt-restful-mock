@@ -14,4 +14,3 @@ module.exports = {
         return this.increment(step);
     }
 };
-

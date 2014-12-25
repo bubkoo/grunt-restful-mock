@@ -1,4 +1,3 @@
-
 var path = require('path');
 var yaml = require('js-yaml');
 var fs = require('fs');

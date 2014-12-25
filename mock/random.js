@@ -144,7 +144,6 @@ module.exports = {
 
                     'lorem': '@lorem',
                     'lorems': '@lorems'
-
                 },
 
                 'network': {
