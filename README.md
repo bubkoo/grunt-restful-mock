@@ -440,89 +440,97 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 - [@id](#native-placeholder-50)
 - [@inc(step)](#native-placeholder-51)
 - [@increment(step)](#native-placeholder-51)
-- [@fromData(path, data)](#native-placeholder-52)
+- [@formItem(key)](#native-placeholder-52)
 
-<a name="native-placeholder-1" id="native-placeholder-1"></a>
-###### @int(min, max) 和 @integer(min, max)
 
-  参数：
+### @int(min, max) 和 @integer(min, max)
+
+在 `min` 和 `max` 之间生成一个随机整数，等价于 `name|min-max: 1`。
+
+参数：
+  
   - `min` 可选，缺省值 `-9007199254740992`
   - `max` 可选，缺省值 `9007199254740992`
 
-  在 `min` 和 `max` 之间生成一个随机整数，等价于 `name|min-max: 100`
-
-<a name="native-placeholder-2" id="native-placeholder-2"></a>
-###### @natural(min, max)
   
-  参数：
+### @natural(min, max)
+
+在 `min` 和 `max` 之间生成一个随机正整数，等价于 `name|min-max: 1`。
+
+参数：
+  
   - `min` 可选，缺省值 `0`
   - `max` 可选，缺省值 `9007199254740992`
 
-  在 `min` 和 `max` 之间生成一个随机正整数，等价于 `name|min-max: 100`
+### @bool(min, max, cur) 和 @boolean(min, max, cur)
 
-<a name="native-placeholder-3" id="native-placeholder-3"></a>
-###### @bool(min, max, cur) 和 @boolean(min, max, cur)
+随机生成一个布尔值，值为 `cur` 的概率是 `min / (min + max)`，值为 `!cur` 的概率是 `max / (min + max)`，等价于 `'name|min-max': cur`。
 
-  参数：
+参数：
+  
   - `min` 可选，缺省值 `1`
   - `max` 可选，缺省值 `1`
   - `cur` 可选，省略时将随机产生一个 `bool` 值
 
-  随机生成一个布尔值，值为 `cur` 的概率是 `min / (min + max)`，值为 `!cur` 的概率是 `max / (min + max)`，等价于 `'name|min-max': cur`
+### @float(min, max, dMin, dMax)
 
-<a name="native-placeholder-4" id="native-placeholder-4"></a>
-###### @float(min, max, dMin, dMax)
+生成一个浮点数，整数部分大于等于 `min` 小于等于 `max`，小数部分保留 `dMin` 到 `dMax` 位，等价于 `'name|1-100.1-10': 100`。
 
-  参数：
+参数：
+  
   - `min`  可选，缺省值 `-9007199254740992`
   - `max`  可选，缺省值 `9007199254740992`
   - `dMin` 可选，缺省值 `0`
   - `dMax` 可选，缺省值 `17`
   
-  生成一个浮点数，整数部分大于等于 `min` 小于等于 `max`，小数部分保留 `dMin` 到 `dMax` 位，等价于 `'name|1-100.1-10': 100`
+### @char(pool) 和 @character(pool)
 
-<a name="native-placeholder-5" id="native-placeholder-5"></a>
-###### @char(pool) 和 @character(pool)
-  参数
+从 `pool` 中随机选择一个字符作为返回的字符。
+
+参数：
+  
   - `pool` 预设字符，可选，预定义的 pool 有：
+    
     - lower : 'abcdefghijklmnopqrstuvwxyz'
     - upper : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
     - number: '0123456789'
     - symbol: '!@#$%^&*()[]'
     
-    省略时的默认值是上述四种 pool 的组合
+    省略时的默认值是上述四种 pool 的组合。
   
-  从 `pool` 中随机选择一个字符作为返回的字符，使用示例：
-  - @char() // 使用默认值
-  - @char('lower')
-  - @char('upper')
-  - @char('number')
-  - @char('symbol')
-  - @char('alpha') // alpha = lower + upper
-  - @char('ABCDefgh') // 自定义的 pool
-  
-<a name="native-placeholder-6" id="native-placeholder-6"></a>
-###### @str(pool, min, max) 和 @string(pool, min, max)
+示例：
 
-  参数：
+```js
+@char() // 使用默认值
+@char('lower')
+@char('upper')
+@char('number')
+@char('symbol')
+@char('alpha') // alpha = lower + upper
+@char('ABCDefgh') // 自定义的 pool
+```
+
+### @str(pool, min, max) 和 @string(pool, min, max)
+
+从 `pool` 候选字符中，随机生成一个长度在 `min` 到 `max` 之间的字符串。
+  
+参数：
+
   - `pool` 同上
   - `min` 字符串的最小长度，可选，缺省值 `0`
   - `max` 字符串的最大长度，可选，缺省值 `9007199254740992`
-  
-  从 `pool` 候选字符中，随机生成一个长度在 `min` 到 `max` 之间的字符串
-  
-<a name="native-placeholder-7" id="native-placeholder-7"></a>
-###### @range(start, stop, step)
 
-  参数：
+### @range(start, stop, step)
+
+从 `start` 开始，每次自增 `step`，直到 `stop` 结束，生成一个数组。
+
+参数：
+
   - `start` 开始位置，可选，缺省值 `0`
   - `stop`  结束位置，必选
   - `step`  自增步长，可选，缺省值 `1`
   
-  从 `start` 开始，每次自增 `step`，直到 `stop` 结束，生成一个数组
- 
-<a name="native-placeholder-8" id="native-placeholder-8"></a>
-###### @capitalize(word)
+### @capitalize(word)
 
   参数：
   - `word` 必选 
@@ -757,72 +765,52 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 <a name="native-placeholder-38" id="native-placeholder-38"></a>
 ###### @lang 和 @language
 
-  随机返回一个语言的名称
+  随机返回一个语言的名称。
 
-<a name="native-placeholder-39" id="native-placeholder-39"></a>
-###### @countryList
+###### @d5
 
-  返回国家数组
-  
-<a name="native-placeholder-40" id="native-placeholder-40"></a>
-###### @provinceList
-
-  返回中国的省份数组  
-
-<a name="native-placeholder-41" id="native-placeholder-41"></a>
-###### @randomArea(join)
-
-  参数：
-  - `join` 分隔符，可选，缺省为 `'-'`
-
-  返回一个随机的省市区所代表的地址
-
-<a name="native-placeholder-42" id="native-placeholder-42"></a>
-###### @d4
-
-  返回 `1` 到 `4` 之间的随机数
+  返回 `1` 到 `5` 之间的随机数。
 
 <a name="native-placeholder-43" id="native-placeholder-43"></a>
-###### @d6
+###### @d10
 
-  返回 `1` 到 `6` 之间的随机数
+  返回 `1` 到 `10` 之间的随机数。
   
 <a name="native-placeholder-44" id="native-placeholder-44"></a>
-###### @d8
-
-  返回 `1` 到 `8` 之间的随机数
-
-<a name="native-placeholder-45" id="native-placeholder-45"></a>
-###### @d12
-
-  返回 `1` 到 `12` 之间的随机数
-
-<a name="native-placeholder-46" id="native-placeholder-46"></a>
 ###### @d20
 
-  返回 `1` 到 `20` 之间的随机数
+  返回 `1` 到 `20` 之间的随机数。
 
-<a name="native-placeholder-47" id="native-placeholder-47"></a>
 ###### @d50
 
-  返回 `1` 到 `50` 之间的随机数
+  返回 `1` 到 `50` 之间的随机数。
 
-<a name="native-placeholder-48" id="native-placeholder-48"></a>
 ###### @d100
 
-  返回 `1` 到 `100` 之间的随机数
+  返回 `1` 到 `100` 之间的随机数。
+
+###### @d200
+
+  返回 `1` 到 `200` 之间的随机数。
+
+###### @d500
+
+  返回 `1` 到 `500` 之间的随机数。
   
-<a name="native-placeholder-49" id="native-placeholder-49"></a>
+###### @d1000
+
+  返回 `1` 到 `1000` 之间的随机数。
+
 ###### @guid
 
-  随机生成一个 GUID，不重复
+  随机生成一个 GUID。
 
-<a name="native-placeholder-50" id="native-placeholder-50"></a>
+
 ###### @id
 
-  随机生成一个 ID，一般情况不会重复
+  随机生成一个 ID。
 
-<a name="native-placeholder-51" id="native-placeholder-51"></a>
+
 ###### @inc(step) 和 @increment(step)
 
   参数：
@@ -830,14 +818,13 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   
    返回从 `0` 开始的自增数，每次调用自增 `step`
 
-<a name="native-placeholder-52" id="native-placeholder-52"></a>
-###### @fromData(path, data)
 
-  参数：
-  - `path` 数据的路径，必选，例如 `'address.province'` 表示返回 `data.address.province` 的值
-  - `data` 数据对象，可选，缺省为 HTTP 请求的参数
+###### @formItem(key)
 
-  返回 `data` 中的指定数据
+返回提交的表单或 QueryString 中的项。
+
+参数：
+  - `key` 数据项
 
 
 ## 使用示例
