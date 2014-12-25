@@ -134,14 +134,20 @@ var handle = {
 };
 
 function renderPlaceholder(template) {
-    while (template.match(rPlaceholder)) {
-        template = template.replace(rPlaceholder, function (input, method, args) {
-            args = args || '()';
-            return 'this.' + method + args;
-        });
+    var result = template;
+    try {
+        while (template.match(rPlaceholder)) {
+            template = template.replace(rPlaceholder, function (input, method, args) {
+                args = args || '()';
+                return 'this.' + method.toUpperCase() + args;
+            });
+        }
+        var fn = new Function('return ' + template + ';');
+        result = fn.call(random);
+    } catch (error) {
+        result += ' ERROR: [' + error + ']';
     }
-    var fn = new Function('return ' + template + ';');
-    return fn.call(random);
+    return result;
 }
 
 function getRules(rule) {
