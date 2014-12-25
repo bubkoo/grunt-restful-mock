@@ -519,7 +519,31 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   - `pool` 同上
   - `min` 字符串的最小长度，可选，缺省值 `0`
   - `max` 字符串的最大长度，可选，缺省值 `9007199254740992`
+  
+### @capitalize(word)
 
+将 `word` 首字母大写。
+
+参数：
+
+  - `word` 必选，被转换的字符串
+  
+### @upper(str)
+  
+将 `str` 中的字符转换为大写字母。
+
+参数：
+
+   - `str` 必选，被转换的字符串
+
+### @lower(str)
+  
+将 `str` 中的字符转换为小写字母
+
+  参数：
+
+   - `str` 必选，被转换的字符串
+   
 ### @range(start, stop, step)
 
 从 `start` 开始，每次自增 `step`，直到 `stop` 结束，生成一个数组。
@@ -530,296 +554,263 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   - `stop`  结束位置，必选
   - `step`  自增步长，可选，缺省值 `1`
   
-### @capitalize(word)
+### @pickOne(arr)
 
-  参数：
-  - `word` 必选 
+从数组或字符串中随机返回其中一个字符或数组项。
+
+参数：
+
+  - `arr` 必选，字符串或数组
+
+### @pickSome(arr, count, shuffle)
+
+从数组中随机选取 `count` 个返回。
+
+参数：
+
+  - `arr` 必选，源数组
+  - `count` 可选，返回的数组长度，缺省时将随机产生一个 `0` 到 `arr.length - 1` 之间的一个数
+  - `shuffle` 可选，是否随机顺序，为 `true` 时返回数组项的顺序将可能与源数组项的顺序同  
   
-  将 `word` 首字母大写
 
-<a name="native-placeholder-9" id="native-placeholder-9"></a>
-###### @upper(str)
+### @shuffle(arr)
+
+随机打乱字符串或数组中的字符或数组项。
+
+参数：
+
+  - `arr` 必选，字符串或数组
   
-  参数：
-   - `str` 必选
-   
-  将 `str` 中的字符转换为大写字母
+### @randomDate(min, max)
 
-<a name="native-placeholder-10" id="native-placeholder-10"></a>
-###### @lower(str)
+从 `min` 到 `max` 之间随机产生一个日期。
+
+参数：
+
+  - `min` 可选，最小毫秒数，缺省值 `0`
+  - `max` 可选，最大毫秒数，缺省值 `(new Date()).getTime()`
   
-  参数：
-   - `str` 必选
-   
-  将 `str` 中的字符转换为小写字母
+### @formatDate(data, format)
 
-<a name="native-placeholder-11" id="native-placeholder-11"></a>
-###### @pick(arr)
+格式化日期或时间。
 
-  参数：
-  - `arr` 字符串或数组，必选
-  
-  从数组或字符串中随机返回其中一个字符或数组项
+参数：
 
-<a name="native-placeholder-12" id="native-placeholder-12"></a>
-###### @shuffle(arr)
-
-  参数：
-  - `arr` 字符串或数组，必选
-  
-  随机打乱字符串或数组中的字符或数组项
-
-<a name="native-placeholder-13" id="native-placeholder-13"></a>
-###### @randomDate(min, max)
-
-  参数：
-  - `min` 最小毫秒数，可选，缺省值 `0`
-  - `max` 最大毫秒数，可选，缺省值 `(new Date()).getTime()`
-  缺省值
-  从 `min` 到 `max` 之间随机产生一个日期
-  
-<a name="native-placeholder-14" id="native-placeholder-14"></a>
-###### @formatDate(data, format)
-
-  参数：
   - `date` 必选，将由 [moment](http://momentjs.com/) 格式化为日期格式，然后调用其 `format` 方法
-  - `format` 必选
+  - `format` 必选，返回的日期时间格式
   
-  注意：两个参数具体的传值可以查看 [moment 官网](http://momentjs.com/)
+注意：两个参数具体的传值可以查看 [moment 官网](http://momentjs.com/)
 
-<a name="native-placeholder-15" id="native-placeholder-15"></a>
-###### @parseDate(...)
+### @parseDate(...)
 
-  该占位符直接返回 `moment(arguments)`，所以参数可以参考 [moment 官网](http://momentjs.com/)
+返回 `moment(arguments)`，所以参数请参考 [moment 官网](http://momentjs.com/)。
   
-<a name="native-placeholder-16" id="native-placeholder-16"></a>
-###### @date(date, format)
+### @date(date, format)
 
-  参数：
+格式化日期为指定的日期格式。
+
+参数：
+
   - `date` 可选，缺省时将由 `randomDate` 随机生成一个
   - `format` 可选，缺省值 `'YYYY-MM-DD'`，其他格式参考 [moment 官网](http://momentjs.com/)
   
-  格式化日期为指定的日期格式
-  
-<a name="native-placeholder-17" id="native-placeholder-17"></a>
-###### @time(date, format)
+### @time(date, format)
 
-  参数：
+格式化日期为指定的时间格式。
+ 
+参数：
+
   - `date` 可选，缺省时将由 `randomDate` 随机生成一个
   - `format` 可选，缺省值 `'HH:mm:ss'`，其他格式参考 [moment 官网](http://momentjs.com/)
   
-  格式化日期为指定的时间格式
+### @datetime(date, format)
 
-<a name="native-placeholder-18" id="native-placeholder-18"></a>
-###### @datetime(date, format)
+格式化日期为指定的日期时间格式。
 
-  参数：
+参数：
+
   - `date` 可选，缺省时将由 `randomDate` 随机生成一个
   - `format` 可选，缺省值 `'YYYY-MM-DD HH:mm:ss'`，其他格式参考 [moment 官网](http://momentjs.com/)
-  
-  格式化日期为指定的日期时间格式
-  
-<a name="native-placeholder-19" id="native-placeholder-19"></a>
-###### @now(unit, format)
 
-  参数：
+### @now(unit, format)
+
+按照指定格式返回当前时间。
+
+参数：
+
   - `unit` 可选，参考 [moment 官网](http://momentjs.com/)
   - `format` 可选，缺省值 `'YYYY-MM-DD HH:mm:ss'`，其他格式参考 [moment 官网](http://momentjs.com/)
   
-  按照指定格式返回当前时间
 
-<a name="native-placeholder-20" id="native-placeholder-20"></a>
-###### @color
+### @color
 
-  生成随机颜色值，例如：`'#080900'`
+生成随机颜色值，例如：`'#080900'`。
 
-<a name="native-placeholder-21" id="native-placeholder-21"></a>
-###### @male_first_name
+### @maleFirstName
   
-  随机返回一个男性名
+返回一个随机男性名。
 
-<a name="native-placeholder-22" id="native-placeholder-22"></a>
-###### @female_first_name
+### @femaleFirstName
   
-  随机返回一个女性名
+返回一个随机女性名。
 
-<a name="native-placeholder-23" id="native-placeholder-23"></a>
-###### @last_name
+### @lastName
 
-  随机返回一个姓
+返回一个随机姓。
   
-<a name="native-placeholder-24" id="native-placeholder-24"></a>
-###### @name(middleName)
+### @name(middleName)
 
-  参数：
+返回一个随机名字。
+
+参数：
+
   - `middleName` 可选
-  
-  随机返回一个名字
 
-<a name="native-placeholder-25" id="native-placeholder-25"></a>
-###### @word(min, max)
+### @word(min, max)
 
-  参数：
-  - `min` 可选
-  - `max` 可选
-  
-  两个参数都省略时，返回长度为 `3` 到 `7` 之间的一个由随机字符组成的单词
-  
-  只有一个参数时，返回该参数长度的随机单词
-  
-  两个参数都没省略时，返回长度为 `min` 到 `max` 之间的一个随机单词
-  
-<a name="native-placeholder-26" id="native-placeholder-26"></a>
-###### @sentence(min, max)
-
-  参数：
-  - `min` 可选
-  - `max` 可选
-  
-  两个参数都省略时，返回由 `3` 到 `7` 个随机单词组成的句子（首个单词首字母大写）
-  
-  只有一个参数时，返回该参数个数的随机单词组成的句子
-  
-  两个参数都没省略时，返回长度为 `min` 到 `max` 个随机单词组成的句子
-
-<a name="native-placeholder-27" id="native-placeholder-27"></a>
-###### @title(min, max)
+返回长度为 `min` 到 `max` 之间的一个随机单词。
 
 参数：
+
   - `min` 可选
   - `max` 可选
   
-  两个参数都省略时，返回由 `3` 到 `7` 个随机单词组成的标题（每个单词的首字母大写）
+两个参数都省略时，返回长度为 `3` 到 `7` 之间的一个由随机字符组成的单词。
   
-  只有一个参数时，返回该参数个数的随机单词组成的标题
+只有一个参数时，返回该参数长度的随机单词。
   
-  两个参数都没省略时，返回长度为 `min` 到 `max` 个随机单词组成的标题
+### @sentence(min, max)
 
-<a name="native-placeholder-28" id="native-placeholder-28"></a>
-###### @paragraph(min, max)
+返回长度为 `min` 到 `max` 个随机单词组成的句子。
 
 参数：
+
   - `min` 可选
   - `max` 可选
   
-  两个参数都省略时，返回由 `3` 到 `7` 个随机句子组成的段落
+两个参数都省略时，返回由 `3` 到 `7` 个随机单词组成的句子（首个单词首字母大写）
   
-  只有一个参数时，返回该参数个数的随机句子组成的段落
+只有一个参数时，返回该参数个数的随机单词组成的句子
   
-  两个参数都没省略时，返回长度为 `min` 到 `max` 个随机句子组成的段落
+### @title(min, max)
 
-<a name="native-placeholder-29" id="native-placeholder-29"></a>
-###### @lorem
+返回长度为 `min` 到 `max` 个随机单词组成的标题（每个单词的首字母大写）。
 
-  返回一个 lorem 随机单词
-
-<a name="native-placeholder-30" id="native-placeholder-30"></a>
-###### @lorem_ipsum
-
-  返回一个 lorem 随机段落
-
-<a name="native-placeholder-31" id="native-placeholder-31"></a>
-###### @tld
-
-  返回一个随机域名后缀 ( com、net、me、org... )
-
-<a name="native-placeholder-32" id="native-placeholder-32"></a>
-###### @domain(tld)
-
-  参数
-  - `tld` 可选，省略时将随机产生一个域名后缀
+参数：
+ 
+  - `min` 可选
+  - `max` 可选
   
-  返回一个随机域名
+两个参数都省略时，返回由 `3` 到 `7` 个随机单词组成的标题。
   
-<a name="native-placeholder-33" id="native-placeholder-33"></a>
-###### @email(domain)
+只有一个参数时，返回该参数个数的随机单词组成的标题。
 
-  参数
-  - `domain` 可选，省略时将随机产生一个域名
+### @paragraph(min, max)
+
+返回长度为 `min` 到 `max` 个随机句子组成的段落。
+
+参数：
+
+  - `min` 可选
+  - `max` 可选
   
-  返回一个随机邮箱
-
-<a name="native-placeholder-34" id="native-placeholder-34"></a>
-###### @url
-
-  随机生成一个 URL
+两个参数都省略时，返回由 `3` 到 `7` 个随机句子组成的段落。
   
-<a name="native-placeholder-35" id="native-placeholder-35"></a>
-###### @ip
-
-  随机生成一个 IP 地址
+只有一个参数时，返回该参数个数的随机句子组成的段落。
   
-<a name="native-placeholder-36" id="native-placeholder-36"></a>
-###### @mobile
+### @lorem
 
-  随机生成一个大陆的手机号码
+返回一个 lorem 随机单词。
+
+### @lorems
+
+返回一个 lorem 随机段落。
+
+### @tld
+
+返回一个随机域名后缀 ( com、net、me、org... )。
+
+### @domain(tld)
+
+返回一个随机域名。
+
+参数
+
+  - `tld` 可选，省略时将随机产生一个域名后缀。
   
-<a name="native-placeholder-37" id="native-placeholder-37"></a>
-###### @zip(len) 和 @zipcode(len)
+### @email(domain)
 
-  参数：
+返回一个随机邮箱。
+
+参数
+
+  - `domain` 可选，省略时将随机产生一个域名。
+  
+### @url
+
+随机生成一个 URL。
+  
+### @ip
+
+随机生成一个 IP 地址。
+  
+### @mobile
+
+随机生成一个大陆的手机号码。
+  
+### @zip(len) 和 @zipcode(len)
+
+随机生成一个邮政编码。
+
+参数：
+
   - `len` 可选，邮政编码的长度，缺省值为 `6`
+
+### @lang 和 @language
+
+随机返回一个语言的名称。
+
+### @d5
+
+返回 `1` 到 `5` 之间的随机数。
+
+### @d10
+
+返回 `1` 到 `10` 之间的随机数。
   
-  随机生成一个邮政编码
+### @d20
 
-<a name="native-placeholder-38" id="native-placeholder-38"></a>
-###### @lang 和 @language
+返回 `1` 到 `20` 之间的随机数。
 
-  随机返回一个语言的名称。
+### @d50
 
-###### @d5
+返回 `1` 到 `50` 之间的随机数。
 
-  返回 `1` 到 `5` 之间的随机数。
+### @d100
 
-<a name="native-placeholder-43" id="native-placeholder-43"></a>
-###### @d10
+返回 `1` 到 `100` 之间的随机数。
 
-  返回 `1` 到 `10` 之间的随机数。
+### @d200
+
+返回 `1` 到 `200` 之间的随机数。
+
+### @d500
+
+返回 `1` 到 `500` 之间的随机数。
   
-<a name="native-placeholder-44" id="native-placeholder-44"></a>
-###### @d20
+### @d1000
 
-  返回 `1` 到 `20` 之间的随机数。
+返回 `1` 到 `1000` 之间的随机数。
 
-###### @d50
+### @guid
 
-  返回 `1` 到 `50` 之间的随机数。
+随机生成一个 GUID。
 
-###### @d100
+### @id
 
-  返回 `1` 到 `100` 之间的随机数。
+随机生成一个 ID。
 
-###### @d200
-
-  返回 `1` 到 `200` 之间的随机数。
-
-###### @d500
-
-  返回 `1` 到 `500` 之间的随机数。
-  
-###### @d1000
-
-  返回 `1` 到 `1000` 之间的随机数。
-
-###### @guid
-
-  随机生成一个 GUID。
-
-
-###### @id
-
-  随机生成一个 ID。
-
-
-###### @inc(step) 和 @increment(step)
-
-  参数：
-  - `step` 自增步长，缺省为 `1`
-  
-   返回从 `0` 开始的自增数，每次调用自增 `step`
-
-
-###### @formItem(key)
+### @formItem(key)
 
 返回提交的表单或 QueryString 中的项。
 
@@ -938,14 +929,14 @@ grunt.initConfig({
 
 ### 在单独文件中定义路由规则
 
-**为什么要在单独的文件中定义路由规则？**
+#### 设计原理
 
 1. 为了增加路由规则的可维护性，推荐将不同 domain 的路由规则放在不同的文件中
 2. 协同开发时，由每个开发者自己去维护自身所关注的 API 的路由
 
 **注意**：不推荐同时将路由规则同时放在 `Gruntfile` 和单独的文件中，虽然你可以这样做。
 
-**如何配置？**
+#### 如何配置
 
 在上述配置的基础上，可以选择性地删除或保留 `route` 配置节，增加如下配置：
 
