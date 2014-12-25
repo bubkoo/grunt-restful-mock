@@ -13,6 +13,7 @@ var network = require('./network');
 
 var random = extend({}, base, dx, arr, address, datetime, form, network, names, article, color, devel);
 
+// to upper case
 for (var key in random) {
     if (random.hasOwnProperty(key)) {
         var upper = key.toUpperCase();

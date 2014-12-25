@@ -206,7 +206,7 @@ function generate(key, template, data, root) {
 
 module.exports = function (template, data) {
     // 外部调用时，初始化 formData
-    random.formData = data;
+    random.params = data;
     return generate(null, template, data, template);
 };
 

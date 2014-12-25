@@ -92,7 +92,7 @@ Router.prototype.add = function (rules) {
                         if (rRule.test(key)) {
                             options.data = {};
                             options.data[key] = options[key];
-                            options.rootShift = true;
+                            options.dataShift = true;
                             break;
                         }
                     }
@@ -188,7 +188,7 @@ function handle(req, res, options) {
 
 function handleJSON(req, res, options) {
     // 生成 mock data
-    res.body = generateJSON(options.data, req.params, options.rootShift);
+    res.body = generateJSON(options.data, req.params, options.dataShift);
 
     var body = JSON.stringify(res.body);
     var headers = {
@@ -211,7 +211,7 @@ function handleJSONP(req, res, options) {
     var key = typeof options.jsonp !== 'string' ? 'callback' : options.jsonp;
     var callback = req.params[key];
 
-    res.body = generateJSON(options.data, req.params, options.rootShift);
+    res.body = generateJSON(options.data, req.params, options.dataShift);
     var body = JSON.stringify(res.body);
 
     if (callback) {

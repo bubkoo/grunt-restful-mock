@@ -2,7 +2,7 @@ var autoIncrementInteger = 0;
 
 module.exports = {
     'formItem': function (key) {
-        var data = this.formData;
+        var data = this.params;
         return data && data[key] || '';
     },
 
