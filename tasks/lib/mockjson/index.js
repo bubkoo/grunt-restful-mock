@@ -70,7 +70,7 @@ var handle = {
 
     'object': function (options) {
         var result = {};
-        var keys = getKeys(options.template);
+        var keys = Object.keys(options.template);
 
         // 随机选取 count 个属性
         if (options.rule.iRange && options.rule.iCount > 0) {
@@ -182,8 +182,8 @@ function getRules(rule) {
 }
 
 function generate(key, template, data, root) {
-    var rule = getRules(key);
     var type = getType(template);
+    var rule = getRules(key);
 
     root = root || template; // 根模板
     if (handle[type]) {
@@ -198,7 +198,11 @@ function generate(key, template, data, root) {
     return template;
 }
 
-module.exports = generate;
+module.exports = function (template, data) {
+    // 外部调用时，初始化 formData
+    random.formData = data;
+    return generate(null, template, data, template);
+};
 
 
 // Helpers
@@ -210,16 +214,6 @@ function getType(object) {
     } else {
         return Object.prototype.toString.call(object).match(/\[object (\w+)\]/)[1].toLowerCase();
     }
-}
-
-function getKeys(object) {
-    var keys = [];
-    for (var key in object) {
-        if (object.hasOwnProperty(key)) {
-            keys.push(key);
-        }
-    }
-    return keys;
 }
 
 function toInt(value) {

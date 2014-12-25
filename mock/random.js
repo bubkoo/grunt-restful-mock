@@ -88,7 +88,9 @@ module.exports = {
                 },
 
                 'address': {
-
+                    // 'countryList': '@countryList',
+                    // 'provinceList': '@provinceList',
+                    'randomArea': '@randomArea'
                 },
 
                 'datetime': {

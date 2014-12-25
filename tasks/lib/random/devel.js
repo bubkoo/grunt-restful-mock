@@ -1,28 +1,16 @@
 var autoIncrementInteger = 0;
 
 module.exports = {
-    'fromData': function (path, data) {
-
-        var result;
-        var copy = data;
-        var parts = path.split('.');
-
-        for (var i = 0, l = parts.length; i < l; i++) {
-            if (parts[i] in copy) {
-                copy = copy[parts[i]];
-            }
-            if (i === l - 1) {
-                result = copy;
-            }
-        }
-        return result;
+    'formItem': function (key) {
+        var data = this.formData;
+        return data && data[key] || '';
     },
 
-    'increment': function (step) {
+    'increment': function (start, step) {
         return autoIncrementInteger += +step || 1;
     },
 
-    'inc': function (step) {
+    'inc': function (start, step) {
         return this.increment(step);
     }
 };
