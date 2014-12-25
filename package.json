@@ -1,7 +1,7 @@
 {
   "name": "grunt-restful-mock",
   "description": "Mock the RESTful API's result",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "homepage": "https://github.com/bubkoo/grunt-restful-mock",
   "author": {
     "name": "bubkoo",
