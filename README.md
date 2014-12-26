@@ -11,18 +11,15 @@
 - 模拟 HTTP 响应状态码，模拟请求超时
 - 模拟 HTTP 请求的网络延时
 - 热重启，修改 mock 配置后自动重启服务
-- 支持同一 URL，根据 POST body 或者 URI param 参数值返回不同数据
+- 自定义占位符
 
-**存在的意义：**
+**意义：**
 
 使用过 [mockjax](https://github.com/appendto/jquery-mockjax) 的同学应该会遇到一个
 苦恼的问题，那就是需要在业务代码中添加许多不必要的 mock 配置，代码上线时需要人肉删除这些 JS
 代码，容易出错而且很有侵入性，同时 mock 环境和测试环境的切换也不是很方便。作者在经历过
 这些痛点之后，基于 grunt 开发了该插件。
 
-## TODO
-
-- 增加自定义占位符接口
 
 
 ## 开始使用
@@ -882,7 +879,7 @@ grunt.initConfig({
               }
           }
       }
-  }
+   }
 });
 ```
 
@@ -907,8 +904,8 @@ grunt.initConfig({
                 'gender': '@bool',
                 'age|18-99': 100
             }
-       ]
-     }
+        ]
+    }
 }
 ```
 
@@ -938,7 +935,6 @@ grunt.initConfig({
     'get': {
      // 这里我定义该 API 的 get 请求延时 500ms，覆盖全局中的定义
      delay: 500,
-     // 返回的数据
      data: { }
 }
 ```
@@ -965,7 +961,6 @@ grunt.initConfig({
              maxAge: 1000 * 60 * 60
          }
      },
-     // 返回的数据
      data: { }
 }
 ```
@@ -980,7 +975,6 @@ grunt.initConfig({
     'get': {
      // 定义 statusCode 为 403，访问该路由时直接返回 403 状态码
      statusCode: 403
-     // 返回的数据
      data: { }
 }
 ```
@@ -1040,6 +1034,74 @@ grunt.initConfig({
 
 #### 自定义占位符
 
+虽然内置占位符可以满足一些常见需求，但不可能做到全面覆盖，所以开放了自定义占位符特性，通过自定义占位符可以返回任何你想要的结果，例如，查询数据库并返回查询结果。
+
+占位符是键值组成的对象，是一系列函数的集合，占位符函数的 `this` 指向内部的 `random` 对象，该对象包含所有内置占位符函数和一个 `params` 对象，该对象保存具体某条路由的 URL 参数和 POST 的表单数据，在自定的占位符函数内部可以使用这些函数和 `params` 对象。
+
+在 options 选项中定义占位符：
+
+```js
+mock: {
+	mode: {
+		options:{
+			placeholders: {
+            	hello: function (name) {
+               		return 'hello ' + name;
+                }
+            }
+		},
+		route: {
+			'demo/for/manual': {
+				'data': {
+				    // 使用占位符
+					'hello': '@hello("bubkoo")'
+				}
+			}
+		}
+	}
+}
+```
+
+
+在路由中定义占位符，路由内部定义的占位符只能在该路由内部使用：
+
+```js
+'demo/for/manual1': {
+    'get': {
+        // 路由内部定义的 placeholder 不共享
+        'placeholders': {
+            'foo': function () {
+                // 使用内置占位符函数 `now`
+                return 'foo: ' + this.now();
+            }
+        },
+        'data': {
+            // 使用全局 placeholder
+            'hello': '@hello("bubkoo")',
+            // 使用局部 placeholder
+            'foo': '@foo', // 只能使用自身定义的局部占位符
+            'bar': '@bar'  // 这里的占位符将出错
+        }
+    }
+},
+'demo/for/manual2': {
+    'get': {
+        // 路由内部定义的 placeholder 不共享
+        'placeholders': {
+            'bar': function () {
+                return 'bar: ' + this.now();
+            }
+        },
+        'data': {
+            // 使用全局 placeholder
+            'hello': '@hello("bubkoo")',
+            // 使用局部 placeholder
+            'foo': '@foo', // 这里的占位符将出错
+            'bar': '@bar'  // 只能使用自身定义的局部占位符
+        }
+    }
+}
+```
 
 ### 在单独文件中定义路由规则
 
@@ -1187,18 +1249,13 @@ grunt.initConfig({
 
 ### 其他
 
-1. 与 nginx 配合使用
+#### 与 nginx 配合使用
 
-  mock 的本质就是在本地（127.0.0.1）的某个端口上开启了一个 HTTP Server 服务，
-  但真实环境下 API 的 host 都不会是 127.0.0.1，这时可以借助 nginx
-  的代理功能了，具体如何配置 nginx 请参考网上的教程。
-  另外，跨域的情况也可以借助 nginx 加 hosts 来解决掉。
+mock 的本质就是在本地（127.0.0.1）的某个端口上开启了一个 HTTP Server 服务，但真实环境下 API 的 host 都不会是 127.0.0.1，这时可以借助 nginx 的代理功能了，具体如何配置 nginx 请参考网上的教程。另外，跨域的情况也可以借助 nginx 加 hosts 来解决掉。
 
-2. 开启多个 mock 任务
+#### 开启多个 mock 任务
 
-  mock 之所以设计为 Grunt 插件，是方便开发人员可以在开发环境下方便使用。同时，
-  mock 开启之后将一直处于监听状态，所以要运行其他 Grunt 任务或者开启多个 mock，
-  都需要新打开一个终端。这并不影响我们的使用，因为 mock 一旦开启，我们一般就不需要去理会它了。
+mock 之所以设计为 Grunt 插件，是方便开发人员可以在开发环境下方便使用。同时，mock 开启之后将一直处于监听状态，所以要运行其他 Grunt 任务或者开启多个 mock，都需要新打开一个终端。这并不影响我们的使用，因为 mock 一旦开启，我们一般就不需要去理会它了。
 
 ## 历史
 
