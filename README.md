@@ -801,19 +801,19 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 
 随机生成一个 ID。
 
-### @formItem(key)
+### @formItem(keys)
 
-返回提交的表单或 QueryString 中的项。
+返回提交的表单或 QueryString 中的项。如果 `keys` 为字符串，则返回单项数据；如果 `keys` 为数组，则返回数据项数组，其他类型将直接返回 `keys`。
 
 参数：
-  - `key` 数据项
+  - `keys` 字符串或数组，要返回数据的键
 
 
 ## 使用示例
 
 ### 基本使用示例
 
-在 options 选项中定义 route 配置。
+在 options 选项中定义 route 配置，留意配置文件中的注释。
 
 ```js
 grunt.initConfig({
@@ -822,19 +822,17 @@ grunt.initConfig({
           options: {
               // 在这里可以定义一些全局的选项
               // 比如网络延时，全局的 cookie 和 statusCode
-
               delay: 200, // 定义所有路由的延时为 200ms，可以在具体的路由中覆盖该定义
               cookie: {}, // 定义全局的 cookie
-
               // 定义路由规则
               route: {
                  // API 的路径
-                 '/path/to/API1': {
+                 '/path/to/api1': {
                     // GET 请求
                     'get': {
-                        // 这里我定义该 API 的 get 请求延时 500ms，覆盖全局中的定义
+                        // 定义该 API 的 get 请求延时 500ms，覆盖全局中的定义
                         delay: 500,
-                        // 返回的 cookie，这里定义的 cookie 将于全局 cookie 进行合并，返回合并后的 cookie
+                        // 这里定义的 cookie 将与全局 cookie 进行合并，返回合并后的 cookie
                         cookie: {
                             // cookie 键值
                             id: 123,
@@ -877,39 +875,9 @@ grunt.initConfig({
                         // 这里定义 statusCode 为 403，访问该路由时直接返回 403 状态码
                         statusCode: 403
                     }
-
-                    // 其他未定义的 HTTP 请求的方式都将返回 404
-                 },
-
-                 // 组合定义 HTTP 谓词
-                 'path/to/api2': {
-                     'get|post': { // 共享 get 和 post 请求
-
-                     }
-                 },
-
-                 // 万能谓词
-                 'path/to/api3': {
-                     '*': { // 接收所有 HTTP 谓词
-                     }
-                 },
-
-                 // 共享同一路由，根据 URL 中的参数返回不同的结果
-                 'path/to/api4': {
-                     // path/to/api4?param1=value1
-                     'get[param1=value1]': {
-
-                     },
-                     // path/to/api4?param2=value2&param3=value3
-                     'get[param2=value2, param3=value3]': {
-
-                     },
-                     // 组合使用
-                     'get|post[param1=value1]|post[param2=value2, param3=value3]': {
-
-                     }
+                    // 其他未定义的谓词都将返回 404
                  }
-
+                 
                  // 其他未定义的路由都将返回 404
               }
           }
@@ -918,14 +886,169 @@ grunt.initConfig({
 });
 ```
 
+#### 数据模板
+
+数据模板可以用在 cookie 和 data 上：
+
+```js
+'/path/to/api': {
+  'get': {
+     cookie: {
+     	userId: '@id',
+     	loginTime: '@now'
+     },
+     data: { 
+     	'count|100': 100,
+        'pageIndex|0-10': 100,
+        'items|0-30': [
+            {
+                'username': '@name',
+                'email': '@email',
+                'gender': '@bool',
+                'age|18-99': 100
+            }
+       ]
+     }
+}
+```
+
+返回的 data 为数组，可以这样定义：
+
+```js
+'/path/to/api': {
+    'get': {
+       'data|0-30': [
+           {
+              'username': '@name',
+              'email': '@email',
+              'gender': '@bool',
+              'age|18-99': 100
+           }
+       ]
+    }
+}
+```
+
+#### 指定延时
+
+在路由中指定的延时将覆盖全局定义的延时：
+
+```js
+'/path/to/api': {
+    'get': {
+     // 这里我定义该 API 的 get 请求延时 500ms，覆盖全局中的定义
+     delay: 500,
+     // 返回的数据
+     data: { }
+}
+```
+
+
+#### 指定 Cookie
+
+可以定义全局 cookie 和每条路由的 cookie，最终返回的 cookie 是两者合并后的结果，如果有相同项，路由下的 cookie 将覆盖全局。
+
+全局 cookie 定义在 options 中，在 [options](#optionscookie) 中已作详细说明，下面看看路由中的 cookie：
+
+
+```js
+'/path/to/api': {
+    'get': {
+     // 路由中定义的 cookie 将与全局 cookie 进行合并，返回合并后的 cookie
+     cookie: {
+         // cookie 键值
+         id: 123,
+         username: 'bubkoo',
+         // cookie 选项，该选项将应用于以上的 cookie
+         options: {
+             // cookie 的有效期，这里是一小时
+             maxAge: 1000 * 60 * 60
+         }
+     },
+     // 返回的数据
+     data: { }
+}
+```
+
+
+#### 指定状态吗
+
+同样，路由中指定的状态码将覆盖全局定义：
+
+```js
+'/path/to/api': {
+    'get': {
+     // 定义 statusCode 为 403，访问该路由时直接返回 403 状态码
+     statusCode: 403
+     // 返回的数据
+     data: { }
+}
+```
+
+
+#### 组合谓词
+
+如果同一路由同时支持多个 HTTP 谓词，可以使用组合定义：
+
+```js
+'path/to/api': {
+    // 共享 get 和 post 请求
+    'get|post': { 
+        data: {}
+    }
+}
+```
+
+
+#### 万能谓词
+
+如果某路由支持所有 HTTP 谓词，可以定义万能谓词：
+
+```js
+'path/to/api': {
+    '*': { 
+        data: {}
+    }
+}
+```
+
+#### 共享路由
+
+对于路由 `path/to/api?type=a` 和 `path/to/api?type=b`，MOCK 都将其识别为 `path/to/api`，所以为了根据参数不同而返回不同数据，可以定义共享路由：
+
+```js
+'path/to/api': {
+    // 匹配 get: path/to/api?param1=value1
+    'get[param1=value1]': {
+        data: {}
+    },
+    
+    // 匹配 get: path/to/api?param2=value2&param3=value3
+    'get[param2=value2, param3=value3]': {
+        data: {}
+    },
+    
+    // 组合使用，同时匹配三种情况
+    //   get : path/to/api
+    //   post: path/to/api?param1=value1
+    //   post: path/to/api?param2=value2&param3=value3
+    'get|post[param1=value1]|post[param2=value2, param3=value3]': {
+        data: {}
+    }
+}
+```
+
+#### 自定义占位符
+
+
 ### 在单独文件中定义路由规则
 
 #### 设计原理
 
-1. 为了增加路由规则的可维护性，推荐将不同 domain 的路由规则放在不同的文件中
-2. 协同开发时，由每个开发者自己去维护自身所关注的 API 的路由
+1. 增加路由规则的可维护性，例如将不同 domain 的路由规则放在不同的文件中
+2. 协同开发，由每个开发者维护自身所关注的 API 的路由
 
-**注意**：不推荐同时将路由规则同时放在 `Gruntfile` 和单独的文件中，虽然你可以这样做。
+**提示**：不推荐同时将路由规则同时放在 `Gruntfile` 和单独的文件中，虽然你可以这样做，否则将使得你的配置文件变得庞大，而越来越难以维护。
 
 #### 如何配置
 
@@ -974,7 +1097,7 @@ grunt.initConfig({
 
 四种文件的格式分别如下：
 
-1. JS 文件
+#### JavaScript
 
   ```JS
   module.exports = {
@@ -993,7 +1116,7 @@ grunt.initConfig({
   };
   ```
 
-2. coffee 文件
+#### CoffeeScript
 
   ```coffee
   module.exports =
@@ -1014,7 +1137,7 @@ grunt.initConfig({
             'pwd':'NOZUONODIE'
   ```
 
-3. yaml 文件
+#### Yaml
 
   ```yaml
   /path/to/API1:
@@ -1034,7 +1157,7 @@ grunt.initConfig({
           pwd: NOZUONODIE
   ```
 
-4. JSON 文件
+#### JSON
 
   ```json
   {
@@ -1079,6 +1202,7 @@ grunt.initConfig({
 
 ## 历史
 
+- 2014-12-27 增加自定义占位符接口
 - 2014-12-04 组合 HTTP 谓词（`get|post`），谓词混同参数（`get[param1=value1]`）
 - 2014-12-03 更新 connect 到最新的 v3.3.3，修复一些被弃用的方法。
 - 2014-12-02 重构 random，将 random 按类别分放在不同的文件中。
