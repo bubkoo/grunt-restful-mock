@@ -429,7 +429,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   * [@guid](#guid)
   * [@id](#id)
   * [@formItem(key)](#formitem-key)
-  * [@fromFile(filepath)](#fromfile-filepath)
+  * [@fromFile(filepath)](#fromfilefilepath)
 
 
 ### @int(min, max) 和 @integer(min, max)
