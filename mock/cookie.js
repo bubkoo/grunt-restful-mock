@@ -27,7 +27,7 @@ module.exports = {
                             'certType': '',             // 证件类型
                             'tranAmount|0-10000000': 200,               // 交易金额
                             'tranStatus': '1',                          // 交易状态
-                            'tranTime': '@DATE(YYYYMMDDhhmmss)',        // 交易时间
+                            'tranTime': '@DATE("YYYYMMDDhhmmss")',        // 交易时间
                             'tranType': '1',                            // 交易类型
                             'userId': '111',
                             'userName': 'chen'
