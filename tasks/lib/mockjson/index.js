@@ -1,7 +1,9 @@
 var nativeRandom = require('../random');
 
 var rRule = /(.+)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/;
-var rPlaceholder = /@(\w[\w|\d]*)(?:(\(.*\))(?![\)\w\d]))?/g;
+// var rPlaceholder = /@(\w[\w|\d]*)(?:(\(.*\))(?![\)\w\d]))?/g;
+var rPlaceholder = /(?:.)?@([a-zA-Z_]\w*)(?:(\(.*\))(?!\)))?/g;
+var rUnPlaceholder = /\\@([a-zA-Z_]\w*)(?:(\(.*\))(?!\)))?/g;
 
 var random;
 var handle = {
@@ -116,16 +118,12 @@ var handle = {
         var template = options.template;
 
         if (template) {
-            // 重复字符串
+            // 重复模板字符串
             while (length--) {
                 result += template;
             }
             options.template = result;
-
-            if (result.match(rPlaceholder)) {
-                result = renderPlaceholder(result);
-            }
-
+            result = renderPlaceholder(result);
         } else {
             // 没有提供模板则随机生成长度为 length 的字符串
             result = options.rule.iRange ? random.string(length) : template;
@@ -134,20 +132,48 @@ var handle = {
     }
 };
 
-function renderPlaceholder(template) {
+function hasPlaceholder(template) {
+    return template.match(rPlaceholder) && !template.match(rUnPlaceholder);
+}
+
+function exePlaceholder(template, methodName, args) {
     var result = template;
     try {
-        while (template.match(rPlaceholder)) {
-            template = template.replace(rPlaceholder, function (input, method, args) {
-                args = args || '()';
-                return 'this.' + method.toUpperCase() + args;
-            });
-        }
-        var fn = new Function('return ' + template + ';');
+        methodName = methodName.toUpperCase();
+        args = renderPlaceholder(args || '()');
+        var fnBody = 'return ' + 'this.' + methodName + args + ';';
+        var fn = new Function(fnBody);
         result = fn.call(random);
     } catch (error) {
         result += ' ERROR: [' + error + ']';
     }
+    return result;
+}
+
+function renderPlaceholder(template) {
+    var result = template;
+    var assigned = false;
+
+    if (template.match(rPlaceholder)) {
+        template = template.replace(rPlaceholder, function (input, methodName, args) {
+            var hasSlash = input[0] === '\\';
+            var ret = hasSlash
+                ? input.substr(1)
+                : exePlaceholder(input, methodName, args);
+
+            if (template === input) {
+                assigned = true;
+                result = ret;
+            } else {
+                if (!hasSlash && input[0] !== '@') {
+                    ret = input[0] + ret;
+                }
+            }
+            return ret;
+        });
+        assigned || (result = template);
+    }
+
     return result;
 }
 
@@ -156,18 +182,18 @@ function getRules(rule) {
     var rRange = /(\d+)-?(\d+)?/,
 
         matches = ((rule + '') || '').match(rRule),
-        // 键
+    // 键
         key = matches && matches[1] || rule,
-        //
+    //
         step = matches && matches[2] && toInt(matches[2]),
 
-        // 整数部分范围
+    // 整数部分范围
         iRange = matches && matches[3] && matches[3].match(rRange),
         iMin = iRange && toInt(iRange[1]),
         iMax = iRange && toInt(iRange[2]),
         iCount = iRange ? !iRange[2] && iMin || random.int(iMin, iMax) : undefined,
 
-        // 小数范围
+    // 小数范围
         dRange = matches && matches[4] && matches[4].match(rRange),
         dMin = dRange && toInt(dRange[1]),
         dMax = dRange && toInt(dRange[2]),
@@ -214,7 +240,7 @@ module.exports = function (template, data, placeholders) {
 
 
 // Helpers
-// ----------------
+// -------
 
 function getType(object) {
     if (object === null || object === undefined) {

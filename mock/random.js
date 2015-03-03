@@ -158,10 +158,6 @@ module.exports = {
 
                 'color': {
                     'color': '@color'
-                },
-
-                'devel': {
-
                 }
             }
         }
