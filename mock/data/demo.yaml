@@ -1,0 +1,8 @@
+success: true
+message: success
+code: 0
+data:
+  from: yaml
+  name: bubkoo
+  age: 29
+  blog: http://bubkoo.com

@@ -429,6 +429,7 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
   * [@guid](#guid)
   * [@id](#id)
   * [@formItem(key)](#formitem-key)
+  * [@fromFile(filepath)](#fromfile-filepath)
 
 
 ### @int(min, max) 和 @integer(min, max)
@@ -805,6 +806,12 @@ name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
 参数：
   - `keys` 字符串或数组，要返回数据的键
 
+### @fromFile(filepath)
+
+返回指定文件中的内容，支持 JSON 和 YAML 格式文件。
+
+参数：
+  - `filepath` 字符串，文件的绝对或相对（相对项目的根目录）路径
 
 ## 使用示例
 

@@ -1,3 +1,6 @@
+var path = require('path');
+var readfile = require('../utils/readfile');
+
 var autoIncrementInteger = 0;
 
 module.exports = {
@@ -17,6 +20,18 @@ module.exports = {
         }
 
         return result;
+    },
+
+    'fromFile': function (filePath) {
+        try {
+            if (filePath) {
+                return readfile(path.resolve(filePath));
+            } else {
+                return 'no file path specified.';
+            }
+        } catch (error) {
+            return error + '';
+        }
     },
 
     'increment': function (start, step) {
