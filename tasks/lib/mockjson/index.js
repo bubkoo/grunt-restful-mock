@@ -57,7 +57,7 @@ var handle = {
     'array': function (options) {
         var result = [];
         var len = options.template.length;    // 原数组长度
-        var count = options.rule.iCount || 0; // 重复次数
+        var count = options.rule.iCount || 1; // 重复次数
 
         while (count--) {
             var j = 0;
