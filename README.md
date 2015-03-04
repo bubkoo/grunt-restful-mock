@@ -82,7 +82,7 @@ Type: `String`
 
 默认值: `"127.0.0.1"`
 
-主机名
+主机名，可设置为 `"127.0.0.1"`，`"localhost"` 或本机IP
 
 #### options.delay
 
