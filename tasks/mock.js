@@ -182,10 +182,13 @@ module.exports = function (grunt) {
                         console.log(formatJSON(req.params, '         '));
                         console.log(' - Response:'.cyan);
                         console.log('     status: '.yellow + (res.statusCode === 200 ? 200 : (res.statusCode + '').red));
+                        console.log('     length: '.yellow + Buffer.byteLength(JSON.stringify(res.body)) + ' byte');
                         next();
                     });
+
+
                     app.use(morgan('' +
-                        '     length: '.yellow + ':res[content-length] byte\\n' +
+                        // '     length: '.yellow + ':res[content-length] byte\\n' +
                         '     timing: '.yellow + ':response-time ms', {
                         immediate: true
                     }));
@@ -208,11 +211,13 @@ module.exports = function (grunt) {
 
                         next();
                     });
+
                 } else {
                     app.use(morgan('[:method] :url'.green, {
                         immediate: true
                     }));
                 }
+
                 next(null, app);
             },
 
@@ -296,7 +301,7 @@ module.exports = function (grunt) {
 
                 reloadTimes++;
 
-                console.log(('\nRestarting mock. Restart times: ').magenta + (reloadTimes + '\n').green);
+                console.log(('\nMock restarted. Restart times: ').magenta + (reloadTimes + '\n').green);
 
                 async.waterfall(pipes);
             });
@@ -370,7 +375,7 @@ module.exports = function (grunt) {
                 console.log('    |_|  |_|\\___/ \\____|_|\\_\\'.magenta + '\n');
             }
 
-            console.log('Started API mock on ' + target + '\n');
+            console.log('Mock started on ' + target + '\n');
 
             if (options.debug === true) {
                 console.log('Waiting for request...\n'.italic.grey);
@@ -400,4 +405,9 @@ module.exports = function (grunt) {
             files = [];
         }
     }
+
+//    function humanFileSize(size) {
+//        var i = Math.floor(Math.log(size) / Math.log(1024));
+//        return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+//    }
 };
