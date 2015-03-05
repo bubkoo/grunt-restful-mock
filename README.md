@@ -2,24 +2,22 @@
 
 > 模拟 AJAX 请求返回的 JSON 数据，减少前端工程师对后端接口的依赖，在接口规范的基础之上，实现与后端并行开发。
 
-**主要特性：**
+**特性：**
 
 - 基于数据模板生成随机数据
 - 支持 RESTful 风格的 RUI
 - 兼容 JSONP 请求
 - 模拟 HTTPOnly 的 Cookie
-- 模拟 HTTP 响应状态码，模拟请求超时
-- 模拟 HTTP 请求的网络延时
+- 模拟 HTTP 响应状态码，模拟请求超时，模拟网络延时
 - 热重启，修改 mock 配置后自动重启服务
-- 自定义占位符
+- 自定义数据模板占位符
 
 **意义：**
 
-使用过 [mockjax](https://github.com/appendto/jquery-mockjax) 的同学应该会遇到一个
-苦恼的问题，那就是需要在业务代码中添加许多不必要的 mock 配置，代码上线时需要人肉删除这些 JS
-代码，容易出错而且很有侵入性，同时 mock 环境和测试环境的切换也不是很方便。作者在经历过
-这些痛点之后，基于 grunt 开发了该插件。
-
+使用过 [mockjax](https://github.com/appendto/jquery-mockjax) 的同学应该遇到过一个
+苦恼的问题，那就是需要在业务代码中添加许多调试用的 mock 配置，上线时需要人肉删除这些 JS
+代码，具有侵入性且容易出错，同时 mock 环境和测试环境的切换也不是很方便。作者在经历过这些痛点
+之后，基于 grunt 开发了该插件。
 
 
 ## 开始使用
@@ -312,6 +310,7 @@ Type: `Object`
   通过重复 `'value'` 生成一个字符串，重复次数等于 `count`。
 
 
+
 #### 属性值是布尔型 **Boolean**
 
 - `'name|1': value`
@@ -321,6 +320,7 @@ Type: `Object`
 - `'name|min-max': value` 
 
   随机生成一个布尔值，值为 `value` 的概率是 `min / (min + max)`，值为 `!value` 的概率是 `max / (min + max)`。
+
 
 
 #### 属性值是对象 **Object**
@@ -334,6 +334,7 @@ Type: `Object`
   从属性值 `{}` 对象中随机选取 `count` 个键值组合成一个新对象。
 
 
+
 #### 属性值是数组 **Array**
 
 - `'name|count': [{}, {} ...]` 
@@ -343,6 +344,7 @@ Type: `Object`
 - `'name|min-max': [{}, {} ...]` 
   
   通过重复属性值 `[{}, {} ...]` 生成一个新数组，重复次数大于等于 `min`，小于等于 `max`。
+
 
 
 #### 属性值是函数 **Function**
@@ -361,28 +363,31 @@ Type: `Object`
   'function1|2': "Mock"
   ```
 
+
 #### 属性值是占位符
 
 占位符只是在属性值字符串中占个位置，并不出现在最终的属性值中。占位符的格式为：
 
 ```js
-name|rule: @占位符 // 没有参数时可以省略括号
-name|rule: @占位符(参数 [, 参数])
-name|rule: @占位符(参数, @占位符(参数，参数)) // 嵌套使用
+name|rule: '@占位符'                          // 没有参数时可以省略括号
+name|rule: '@占位符(参数 [, 参数])'            // 一个或多个参数
+name|rule: '@占位符(参数, @占位符(参数，参数))'  // 嵌套使用
+name|rule: 'something@占位符'                 // 字符串和占位符结合，返回结果为字符串
 ```
 **注意：**
+- 使用占位符与函数调用类似，参数格式与函数调用的参数格式一致
 - 占位符和规则可以同时使用
-- 占位符可以嵌套使用
-- 属性值的类型由占位符的返回值决定
-- 占位符不区分大小写，但是为了明确区分是占位符，推荐采用全大写的方式
+- 占位符可以嵌套使用，内部占位符的返回值作为外部占位符的参数
+- 属性值的类型由占位符的返回值决定（除了字符串和占位符结合使用的情况）
+- 占位符不区分大小写，但是为了明确区分是占位符，**推荐**采用全大写的方式
 
 
 ## 内置占位符
 
-  * [@int(min, max) 和 @integer(min, max)](#int-min-max-和-integer-min-max)
-  * [@natural(min, max)](#natural-min-max)
-  * [@bool(min, max, cur) 和 @boolean(min, max, cur)](#bool-min-max-cur-和-boolean-min-max-cur)
-  * [@float(min, max, dMin, dMax)](#floatmin-max-dmin-dmax)
+  * [@int(min, max) 和 @integer(min, max)](#int-min-max-和-integer-min-max) 返回一个整数
+  * [@natural(min, max)](#natural-min-max) 返回一个正整数
+  * [@bool(min, max, cur) 和 @boolean(min, max, cur)](#bool-min-max-cur-和-boolean-min-max-cur) 返回一个布尔值
+  * [@float(min, max, dMin, dMax)](#floatmin-max-dmin-dmax) 返回一个浮点数
   * [@char(pool) 和 @character(pool)](#charpool-和-characterpool)
   * [@str(pool, min, max) 和 @string(pool, min, max)](#str-pool-min-max-和-string-pool-min-max)
   * [@capitalize(word)](#capitalize-word)
