@@ -369,10 +369,11 @@ Type: `Object`
 占位符只是在属性值字符串中占个位置，并不出现在最终的属性值中。占位符的格式为：
 
 ```js
-name|rule: '@占位符'                          // 没有参数时可以省略括号
-name|rule: '@占位符(参数 [, 参数])'            // 一个或多个参数
+name|rule: '@占位符'                           // 没有参数时可以省略括号
+name|rule: '@占位符(参数 [, 参数])'             // 一个或多个参数
 name|rule: '@占位符(参数, @占位符(参数，参数))'  // 嵌套使用
-name|rule: 'something@占位符'                 // 字符串和占位符结合，返回结果为字符串
+name|rule: 'something@占位符'                  // 字符串和占位符结合，返回结果为字符串
+name|rule: 'something\\@占位符'                // 占位符转义，将直接返回 `'something\\@占位符'`
 ```
 **注意：**
 - 使用占位符与函数调用类似，参数格式与函数调用的参数格式一致
@@ -388,41 +389,41 @@ name|rule: 'something@占位符'                 // 字符串和占位符结合�
   * [@natural(min, max)](#natural-min-max) 返回一个正整数
   * [@bool(min, max, cur) 和 @boolean(min, max, cur)](#bool-min-max-cur-和-boolean-min-max-cur) 返回一个布尔值
   * [@float(min, max, dMin, dMax)](#floatmin-max-dmin-dmax) 返回一个浮点数
-  * [@char(pool) 和 @character(pool)](#charpool-和-characterpool)
-  * [@str(pool, min, max) 和 @string(pool, min, max)](#str-pool-min-max-和-string-pool-min-max)
-  * [@capitalize(word)](#capitalize-word)
-  * [@upper(str)](#upper-str)
-  * [@lower(str)](#lower-str)
-  * [@range(start, stop, step)](#range-start-stop-step)
-  * [@pickOne(arr)](#pickone-arr)
-  * [@pickSome(arr, count, shuffle)](#picksome-arr-count-shuffle)
-  * [@shuffle(arr)](#shuffle-arr)
-  * [@randomDate(min, max)](#randomdate-min-max)
-  * [@formatDate(data, format)](#formatdate-data-format)
+  * [@char(pool) 和 @character(pool)](#charpool-和-characterpool) 返回一个字符
+  * [@str(pool, min, max) 和 @string(pool, min, max)](#str-pool-min-max-和-string-pool-min-max) 返回一个字符串
+  * [@capitalize(word)](#capitalize-word) 将 `word` 首字母大写
+  * [@upper(str)](#upper-str) 转换为大写
+  * [@lower(str)](#lower-str) 转换为小写
+  * [@range(start, stop, step)](#range-start-stop-step) 生成一个数组
+  * [@pickOne(arr)](#pickone-arr) 从数组或字符串中随机返回其中一个字符或数组项
+  * [@pickSome(arr, count, shuffle)](#picksome-arr-count-shuffle) 从数组中随机选取 `count` 个返回
+  * [@shuffle(arr)](#shuffle-arr) 随机打乱数组或字符串
+  * [@randomDate(min, max)](#randomdate-min-max) 返回一个日期
+  * [@formatDate(data, format)](#formatdate-data-format) 格式化日期时间
   * [@parseDate(...)](#parsedate)
   * [@date(date, format)](#date-date-format)
   * [@time(date, format)](#time-date-format)
   * [@datetime(date, format)](#datetime-date-format)
   * [@now(unit, format)](#now-unit-format)
-  * [@color](#color)
-  * [@maleFirstName](#malefirstname)
-  * [@femaleFirstName](#femalefirstname)
-  * [@lastName](#lastname)
-  * [@name(middleName)](#namemiddle-name)
-  * [@word(min, max)](#word-min-max)
-  * [@sentence(min, max)](#sentence-min-max)
-  * [@title(min, max)](#title-min-max)
-  * [@paragraph(min, max)](#paragraph-min-max)
+  * [@color](#color) 返回一个颜色
+  * [@maleFirstName](#malefirstname) 返回一个男性名
+  * [@femaleFirstName](#femalefirstname) 返回一个女性名
+  * [@lastName](#lastname) 返回一个姓
+  * [@name(middleName)](#namemiddle-name) 返回一个名字
+  * [@word(min, max)](#word-min-max) 返回一个单词
+  * [@sentence(min, max)](#sentence-min-max) 返回一个句子
+  * [@title(min, max)](#title-min-max) 返回一个标题
+  * [@paragraph(min, max)](#paragraph-min-max) 返回一个段落
   * [@lorem](#lorem)
   * [@lorems](#lorems)
-  * [@tld](#tld)
-  * [@domain(tld)](#domain-tld)
-  * [@email(domain)](#email-domain)
-  * [@url](#url)
-  * [@ip](#ip)
-  * [@mobile](#mobile)
-  * [@zip(len) 和 @zipcode(len)](#zip-len-和-zipcode-len)
-  * [@lang 和 @language](#lang-和-language)
+  * [@tld](#tld) 返回一个域名后缀
+  * [@domain(tld)](#domain-tld) 返回一个域名
+  * [@email(domain)](#email-domain) 返回一个邮箱
+  * [@url](#url) 返回一个 URL
+  * [@ip](#ip) 返回一个 IP
+  * [@mobile](#mobile) 返回一个大陆手机号码
+  * [@zip(len) 和 @zipcode(len)](#zip-len-和-zipcode-len) 返回一个邮政编码
+  * [@lang 和 @language](#lang-和-language) 返回一个语言名称
   * [@d5](#d5)
   * [@d10](#d10)
   * [@d20](#d20)
@@ -431,10 +432,10 @@ name|rule: 'something@占位符'                 // 字符串和占位符结合�
   * [@d200](#d200)
   * [@d500](#d500)
   * [@d1000](#d1000)
-  * [@guid](#guid)
-  * [@id](#id)
-  * [@formItem(key)](#formitem-key)
-  * [@fromFile(filepath)](#fromfilefilepath)
+  * [@guid](#guid) 生成一个 GUID
+  * [@id](#id) 生成一个 ID
+  * [@formItem(key)](#formitem-key) 返回提交的表单或 `QueryString` 中的项
+  * [@fromFile(filepath)](#fromfilefilepath) 返回指定文件中的内容
 
 
 ### @int(min, max) 和 @integer(min, max)
