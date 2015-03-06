@@ -182,7 +182,7 @@ module.exports = function (grunt) {
                         console.log(formatJSON(req.params, '         '));
                         console.log(' - Response:'.cyan);
                         console.log('     status: '.yellow + (res.statusCode === 200 ? 200 : (res.statusCode + '').red));
-                        console.log('     length: '.yellow + Buffer.byteLength(JSON.stringify(res.body)) + ' byte');
+                        console.log('     length: '.yellow + Buffer.byteLength(JSON.stringify(res.body || {})) + ' byte');
                         next();
                     });
 
@@ -406,8 +406,8 @@ module.exports = function (grunt) {
         }
     }
 
-//    function humanFileSize(size) {
-//        var i = Math.floor(Math.log(size) / Math.log(1024));
-//        return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-//    }
+    //    function humanFileSize(size) {
+    //        var i = Math.floor(Math.log(size) / Math.log(1024));
+    //        return (size / Math.pow(1024, i)).toFixed(2) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+    //    }
 };
