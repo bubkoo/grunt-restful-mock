@@ -98,10 +98,10 @@ module.exports = {
                     'now2': '@now("YYYY年MM月DD日 HH时mm分ss秒")',
                     'now3': '@now("month", "YYYY-MM-DD HH:mm:ss")',
                     'randomDate': '@randomDate',
-                    'date': '@date(@randomDate, "YYYY-MM-DD")',
-                    'time': '@time(@randomDate, "HH:mm:ss")',
-                    'datetime': '@datetime(@randomDate, "YYYY-MM-DD HH:mm:ss")',
-                    'formatDate': '@formatDate(@randomDate, "YYYY-MM-DD HH:mm:ss")',
+                    'date': '@date("@randomDate", "YYYY-MM-DD")',
+                    'time': '@time("@randomDate", "HH:mm:ss")',
+                    'datetime': '@datetime("@randomDate", "YYYY-MM-DD HH:mm:ss")',
+                    'formatDate': '@formatDate("@randomDate", "YYYY-MM-DD HH:mm:ss")',
                     'parseDate': '@parseDate("2014-12-24 10:56:02")'
                 },
 

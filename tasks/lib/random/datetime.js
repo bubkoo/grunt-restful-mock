@@ -87,7 +87,7 @@ module.exports = {
 // -------
 
 function isNumber(val) {
-    return !isUndefined(val) && !isNaN(val) && isFinite(val);
+    return val && !isUndefined(val) && !isNaN(val) && isFinite(val);
 }
 
 function toInt(val) {

@@ -1,5 +1,5 @@
 /demo/for/yaml:
-  post:
+  get:
     data:
       code: 0
       data:

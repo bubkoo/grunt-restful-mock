@@ -2,8 +2,8 @@ var nativeRandom = require('../random');
 
 var rRule = /(.+)\|(?:([\+-]\d+)|(\d+-?\d*)?(?:\.(\d+-?\d*))?)/;
 // var rPlaceholder = /@(\w[\w|\d]*)(?:(\(.*\))(?![\)\w\d]))?/g;
-var rPlaceholder = /(?:.)?@([a-zA-Z_]\w*)(?:(\(.*\))(?!\)))?/g;
-var rUnPlaceholder = /\\@([a-zA-Z_]\w*)(?:(\(.*\))(?!\)))?/g;
+// var rPlaceholder = /(?:.)?@([a-zA-Z_]\w*)(?:(\(.*\))(?!\)))?/g;
+var rPlaceholder = /(?:.)?@([a-zA-Z_]\w*)(?:\((.*)\)(?!\)))?/g;
 
 var random;
 var handle = {
@@ -132,18 +132,15 @@ var handle = {
     }
 };
 
-function hasPlaceholder(template) {
-    return template.match(rPlaceholder) && !template.match(rUnPlaceholder);
-}
-
-function exePlaceholder(template, methodName, args) {
+function exePlaceholder(template, methodName, argsString) {
     var result = template;
     try {
         methodName = methodName.toUpperCase();
-        args = renderPlaceholder(args || '()');
-        var fnBody = 'return ' + 'this.' + methodName + args + ';';
-        var fn = new Function(fnBody);
-        result = fn.call(random);
+        argsString = renderPlaceholder(argsString || '');
+//        result = random[methodName].apply(random, argsString.split(/\s*,\s*/g));
+                var fnBody = 'return ' + 'this.' + methodName + '(' + argsString + ');';
+                var fn = new Function(fnBody);
+                result = fn.call(random);
     } catch (error) {
         result += ' ERROR: [' + error + ']';
     }
@@ -155,21 +152,21 @@ function renderPlaceholder(template) {
     var assigned = false;
 
     if (template.match(rPlaceholder)) {
-        template = template.replace(rPlaceholder, function (input, methodName, args) {
-            var hasSlash = input[0] === '\\';
+        template = template.replace(rPlaceholder, function (input, methodName, argsString) {
+            var firstChar = input[0];
+            var hasSlash = firstChar === '\\';
             var ret = hasSlash
                 ? input.substr(1)
-                : exePlaceholder(input, methodName, args);
-
+                : exePlaceholder(input, methodName, argsString);
             if (template === input) {
                 assigned = true;
                 result = ret;
             } else {
-                if (!hasSlash && input[0] !== '@') {
-                    ret = input[0] + ret;
+                if (!hasSlash && firstChar !== '@') {
+                    ret = firstChar + ret;
                 }
             }
-            return ret;
+            return ret + '';
         });
         assigned || (result = template);
     }

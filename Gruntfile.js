@@ -62,7 +62,7 @@ module.exports = function (grunt) {
                                 delay: 3000,
                                 data: {
                                     code: '0',
-                                    msg: ''
+                                    msg: 'delay 3s'
                                 }
                             }
                         }
