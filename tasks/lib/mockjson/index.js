@@ -137,10 +137,10 @@ function exePlaceholder(template, methodName, argsString) {
     try {
         methodName = methodName.toUpperCase();
         argsString = renderPlaceholder(argsString || '');
-//        result = random[methodName].apply(random, argsString.split(/\s*,\s*/g));
-                var fnBody = 'return ' + 'this.' + methodName + '(' + argsString + ');';
-                var fn = new Function(fnBody);
-                result = fn.call(random);
+        //        result = random[methodName].apply(random, argsString.split(/\s*,\s*/g));
+        var fnBody = 'return ' + 'this.' + methodName + '(' + argsString + ');';
+        var fn = new Function(fnBody);
+        result = fn.call(random);
     } catch (error) {
         result += ' ERROR: [' + error + ']';
     }
