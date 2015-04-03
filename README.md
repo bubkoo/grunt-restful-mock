@@ -28,6 +28,7 @@
 
 ## 历史
 
+- 2015-04-02 将依赖项 gaze 的版本从 0.6.4 降为 0.5.1，以修复 NodeJS v0.12 导致的问题，[issues](https://github.com/shama/gaze/issues/175)
 - 2015-03-03 增加 fromFile 占位符，支持从文件中获取 json 数据
 - 2014-12-27 增加自定义占位符接口
 - 2014-12-04 组合 HTTP 谓词（`get|post`），谓词混同参数（`get[param1=value1]`）
