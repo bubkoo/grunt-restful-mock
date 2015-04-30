@@ -4,10 +4,10 @@
 
 ## 目录
 
- - [开始使用](wiki/开始使用)
- - [使用示例](wiki/使用示例)
- - [数据模板语法规则](wiki/数据模板语法规则)
- - [内置占位符](wiki/内置占位符)
+ - [开始使用](https://github.com/bubkoo/grunt-restful-mock/wiki/开始使用)
+ - [使用示例](https://github.com/bubkoo/grunt-restful-mock/wiki/使用示例)
+ - [数据模板语法规则](https://github.com/bubkoo/grunt-restful-mock/wiki/数据模板语法规则)
+ - [内置占位符](https://github.com/bubkoo/grunt-restful-mock/wiki/内置占位符)
 
 ## 特性
 
