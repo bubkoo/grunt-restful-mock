@@ -19,13 +19,6 @@
 - 热重启，修改 mock 配置后自动重启服务
 - 自定义数据模板占位符
 
-## 意义
-
-使用过 [mockjax](https://github.com/appendto/jquery-mockjax) 的同学应该遇到过一个
-苦恼的问题，那就是需要在业务代码中添加许多调试用的 mock 配置，上线时需要人肉删除这些 JS
-代码，具有侵入性且容易出错，同时 mock 环境和测试环境的切换也不是很方便。作者在经历过这些痛点
-之后，基于 grunt 开发了该插件。
-
 ## 历史
 
 - 2015-04-02 发布版本 0.1.21，将依赖项 gaze 的版本从 0.6.4 降为 0.5.1，以修复 NodeJS v0.12 导致的问题，[issues](https://github.com/shama/gaze/issues/175)
