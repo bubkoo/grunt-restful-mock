@@ -5,7 +5,7 @@
  *    | |  | | |_| | |___| . \
  *    |_|  |_|\___/ \____|_|\_\
  *
- * Copyright (c) 2014 bubkoo
+ * Copyright (c) 2014-2015 bubkoo
  * Licensed under the MIT license.
  */
 
@@ -32,7 +32,7 @@ module.exports = function (grunt) {
   var readfile = require('./lib/utils/readfile');
 
 
-  grunt.registerMultiTask('mock', 'Start a API mock server.', function () {
+  grunt.registerMultiTask('mock', 'Start a mock server.', function () {
 
     var self = this;
     var _ = grunt.util._;
@@ -76,6 +76,7 @@ module.exports = function (grunt) {
       // 解析路由配置文件
       function (next) {
         self.files.forEach(function (f) {
+
           var cwd = f.cwd;
           var src = f.src.filter(function (filepath) {
             filepath = getFullPath(filepath, cwd);
@@ -110,8 +111,7 @@ module.exports = function (grunt) {
 
           if (options.route) {
             _.merge(options.route, routes);
-          }
-          else {
+          } else {
             options.route = routes;
           }
         });
@@ -124,7 +124,7 @@ module.exports = function (grunt) {
           grunt.fatal('protocol option must be \'http\' or \'https\'.');
         }
         if (!options.port) {
-          grunt.fatal('must be assign a service port.');
+          grunt.fatal('must be assign a port.');
         }
         next();
       },
@@ -139,8 +139,9 @@ module.exports = function (grunt) {
         // 解析 url 参数
         app.use(function (req, res, next) {
           if (!req.query) {
-            req.query = ~req.url.indexOf('?') ?
-              qs.parse(parseUrl(req).query) : {};
+            req.query = ~req.url.indexOf('?')
+              ? qs.parse(parseUrl(req).query)
+              : {};
           }
           next();
         });
@@ -192,6 +193,7 @@ module.exports = function (grunt) {
             '     timing: '.yellow + ':response-time ms', {
             immediate: true
           }));
+
           app.use(function (req, res, next) {
             var data = formatJSON(res.body, '         '),
               cookies;
