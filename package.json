@@ -1,7 +1,7 @@
 {
   "name": "grunt-restful-mock",
-  "description": "Mock json data.",
-  "version": "0.1.21",
+  "description": "A mock server returning random JSON from schema.",
+  "version": "0.2.0",
   "homepage": "https://github.com/bubkoo/grunt-restful-mock",
   "author": {
     "name": "bubkoo",
@@ -32,15 +32,11 @@
     "restful-mock-server": "0.0.1"
   },
   "devDependencies": {
-    "chai": "^3.0.0",
-    "coveralls": "^2.11.2",
     "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-mocha-istanbul": "^2.4.0",
-    "grunt-mocha-test": "^0.12.7",
-    "istanbul": "^0.3.17",
-    "mocha": "^2.2.5"
+    "grunt-contrib-jshint": "^0.11.2"
+  },
+  "peerDependencies": {
+    "grunt": ">=0.4.0"
   },
   "keywords": [
     "gruntplugin",

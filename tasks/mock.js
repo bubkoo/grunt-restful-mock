@@ -17,7 +17,7 @@ var yaml = require('js-yaml');
 var mockServer = require('restful-mock-server');
 
 
-function getFullPath(filepath, cwd) {
+function getFilepath(filepath, cwd) {
   filepath = cwd ? path.join(cwd, filepath) : filepath;
   return path.join(process.cwd(), filepath);
 }
@@ -64,7 +64,7 @@ module.exports = function (grunt) {
 
       f.src.filter(function (filepath) {
 
-        filepath = getFullPath(filepath, f.cwd);
+        filepath = getFilepath(filepath, f.cwd);
 
         if (!grunt.file.exists(filepath)) {
           grunt.log.warn('Source file "' + filepath + '" not found.');
@@ -90,6 +90,7 @@ module.exports = function (grunt) {
     } else {
       options.rules = rules;
     }
+
 
     // watch
     // -----
