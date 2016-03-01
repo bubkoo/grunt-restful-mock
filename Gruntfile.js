@@ -1,6 +1,6 @@
 /*
  * grunt-restful-mock
- * 
+ *
  *
  * Copyright (c) 2014 bubkoo
  * Licensed under the MIT license.
@@ -15,8 +15,7 @@ module.exports = function (grunt) {
         jshint: {
             all: [
                 'Gruntfile.js',
-                'tasks/**/*.js',
-                'test/**/*/js'
+                'tasks/**/*.js'
             ],
             options: {
                 jshintrc: '.jshintrc'
@@ -32,7 +31,6 @@ module.exports = function (grunt) {
         mock: {
             options: {
                 debug: true,
-                // 监视配置文件变化，自动重启服务
                 watch: 'grunt/mock.js'
             },
 

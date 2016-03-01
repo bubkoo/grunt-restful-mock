@@ -28,19 +28,8 @@
     "test": "grunt mock"
   },
   "dependencies": {
-    "async": "^0.9.0",
-    "body-parser": "^1.10.0",
-    "connect": "^3.3.3",
-    "cookie": "^0.1.2",
-    "cookie-signature": "^1.0.5",
-    "gaze": "^0.5.1",
     "js-yaml": "^3.2.3",
-    "json-from-template": "0.0.1",
-    "morgan": "^1.5.0",
-    "parseurl": "^1.3.0",
-    "path-to-regexp": "^1.0.1",
-    "portscanner": "^1.0.0",
-    "qs": "^2.3.3"
+    "restful-mock-server": "0.0.1"
   },
   "devDependencies": {
     "chai": "^3.0.0",
