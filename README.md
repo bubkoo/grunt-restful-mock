@@ -31,14 +31,8 @@
 ## 历史
 
 ### v0.2.0
-#### date: 2015-10-10
-#### changes:
+- 提取核心代码为独立的模块：[json-from-template](https://github.com/bubkoo/json-from-template),  [generate-random-data](https://github.com/bubkoo/generate-random-data)
 
 ### v0.1.21
-
-- 2015-04-02 发布版本 0.1.21，将依赖项 gaze 的版本从 0.6.4 降为 0.5.1，以修复 NodeJS v0.12 导致的问题，[issues](https://github.com/shama/gaze/issues/175)
-- 2015-03-03 增加 fromFile 占位符，支持从文件中获取 json 数据
-- 2014-12-27 增加自定义占位符接口
-- 2014-12-04 组合 HTTP 谓词（`get|post`），谓词混同参数（`get[param1=value1]`）
-- 2014-12-03 更新 connect 到最新的 v3.3.3，修复一些被弃用的方法。
-- 2014-12-02 重构 random，将 random 按类别分放在不同的文件中。
+- 增加自定义占位符接口
+- 组合 HTTP 谓词（`get|post`），谓词混同参数（`get[param1=value1]`）
