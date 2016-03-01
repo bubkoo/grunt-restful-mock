@@ -31,7 +31,7 @@
 ## 历史
 
 ### v0.2.0
-- 提取核心代码为独立的模块：[json-from-template](https://github.com/bubkoo/json-from-template),  [generate-random-data](https://github.com/bubkoo/generate-random-data)
+- 提取核心代码为独立的模块：[json-from-template](https://github.com/bubkoo/json-from-template), [generate-random-data](https://github.com/bubkoo/generate-random-data)
 
 ### v0.1.21
 - 增加自定义占位符接口
