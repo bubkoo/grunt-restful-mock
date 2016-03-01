@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "js-yaml": "^3.2.3",
-    "restful-mock-server": "0.0.1"
+    "restful-mock-server": "0.0.2"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
