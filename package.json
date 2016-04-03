@@ -1,7 +1,7 @@
 {
   "name": "grunt-restful-mock",
   "description": "A mock server returning random JSON from schema.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "homepage": "https://github.com/bubkoo/grunt-restful-mock",
   "author": {
     "name": "bubkoo",
@@ -15,17 +15,12 @@
   "bugs": {
     "url": "https://github.com/bubkoo/grunt-restful-mock/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/bubkoo/grunt-restful-mock/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
   "engines": {
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "grunt mock"
+    "test": "grunt jshint"
   },
   "dependencies": {
     "js-yaml": "^3.2.3",
