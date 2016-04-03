@@ -1,5 +1,3 @@
-# grunt-restful-mock
-
 ![logo.svg](https://cdn.rawgit.com/bubkoo/grunt-restful-mock/master/logo.svg)
 
 
