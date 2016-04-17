@@ -1,0 +1,11 @@
+{
+    "success": true,
+    "message": "success",
+    "code": 0,
+    "data": {
+        "from": "json",
+        "name": "bubkoo",
+        "age": 29,
+        "blog": "http://bubkoo.com"
+    }
+}

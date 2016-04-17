@@ -1,0 +1,11 @@
+{
+    "/demo/for/json": {
+        "get": {
+            "delay": 3000,
+            "data": {
+                "code": "0",
+                "msg": "delay 3s"
+            }
+        }
+    }
+}

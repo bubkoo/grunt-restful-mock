@@ -1,0 +1,14 @@
+/demo/for/yaml:
+  get:
+    data:
+      code: 0
+      data:
+        count: 30
+        page: 1
+        page_num: 1
+        results|30:
+          - date|+1: 20140514
+            earnings|1-10000: 10
+
+        total: 30
+        msg: ''
