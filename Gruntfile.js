@@ -30,7 +30,7 @@ module.exports = function (grunt) {
 
             demo: {
                 options: {
-                    port: '9090',
+                    port: '6001',
                     debug: true,
                     placeholders: {
                         hello: function (name) {
