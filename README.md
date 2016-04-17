@@ -5,13 +5,7 @@
 
 
 [![MIT License](https://img.shields.io/badge/license-MIT_License-green.svg?style=flat-square)](https://github.com/bubkoo/grunt-restful-mock/blob/master/LICENSE)
-[![build:?](https://img.shields.io/travis/bubkoo/grunt-restful-mock/master.svg?style=flat-square)](https://travis-ci.org/bubkoo/grunt-restful-mock)
-
-
 [![npm:](https://img.shields.io/npm/v/grunt-restful-mock.svg?style=flat-square)](https://www.npmjs.com/packages/grunt-restful-mock)
-[![downloads:?](https://img.shields.io/npm/dm/grunt-restful-mock.svg?style=flat-square)](https://www.npmjs.com/packages/grunt-restful-mock)
-[![dependencies:?](https://img.shields.io/david/bubkoo/grunt-restful-mock.svg?style=flat-square)](https://david-dm.org/bubkoo/grunt-restful-mock)
-
 
 
 ## 特性
